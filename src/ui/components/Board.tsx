@@ -1,8 +1,9 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type KeyboardEvent, type PointerEvent } from 'react';
 import { colOf, neighbors, rowOf } from '../../core/puzzle/geometry';
 import type { GameAction, GameState } from '../../core/puzzle/game';
-import type { Settings } from '../../store/saveStore';
-import { REGION_COLORS } from '../colors';
+import { HIGH_CONTRAST_COLORS, themeById } from '../../core/economy/cosmetics';
+import { useSave, type Settings } from '../../store/saveStore';
+import { haptic, sfx } from '../audio';
 import { DogFace } from './DogFace';
 
 interface BoardProps {
@@ -39,7 +40,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
   const placeDog = useCallback(
     (cell: number) => {
       dispatch({ type: 'placeDog', cell, autoCross: settings.autoCross });
-      navigator.vibrate?.(15);
+      haptic(15);
     },
     [dispatch, settings.autoCross],
   );
@@ -65,6 +66,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
       return;
     }
     dispatch({ type: 'toggleX', cell });
+    sfx('x');
     g.lastTapCell = cell;
     g.lastTapTime = now;
   };
@@ -149,10 +151,14 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
       setCursor(Math.max(0, Math.min(size - 1, nr)) * size + Math.max(0, Math.min(size - 1, nc)));
     };
     switch (e.key) {
-      case 'ArrowUp': return move(r - 1, c);
-      case 'ArrowDown': return move(r + 1, c);
-      case 'ArrowLeft': return move(r, c - 1);
-      case 'ArrowRight': return move(r, c + 1);
+      case 'ArrowUp':
+        return move(r - 1, c);
+      case 'ArrowDown':
+        return move(r + 1, c);
+      case 'ArrowLeft':
+        return move(r, c - 1);
+      case 'ArrowRight':
+        return move(r, c + 1);
       case ' ':
       case 'x':
         e.preventDefault();
@@ -188,13 +194,43 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
     const set = new Set<number>();
     for (const u of state.hint?.units ?? []) {
       for (let i = 0; i < size * size; i++) {
-        if ((u.type === 'row' && rowOf(i, size) === u.index) || (u.type === 'col' && colOf(i, size) === u.index) || (u.type === 'region' && regions[i] === u.index)) set.add(i);
+        if (
+          (u.type === 'row' && rowOf(i, size) === u.index) ||
+          (u.type === 'col' && colOf(i, size) === u.index) ||
+          (u.type === 'region' && regions[i] === u.index)
+        )
+          set.add(i);
       }
     }
     return set;
   }, [state.hint, size, regions]);
 
+  const cosmetics = useSave((s) => s.cosmetics);
+  const theme = themeById(cosmetics.boardTheme);
+  const palette = settings.highContrast ? HIGH_CONTRAST_COLORS : theme.regionColors;
+  const boardVars = {
+    ['--region-border' as string]: settings.highContrast ? '#000' : theme.border,
+    ['--cell-border' as string]: settings.highContrast ? 'rgba(0,0,0,0.45)' : theme.cellBorder,
+  };
+
   const event = state.event;
+  /** Cells that ripple outward from a freshly placed dog (row, column and yard). */
+  const ripple = useMemo(() => {
+    const map = new Map<number, number>();
+    if (!event || (event.type !== 'dog' && event.type !== 'powerUp') || settings.reducedMotion) return map;
+    for (const src of event.cells) {
+      const [sr, sc] = [rowOf(src, size), colOf(src, size)];
+      for (let i = 0; i < size * size; i++) {
+        const [r, c] = [rowOf(i, size), colOf(i, size)];
+        if (event.type === 'dog' && r !== sr && c !== sc && regions[i] !== regions[src]) continue;
+        if (event.type === 'powerUp' && Math.max(Math.abs(r - sr), Math.abs(c - sc)) > 1) continue;
+        const d = Math.abs(r - sr) + Math.abs(c - sc);
+        map.set(i, Math.min(map.get(i) ?? Infinity, d));
+      }
+    }
+    return map;
+  }, [event, size, regions, settings.reducedMotion]);
+
   const conflictCells = useMemo(() => {
     if (event?.type !== 'wrong') return new Set<number>();
     return new Set(neighbors(event.cells[0], size));
@@ -203,8 +239,8 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
   return (
     <div
       ref={boardRef}
-      className={`board ${onTarget ? 'targeting' : ''}`}
-      style={{ gridTemplateColumns: `repeat(${size}, 1fr)`, ['--n' as string]: size }}
+      className={`board ${onTarget ? 'targeting' : ''} ${settings.highContrast ? 'high-contrast' : ''}`}
+      style={{ gridTemplateColumns: `repeat(${size}, 1fr)`, ['--n' as string]: size, ...boardVars }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -228,6 +264,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
         const right = c < size - 1 ? regions[cell + 1] : undefined;
         const done = settings.highlightDone && mark !== 'dog' && (doneUnits.rows.has(r) || doneUnits.cols.has(c) || doneUnits.regs.has(reg));
         const isEventCell = event?.cells.includes(cell);
+        const rippleDist = ripple.get(cell);
         const classes = [
           'cell',
           done ? 'done' : '',
@@ -238,23 +275,26 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
           isEventCell && event?.type === 'shielded' ? 'shielded' : '',
           isEventCell && event?.type === 'powerUp' ? 'powered' : '',
           conflictCells.has(cell) && marks[cell] === 'dog' ? 'bark' : '',
+          rippleDist !== undefined ? 'ripple' : '',
+          settings.patterns ? `pat pat-${reg % 8}` : '',
         ].join(' ');
         return (
           <div
-            key={`${cell}-${isEventCell ? event?.id : 0}`}
+            key={`${cell}-${isEventCell || rippleDist !== undefined ? event?.id : 0}`}
             data-cell={cell}
             className={classes}
             role="gridcell"
             aria-label={`Row ${r + 1}, column ${c + 1}, ${mark === 'dog' ? 'dog' : mark === 'empty' ? 'empty' : 'crossed'}`}
             style={{
-              background: REGION_COLORS[reg],
+              backgroundColor: palette[reg % palette.length],
+              animationDelay: rippleDist !== undefined ? `${rippleDist * 45}ms` : undefined,
               borderTop: `${thick(up)}px solid ${b(up)}`,
               borderBottom: `${thick(down)}px solid ${b(down)}`,
               borderLeft: `${thick(left)}px solid ${b(left)}`,
               borderRight: `${thick(right)}px solid ${b(right)}`,
             }}
           >
-            {mark === 'dog' && <DogFace breed={reg} className="dog pop" />}
+            {mark === 'dog' && <DogFace breed={reg} className="dog pop" accessory={cosmetics.accessory} />}
             {mark === 'x' && <span className="mark x">✕</span>}
             {mark === 'autoX' && <span className="mark auto">•</span>}
             {isEventCell && event?.type === 'wrong' && <DogFace breed={reg} mood="sad" className="dog ghost" />}

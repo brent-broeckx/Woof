@@ -1,0 +1,84 @@
+.memoryFetch-game {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  color: #3b2f2a;
+}
+.memory-notice {
+  min-height: 24px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fffaf2;
+  box-shadow: 0 3px 0 rgba(90, 60, 40, 0.14);
+  font-weight: 800;
+  text-align: center;
+}
+.memory-grid {
+  width: min(100%, 440px, 62vh);
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 24px;
+  background: #fbf5ea;
+}
+.memory-card {
+  aspect-ratio: 1;
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  padding: 0;
+  border-radius: 16px;
+  background: transparent;
+  perspective: 700px;
+}
+.memory-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 260ms ease;
+}
+.memory-card.shown .memory-card-inner {
+  transform: rotateY(180deg);
+}
+.memory-card-back,
+.memory-card-front {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  backface-visibility: hidden;
+  box-shadow: 0 3px 0 rgba(90, 60, 40, 0.2);
+}
+.memory-card-back {
+  background: linear-gradient(135deg, #e8805a, #f2b631);
+  color: #fffaf2;
+  font-size: 1.8rem;
+  font-weight: 1000;
+}
+.memory-card-front {
+  background: #fffaf2;
+  transform: rotateY(180deg);
+}
+.memory-card-front svg {
+  width: 78%;
+  height: 78%;
+}
+.memory-card.matched .memory-card-front {
+  background: #b5e2a0;
+}
+.memory-bone {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 0 rgba(90, 60, 40, 0.18));
+}
+@media (max-width: 520px) {
+  .memory-grid {
+    gap: 6px;
+  }
+  .memory-card-back,
+  .memory-card-front {
+    border-radius: 12px;
+  }
+}

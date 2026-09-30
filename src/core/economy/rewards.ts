@@ -20,6 +20,13 @@ export const GAME_BIAS: Record<MiniGameId, PowerUpId[]> = {
   connectLeashes: ['fetch', 'pawScan'],
   blockDrop: ['shield', 'extraBone'],
   slidingPup: ['flashlight', 'sniff'],
+  kibbleBlocks: ['pawScan', 'extraBone'],
+  memoryFetch: ['sniff', 'guideDog'],
+  nonogramPaws: ['flashlight', 'pawScan'],
+  rushHour: ['rewind', 'guideDog'],
+  waterSort: ['rewind', 'guideDog'],
+  lightsOut: ['flashlight', 'rewind'],
+  pipeSprinklers: ['pawScan', 'flashlight'],
 };
 
 export const PITY_THRESHOLD = 4;
@@ -40,11 +47,29 @@ export interface BonusReward {
   pity: number;
 }
 
-function rollItem(seed: number, stars: 1 | 2 | 3, game: MiniGameId, forced?: Rarity): PowerUpId {
+function rollItem(seed: number, stars: 1 | 2 | 3, game: MiniGameId | null, forced?: Rarity): PowerUpId {
   const rng = createRng(seed);
   const rarity: Rarity = forced ?? rng.weighted(Object.entries(RARITY_WEIGHTS[stars]) as [Rarity, number][]);
   const options = POWER_UP_IDS.filter((id) => POWER_UPS[id].rarity === rarity);
-  return rng.weighted(options.map((id) => [id, GAME_BIAS[game].includes(id) ? 3 : 1] as const));
+  const bias = game ? GAME_BIAS[game] : [];
+  return rng.weighted(options.map((id) => [id, bias.includes(id) ? 3 : 1] as const));
+}
+
+/** World chest: opened once per world after all 25 levels are finished. */
+export function rollChest(saveSeed: number, worldId: number, worldStars: number, maxStars: number): { items: PowerUpId[]; treats: number } {
+  const ratio = maxStars > 0 ? worldStars / maxStars : 0;
+  const count = 3 + (ratio >= 0.6 ? 1 : 0) + (ratio >= 1 ? 1 : 0);
+  const tier: 1 | 2 | 3 = ratio >= 0.9 ? 3 : ratio >= 0.6 ? 2 : 1;
+  const items = Array.from({ length: count }, (_, i) =>
+    rollItem(hashSeed(saveSeed, 'chest', worldId, i), tier, null, i === 0 && tier === 3 ? 'rare' : undefined),
+  );
+  return { items, treats: 50 * worldId + Math.round(50 * ratio) };
+}
+
+/** Daily puzzle prize: one power-up, better with more stars. */
+export function rollDailyItem(saveSeed: number, date: string, stars: number): PowerUpId {
+  const s = Math.max(1, Math.min(3, stars)) as 1 | 2 | 3;
+  return rollItem(hashSeed(saveSeed, 'daily', date), s, null);
 }
 
 /**

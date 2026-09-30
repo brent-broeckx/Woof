@@ -7,7 +7,12 @@ const TOGGLES: { key: keyof SettingsData; label: string; help: string }[] = [
   { key: 'autoCross', label: 'Auto-cross', help: 'After placing a dog, mark every tile it rules out.' },
   { key: 'highlightDone', label: 'Highlight finished lines', help: 'Dim rows, columns and yards that already have their dog.' },
   { key: 'showTimer', label: 'Show timer', help: 'Show how long you have been playing a level.' },
-  { key: 'reducedMotion', label: 'Reduce motion', help: 'Turn off bouncy animations.' },
+  { key: 'reducedMotion', label: 'Reduce motion', help: 'Turn off bouncy animations and confetti.' },
+  { key: 'sound', label: 'Sound effects', help: 'Pops, barks and happy jingles.' },
+  { key: 'music', label: 'Music', help: 'A calm, generated lo-fi tune.' },
+  { key: 'haptics', label: 'Vibration', help: 'Buzz on phones when you place a dog or make a mistake.' },
+  { key: 'patterns', label: 'Yard patterns', help: 'Add a pattern to every yard colour (colour-blind friendly).' },
+  { key: 'highContrast', label: 'High contrast', help: 'Strong colours and thick black yard borders.' },
 ];
 
 export function Settings() {

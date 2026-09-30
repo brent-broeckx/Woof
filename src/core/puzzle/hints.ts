@@ -4,9 +4,7 @@ import { applyDeduction, createLogicState, findNextDeduction, type Deduction } f
 import { solutionCells } from './geometry';
 import type { Puzzle } from './types';
 
-export type Hint =
-  | { kind: 'mistake'; cells: number[] }
-  | { kind: 'deduction'; deduction: Deduction };
+export type Hint = { kind: 'mistake'; cells: number[] } | { kind: 'deduction'; deduction: Deduction };
 
 /**
  * Finds the easiest deduction the player hasn't already made.

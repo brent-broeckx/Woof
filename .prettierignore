@@ -1,0 +1,8 @@
+dist
+node_modules
+public
+src/data/puzzles.json
+package-lock.json
+test-results
+playwright-report
+*.md

@@ -70,9 +70,13 @@ export default function ConnectLeashesView({ tier, seed, onFinish }: MiniGamePro
   return (
     <div className="minigame leash-game">
       <div className="mg-stats">
-        <span>🔗 {connected}/{endpoints.length} pairs</span>
+        <span>
+          🔗 {connected}/{endpoints.length} pairs
+        </span>
         <span>🟩 {Math.round((covered / (size * size)) * 100)}% filled</span>
-        <span>✍️ {state.moves} / {target} strokes</span>
+        <span>
+          ✍️ {state.moves} / {target} strokes
+        </span>
       </div>
       <div
         ref={boardRef}
@@ -87,11 +91,7 @@ export default function ConnectLeashesView({ tier, seed, onFinish }: MiniGamePro
           const ep = endpointColor(puzzle, cell);
           const pathColor = state.paths.findIndex((p) => p.includes(cell));
           return (
-            <div
-              key={cell}
-              className="leash-cell"
-              style={{ background: pathColor >= 0 ? `${LEASH_COLORS[pathColor]}33` : undefined }}
-            >
+            <div key={cell} className="leash-cell" style={{ background: pathColor >= 0 ? `${LEASH_COLORS[pathColor]}33` : undefined }}>
               {ep >= 0 && (
                 <div className={`leash-dog ${isComplete(state, ep) ? 'happy' : ''}`} style={{ background: LEASH_COLORS[ep] }}>
                   <DogFace breed={ep} />

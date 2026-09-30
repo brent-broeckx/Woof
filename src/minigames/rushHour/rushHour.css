@@ -1,0 +1,102 @@
+.rushHour-game {
+  align-items: center;
+  color: #3b2f2a;
+}
+
+.rush-board {
+  position: relative;
+  width: min(100%, 440px, 62vh);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 4px;
+  padding: 8px;
+  border-radius: 24px;
+  background: linear-gradient(90deg, rgba(90, 60, 40, 0.08) 1px, transparent 1px), linear-gradient(rgba(90, 60, 40, 0.08) 1px, transparent 1px), #fbf5ea;
+  background-size: calc(100% / 6) calc(100% / 6);
+  box-shadow:
+    0 3px 0 rgba(90, 60, 40, 0.2),
+    inset 0 0 0 3px #fffaf2;
+  touch-action: none;
+  outline: none;
+}
+
+.rush-board:focus-visible {
+  box-shadow:
+    0 0 0 4px rgba(232, 128, 90, 0.35),
+    0 3px 0 rgba(90, 60, 40, 0.2);
+}
+
+.rush-cell {
+  border-radius: 12px;
+  background: rgba(255, 250, 242, 0.7);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rush-exit {
+  position: absolute;
+  right: -18px;
+  top: calc((100% - 16px) / 6 * 2 + 8px);
+  width: 28px;
+  height: calc((100% - 16px) / 6);
+  border-radius: 0 14px 14px 0;
+  background: #9fdcd4;
+  box-shadow: inset 0 0 0 3px rgba(59, 47, 42, 0.18);
+}
+
+.rush-exit::after {
+  content: 'EXIT';
+  position: absolute;
+  right: -22px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #3b2f2a;
+}
+
+.rush-vehicle {
+  position: absolute;
+  left: calc(8px + var(--col) * ((100% - 16px) / 6));
+  top: calc(8px + var(--row) * ((100% - 16px) / 6));
+  width: calc(var(--w) * ((100% - 16px) / 6) - 4px);
+  height: calc(var(--h) * ((100% - 16px) / 6) - 4px);
+  border: 0;
+  border-radius: 18px;
+  box-shadow:
+    0 3px 0 rgba(90, 60, 40, 0.22),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.45);
+  display: grid;
+  place-items: center;
+  color: #3b2f2a;
+  font-size: 1.4rem;
+  cursor: grab;
+  z-index: 2;
+  touch-action: none;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.rush-vehicle:active {
+  cursor: grabbing;
+}
+
+.rush-vehicle.selected {
+  box-shadow:
+    0 0 0 4px rgba(232, 128, 90, 0.45),
+    0 3px 0 rgba(90, 60, 40, 0.22),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+.rush-vehicle svg {
+  width: min(72px, 90%);
+  height: min(72px, 90%);
+}
+
+.dog-van {
+  border-radius: 24px 16px 16px 24px;
+}

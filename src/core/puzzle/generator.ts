@@ -92,14 +92,16 @@ export function makeUnique(size: number, regions: number[], solution: number[], 
     const sols = findSolutions({ size, regions }, 2);
     const alt = sols.find((s) => s.some((c, r) => c !== solution[r]));
     if (!alt) return true;
-    const candidates = rng.shuffle(
-      alt.map((c, r) => r * size + c).filter((cell) => !solCells.has(cell)),
-    );
+    const candidates = rng.shuffle(alt.map((c, r) => r * size + c).filter((cell) => !solCells.has(cell)));
     let changed = false;
     for (const cell of candidates) {
       const reg = regions[cell];
       const neighborRegs = rng.shuffle([
-        ...new Set(orthogonal(cell, size).map((n) => regions[n]).filter((r) => r !== reg)),
+        ...new Set(
+          orthogonal(cell, size)
+            .map((n) => regions[n])
+            .filter((r) => r !== reg),
+        ),
       ]);
       if (!neighborRegs.length || !regionConnectedWithout(regions, size, reg, cell)) continue;
       regions[cell] = neighborRegs[0];

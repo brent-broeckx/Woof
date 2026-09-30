@@ -1,15 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BlockDropGame, HEIGHT, WIDTH, blockDropConfigForTier, pieceCells } from './blockDrop/logic';
-import {
-  allConnected,
-  createLeashState,
-  generateLeashPuzzle,
-  hamiltonianPath,
-  isFilled,
-  leashStars,
-  pointerDown,
-  pointerEnter,
-} from './connectLeashes/logic';
+import { allConnected, createLeashState, generateLeashPuzzle, hamiltonianPath, isFilled, leashStars, pointerDown, pointerEnter } from './connectLeashes/logic';
 import { createRng } from '../core/rng';
 import { isSolvedTiles, optimalMoves, scramble, slide, slidingStars } from './slidingPup/logic';
 
@@ -45,7 +36,13 @@ describe('Connect the Leashes', () => {
   });
 
   it('cuts another leash when drawing through it', () => {
-    const puzzle = { size: 3, endpoints: [[0, 2], [6, 8]] as [number, number][] };
+    const puzzle = {
+      size: 3,
+      endpoints: [
+        [0, 2],
+        [6, 8],
+      ] as [number, number][],
+    };
     let s = createLeashState(puzzle);
     s = pointerDown(s, 0);
     s = pointerEnter(s, 3);

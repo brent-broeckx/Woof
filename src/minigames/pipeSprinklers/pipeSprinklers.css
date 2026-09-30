@@ -1,0 +1,85 @@
+.pipeSprinklers-game {
+  align-items: center;
+  color: #3b2f2a;
+}
+
+.pipe-board {
+  width: min(100%, 440px, 62vh);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  grid-template-rows: repeat(var(--n), 1fr);
+  gap: 6px;
+  padding: 8px;
+  border-radius: 24px;
+  background: #fbf5ea;
+  box-shadow:
+    0 3px 0 rgba(90, 60, 40, 0.2),
+    inset 0 0 0 3px #fffaf2;
+}
+
+.pipe-tile {
+  position: relative;
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 18px;
+  background: #fffaf2;
+  box-shadow:
+    inset 0 0 0 2px rgba(90, 60, 40, 0.08),
+    0 2px 0 rgba(90, 60, 40, 0.14);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform 120ms ease,
+    background 120ms ease;
+  padding: 4px;
+}
+
+.pipe-tile:hover,
+.pipe-tile:focus-visible {
+  transform: translateY(-1px);
+  outline: 3px solid rgba(232, 128, 90, 0.35);
+}
+
+.pipe-tile.wet {
+  background: #eaf7ff;
+}
+
+.pipe-tile.leak {
+  background: #fff0e8;
+}
+
+.pipe-tile.leak::after {
+  content: '💦';
+  position: absolute;
+  right: -6px;
+  top: -8px;
+  font-size: 1rem;
+}
+
+.pipe-tile svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pipe-bowl {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 34%;
+  min-width: 24px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fffaf2;
+  box-shadow: 0 2px 0 rgba(90, 60, 40, 0.18);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.pipe-bowl svg {
+  width: 100%;
+  height: 100%;
+}

@@ -6,7 +6,10 @@ export type Screen =
   | { name: 'level'; id: number }
   | { name: 'kennel' }
   | { name: 'settings' }
-  | { name: 'howto' };
+  | { name: 'howto' }
+  | { name: 'daily' }
+  | { name: 'endless' }
+  | { name: 'stats' };
 
 interface NavState {
   screen: Screen;

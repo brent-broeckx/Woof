@@ -11,19 +11,33 @@ export function HowTo() {
       <div className="card">
         <h3>The rules</h3>
         <ul>
-          <li>Place exactly <b>one dog in every row</b> and <b>every column</b>.</li>
-          <li>Each coloured <b>yard</b> gets exactly one dog too.</li>
-          <li>Dogs need space: two dogs can <b>never touch</b>, not even diagonally.</li>
+          <li>
+            Place exactly <b>one dog in every row</b> and <b>every column</b>.
+          </li>
+          <li>
+            Each coloured <b>yard</b> gets exactly one dog too.
+          </li>
+          <li>
+            Dogs need space: two dogs can <b>never touch</b>, not even diagonally.
+          </li>
           <li>Every puzzle has one solution, and you can always find it with logic. No guessing needed!</li>
         </ul>
       </div>
       <div className="card">
         <h3>Controls</h3>
         <ul>
-          <li><b>Tap</b> a tile to cross it off (✕). Tap again to clear it.</li>
-          <li><b>Double-tap</b>, <b>long-press</b> or <b>right-click</b> to place a dog.</li>
-          <li><b>Drag</b> to cross off many tiles at once.</li>
-          <li>Keyboard: arrow keys move, <kbd>Space</kbd> crosses, <kbd>Enter</kbd> places a dog.</li>
+          <li>
+            <b>Tap</b> a tile to cross it off (✕). Tap again to clear it.
+          </li>
+          <li>
+            <b>Double-tap</b>, <b>long-press</b> or <b>right-click</b> to place a dog.
+          </li>
+          <li>
+            <b>Drag</b> to cross off many tiles at once.
+          </li>
+          <li>
+            Keyboard: arrow keys move, <kbd>Space</kbd> crosses, <kbd>Enter</kbd> places a dog.
+          </li>
           <li>A wrong dog costs a 🦴 bone. Lose all 3 and the level is over. Then you can use power-ups or retry.</li>
         </ul>
       </div>
