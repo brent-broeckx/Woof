@@ -1,7 +1,9 @@
 // Woofdoku service worker: offline play after the first visit.
-// Bump VERSION to drop old caches.
-const VERSION = 'woofdoku-v1';
-const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png'];
+// VERSION and PRECACHE are filled in at build time (see vite.config.ts), so each deploy
+// gets a fresh cache and every built asset (incl. lazy mini-game chunks) works offline.
+const VERSION = 'woofdoku-dev';
+const PRECACHE = [];
+const CORE = [...new Set(['./', './index.html', './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png', ...PRECACHE])];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
@@ -33,7 +35,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(VERSION).then((c) => c.put('./index.html', copy));
           return res;
         })
-        .catch(() => caches.match('./index.html')),
+        .catch(() => caches.match('./index.html', { ignoreVary: true })),
     );
     return;
   }
@@ -41,7 +43,7 @@ self.addEventListener('fetch', (event) => {
   // Hashed assets, icons and fonts: cache first, refresh in the background.
   event.respondWith(
     caches.open(VERSION).then(async (cache) => {
-      const cached = await cache.match(req);
+      const cached = await cache.match(req, { ignoreVary: true });
       const network = fetch(req)
         .then((res) => {
           if (res.ok || res.type === 'opaque') cache.put(req, res.clone());

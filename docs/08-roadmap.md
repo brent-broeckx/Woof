@@ -20,7 +20,7 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 - [x] Vite + React + TS strict, Vitest. oxlint, Prettier, Playwright.
 - [x] Folder structure from doc 06; path aliases.
 - [x] Git repo init, CI (typecheck + test + build) via GitHub Actions.
-- [ ] Deploy empty shell to static hosting.
+- [x] Deploy to static hosting (GitHub Pages).
 
 **Done when:** `npm run dev / test / build` work; blank app deployed.
 
@@ -77,7 +77,7 @@ All seven built. Intro order (every 5th level): Connect the Leashes → Block Dr
 - [x] Daily puzzle + 7-day streak; Endless mode (5×5–10×10, 3 difficulties) generated in a Web Worker; Stats screen.
 - [~] Balancing: per-level stats (attempts, losses, best time) collected and shown as "Toughest levels"; tuning pass still to do with real play data.
 - [x] Lint/format: **oxlint** + Prettier (typescript-eslint doesn't support TypeScript 7 yet).
-- [ ] Deploy to static hosting.
+- [x] Deploy to GitHub Pages (Actions workflow on push to `main`).
 ---
 
 ## Risks & mitigations

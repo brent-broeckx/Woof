@@ -21,6 +21,12 @@ npm run icons            # regenerate PNG app icons in public/icons
 
 > Playwright: if the browser download fails, use an installed browser, e.g. `PW_CHANNEL=msedge npm run e2e` (PowerShell: `$env:PW_CHANNEL='msedge'`).
 
+## Play it online
+
+**https://brent-broeckx.github.io/Woof/** - deployed automatically by `.github/workflows/deploy.yml` on every push to `main`. Works on desktop and mobile; use the browser's *Install app* / *Add to Home Screen* to install it as a PWA, which also works offline after the first visit.
+
+The build injects a precache list and a build-specific cache version into `sw.js` (see `vite.config.ts`), so every deploy replaces the old offline cache.
+
 ## Code layout
 
 | Path | Purpose |
