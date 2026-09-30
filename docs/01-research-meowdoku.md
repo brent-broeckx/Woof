@@ -17,7 +17,7 @@ Result: an N×N board has exactly N cats. Each puzzle has a **unique solution** 
 
 ## Controls
 | Input | Action |
-|---|---|
+| --- | --- |
 | Single tap | Toggle an **X** (a note: "no cat here") |
 | Double tap | Place a **cat** (commit) |
 | Drag | Paint / erase X's across many cells |
@@ -51,7 +51,7 @@ Result: an N×N board has exactly N cats. Each puzzle has a **unique solution** 
 
 ## Common solving techniques (used later to grade difficulty)
 | Technique | Description | Difficulty |
-|---|---|---|
+| --- | --- | --- |
 | Single cell region | Region of size 1 → forced | Trivial |
 | Last cell in row/col/region | Only one open cell left | Easy |
 | Neighbor elimination | Cells around a placed dog are X | Easy |
@@ -63,7 +63,7 @@ Result: an N×N board has exactly N cats. Each puzzle has a **unique solution** 
 
 ## What we copy vs. change
 | Keep | Change |
-|---|---|
+| --- | --- |
 | Exact 3-rule logic, unique solutions | Cats → **dogs** (breeds per region/color) |
 | Tap X / double-tap place / drag | Add **bonus mini-game levels** every 5 levels |
 | 3 lives per level | Lives called **bones** 🦴 |
