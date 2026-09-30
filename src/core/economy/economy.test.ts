@@ -1,7 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import { bonusGameSequence, getLevel, isBonusLevel, TOTAL_LEVELS } from '../progression/levels';
 import { POWER_UPS } from './powerups';
-import { rollBonusReward, treatsForImprovement } from './rewards';
+import { rollBonusReward, rollChest, treatsForImprovement } from './rewards';
+import { BOARD_THEMES, ACCESSORIES, cosmeticPrice } from './cosmetics';
+
+describe('world chest & cosmetics', () => {
+  it('scales chest size and treats with stars', () => {
+    const low = rollChest(1, 1, 25, 75);
+    const high = rollChest(1, 1, 75, 75);
+    expect(low.items).toHaveLength(3);
+    expect(high.items).toHaveLength(5);
+    expect(high.treats).toBeGreaterThan(low.treats);
+    for (const id of high.items) expect(POWER_UPS[id]).toBeDefined();
+    expect(POWER_UPS[high.items[0]].rarity).toBe('rare');
+    expect(rollChest(7, 2, 60, 75)).toEqual(rollChest(7, 2, 60, 75));
+  });
+
+  it('has unique cosmetic ids with 11 yard colours per theme', () => {
+    const ids = [...BOARD_THEMES.map((t) => t.id), ...ACCESSORIES.map((a) => a.id)];
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const t of BOARD_THEMES) expect(t.regionColors).toHaveLength(11);
+    expect(cosmeticPrice('classic')).toBe(0);
+    expect(cosmeticPrice('crown')).toBeGreaterThan(0);
+  });
+});
 
 describe('progression', () => {
   it('puts a bonus level on every 5th level', () => {
@@ -11,6 +33,9 @@ describe('progression', () => {
     expect(getLevel(5)).toMatchObject({ kind: 'bonus', game: 'connectLeashes', tier: 1 });
     expect(getLevel(10)).toMatchObject({ kind: 'bonus', game: 'blockDrop' });
     expect(getLevel(15)).toMatchObject({ kind: 'bonus', game: 'slidingPup' });
+    expect(getLevel(20)).toMatchObject({ kind: 'bonus', game: 'kibbleBlocks' });
+    expect(getLevel(35)).toMatchObject({ kind: 'bonus', game: 'rushHour' });
+    expect(getLevel(50)).toMatchObject({ kind: 'bonus', game: 'pipeSprinklers' });
     expect(getLevel(6)).toMatchObject({ kind: 'puzzle', puzzleIndex: 4 });
   });
 

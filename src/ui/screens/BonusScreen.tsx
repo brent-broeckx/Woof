@@ -4,6 +4,8 @@ import { TOTAL_LEVELS, type LevelEntry } from '../../core/progression/levels';
 import { MINI_GAMES, type MiniGameResult } from '../../minigames/registry';
 import { useNav } from '../../store/navStore';
 import { useSave } from '../../store/saveStore';
+import { sfx } from '../audio';
+import { Confetti } from '../components/Confetti';
 import { Modal, Stars, TopBar } from '../components/common';
 
 type BonusLevel = Extract<LevelEntry, { kind: 'bonus' }>;
@@ -21,6 +23,8 @@ export function BonusScreen({ level }: { level: BonusLevel }) {
     const stars = Math.max(1, result.stars);
     const { items } = useSave.getState().completeBonus(level.id, level.game, stars);
     setPhase({ name: 'result', result, items, stars });
+    sfx('win');
+    window.setTimeout(() => sfx('reward'), 600);
   };
 
   const attempt = phase.name === 'play' ? phase.attempt : 0;
@@ -94,6 +98,7 @@ export function BonusScreen({ level }: { level: BonusLevel }) {
         </Modal>
       )}
 
+      {phase.name === 'result' && phase.stars === 3 && <Confetti />}
       {phase.name === 'result' && (
         <Modal>
           <h2>{phase.result.stars >= 3 ? 'Pawsome!' : phase.result.stars >= 2 ? 'Good dog!' : 'Nice try!'}</h2>

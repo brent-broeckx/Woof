@@ -1,0 +1,92 @@
+/** Cosmetics bought with treats in the Kennel. Purely visual. */
+
+export interface BoardTheme {
+  id: string;
+  name: string;
+  icon: string;
+  price: number;
+  regionColors: string[];
+  border: string;
+  cellBorder: string;
+  /** Page tint behind the board (null = keep the world colour). */
+  background: string | null;
+}
+
+export const BOARD_THEMES: BoardTheme[] = [
+  {
+    id: 'classic',
+    name: 'Classic Pastel',
+    icon: '🎨',
+    price: 0,
+    regionColors: ['#f7b5c8', '#a9cdf2', '#f5dc7f', '#b5e2a0', '#c8b2ee', '#f8c190', '#9fdcd4', '#f19c9c', '#e8c9f2', '#d8c0a3', '#c9ced6'],
+    border: '#4a3b33',
+    cellBorder: 'rgba(74, 59, 51, 0.18)',
+    background: null,
+  },
+  {
+    id: 'garden',
+    name: 'Spring Garden',
+    icon: '🌷',
+    price: 150,
+    regionColors: ['#ffc9de', '#bfe3ff', '#fff0a8', '#c6f0b0', '#dccbff', '#ffd6a8', '#b8f0e4', '#ffb3b3', '#f3dcff', '#e9d7bf', '#dfe5ea'],
+    border: '#4f6b3a',
+    cellBorder: 'rgba(79, 107, 58, 0.2)',
+    background: '#eef7e2',
+  },
+  {
+    id: 'autumn',
+    name: 'Autumn Walk',
+    icon: '🍂',
+    price: 200,
+    regionColors: ['#e9a27c', '#c7b27a', '#f1cf7a', '#a9bf7c', '#c49a8a', '#e8b66b', '#9fbfaa', '#d9876b', '#dcb8a6', '#b8946f', '#c4bcae'],
+    border: '#5b3a24',
+    cellBorder: 'rgba(91, 58, 36, 0.2)',
+    background: '#f7ead9',
+  },
+  {
+    id: 'candy',
+    name: 'Candy Shop',
+    icon: '🍭',
+    price: 250,
+    regionColors: ['#ff9ec7', '#8fd3ff', '#ffe066', '#9ff09a', '#c59bff', '#ffb877', '#76e5d3', '#ff8a8a', '#f3b8ff', '#e3c29b', '#c2cbe0'],
+    border: '#6a2c5a',
+    cellBorder: 'rgba(106, 44, 90, 0.18)',
+    background: '#fdeef6',
+  },
+  {
+    id: 'night',
+    name: 'Starry Night',
+    icon: '🌙',
+    price: 300,
+    regionColors: ['#b0678a', '#4f79b0', '#b39a3c', '#5e9a55', '#7d64b3', '#b8774a', '#3f9a90', '#b35a5a', '#9a74ad', '#8c7258', '#77808c'],
+    border: '#12121f',
+    cellBorder: 'rgba(255, 255, 255, 0.14)',
+    background: '#2b2d45',
+  },
+];
+
+/** Colour-blind friendly high-contrast palette (Okabe–Ito based + extras). */
+export const HIGH_CONTRAST_COLORS = ['#e69f00', '#56b4e9', '#f0e442', '#009e73', '#cc79a7', '#d55e00', '#0072b2', '#ffffff', '#999999', '#a6761d', '#b3de69'];
+
+export type AccessoryId = 'none' | 'bandana' | 'bow' | 'partyHat' | 'glasses' | 'crown' | 'flower' | 'tophat';
+
+export interface Accessory {
+  id: AccessoryId;
+  name: string;
+  icon: string;
+  price: number;
+}
+
+export const ACCESSORIES: Accessory[] = [
+  { id: 'none', name: 'Just the pup', icon: '🐶', price: 0 },
+  { id: 'bandana', name: 'Red Bandana', icon: '🧣', price: 100 },
+  { id: 'bow', name: 'Pink Bow', icon: '🎀', price: 120 },
+  { id: 'flower', name: 'Daisy', icon: '🌼', price: 120 },
+  { id: 'glasses', name: 'Cool Shades', icon: '🕶️', price: 180 },
+  { id: 'partyHat', name: 'Party Hat', icon: '🥳', price: 200 },
+  { id: 'tophat', name: 'Top Hat', icon: '🎩', price: 260 },
+  { id: 'crown', name: 'Royal Crown', icon: '👑', price: 400 },
+];
+
+export const themeById = (id: string) => BOARD_THEMES.find((t) => t.id === id) ?? BOARD_THEMES[0];
+export const cosmeticPrice = (id: string) => BOARD_THEMES.find((t) => t.id === id)?.price ?? ACCESSORIES.find((a) => a.id === id)?.price ?? Infinity;

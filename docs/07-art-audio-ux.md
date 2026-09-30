@@ -41,3 +41,10 @@ Sound, music, haptics, auto-cross, conflict highlight, patterns, high contrast, 
 ## Layout
 - Mobile portrait: HUD top, board middle, tray bottom (thumb-reachable).
 - Desktop: board centered, side panel with power-ups & rules.
+
+## Implementation notes (Phase 4)
+- **Audio:** no audio files — all SFX are synthesized with WebAudio (`src/ui/audio.ts`) and background music is a soft generative loop. Sound, music and haptics each have a toggle; audio unlocks on first user gesture.
+- **Juice:** a ripple wave across the board on win (delay by distance from the last placed dog), confetti on wins / 3★ bonus results / chest opens.
+- **Accessibility:** per-region **patterns** (8 SVG-free CSS patterns) and a **high-contrast** palette override any board theme.
+- **Cosmetics:** board themes change the region palette; accessories (bandana, bow, hats, shades, crown…) are SVG overlays on every placed dog.
+- **Layout:** phones stack HUD → board → tools; at ≥900×560 the HUD, tools and power-ups move to a side panel next to the board.

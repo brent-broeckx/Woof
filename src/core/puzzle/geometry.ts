@@ -71,9 +71,7 @@ export function solutionCells(puzzle: Puzzle): number[] {
   return puzzle.solution.map((col, row) => row * puzzle.size + col);
 }
 
-export const REGION_NAMES = [
-  'pink', 'blue', 'yellow', 'green', 'purple', 'orange', 'teal', 'red', 'lilac', 'brown', 'grey',
-];
+export const REGION_NAMES = ['pink', 'blue', 'yellow', 'green', 'purple', 'orange', 'teal', 'red', 'lilac', 'brown', 'grey'];
 
 export function describeUnit(ref: UnitRef): string {
   if (ref.type === 'row') return `row ${ref.index + 1}`;

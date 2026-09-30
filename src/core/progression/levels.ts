@@ -20,8 +20,21 @@ export const WORLDS: World[] = [
 
 export const TOTAL_LEVELS = WORLDS.length * LEVELS_PER_WORLD;
 
-export type MiniGameId = 'connectLeashes' | 'blockDrop' | 'slidingPup';
-export const MINI_GAME_IDS: MiniGameId[] = ['connectLeashes', 'blockDrop', 'slidingPup'];
+export type MiniGameId =
+  'connectLeashes' | 'blockDrop' | 'slidingPup' | 'kibbleBlocks' | 'memoryFetch' | 'nonogramPaws' | 'rushHour' | 'waterSort' | 'lightsOut' | 'pipeSprinklers';
+/** Introduction order: one new game every bonus level, then a weighted rotation. */
+export const MINI_GAME_IDS: MiniGameId[] = [
+  'connectLeashes',
+  'blockDrop',
+  'slidingPup',
+  'kibbleBlocks',
+  'memoryFetch',
+  'nonogramPaws',
+  'rushHour',
+  'waterSort',
+  'lightsOut',
+  'pipeSprinklers',
+];
 
 export type LevelEntry =
   | { id: number; world: number; kind: 'puzzle'; puzzleIndex: number }
@@ -71,10 +84,34 @@ export const PUZZLE_COUNT = TOTAL_LEVELS - TOTAL_LEVELS / BONUS_EVERY;
 
 /** Board sizes for every puzzle slot (4 puzzles per cycle, 5 cycles per world). */
 export const PUZZLE_SIZES: number[][][] = [
-  [[4, 4, 5, 5], [5, 5, 5, 6], [5, 6, 6, 6], [6, 6, 6, 6], [6, 6, 6, 6]],
-  [[6, 6, 7, 6], [6, 7, 7, 7], [7, 7, 7, 7], [7, 7, 7, 7], [7, 7, 7, 7]],
-  [[7, 7, 8, 7], [7, 8, 8, 8], [8, 8, 8, 8], [8, 8, 8, 8], [8, 8, 8, 8]],
-  [[8, 8, 9, 8], [8, 9, 9, 9], [9, 9, 9, 9], [9, 9, 9, 10], [9, 9, 10, 10]],
+  [
+    [4, 4, 5, 5],
+    [5, 5, 5, 6],
+    [5, 6, 6, 6],
+    [6, 6, 6, 6],
+    [6, 6, 6, 6],
+  ],
+  [
+    [6, 6, 7, 6],
+    [6, 7, 7, 7],
+    [7, 7, 7, 7],
+    [7, 7, 7, 7],
+    [7, 7, 7, 7],
+  ],
+  [
+    [7, 7, 8, 7],
+    [7, 8, 8, 8],
+    [8, 8, 8, 8],
+    [8, 8, 8, 8],
+    [8, 8, 8, 8],
+  ],
+  [
+    [8, 8, 9, 8],
+    [8, 9, 9, 9],
+    [9, 9, 9, 9],
+    [9, 9, 9, 10],
+    [9, 9, 10, 10],
+  ],
 ];
 
 /** Hardest technique difficulty allowed per world (see docs/05). */

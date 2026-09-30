@@ -2,7 +2,7 @@
 
 A web-based, dog-themed take on the mobile logic puzzle **Meowdoku**, extended with **bonus mini-game levels** (every 5th level) that award **power-ups** for the main puzzle.
 
-> Status: **Playable MVP** — roadmap Phases 0–3 are implemented (plus much of Phase 4's UI): 100 levels in 4 worlds, 80 generated logic puzzles, 3 bonus mini-games, 8 power-ups, a treat shop, and save/export.
+> Status: **Feature-complete v1 candidate** — roadmap Phases 0–6 implemented: 100 levels in 4 worlds, 80 generated logic puzzles, **10 bonus mini-games**, 8 power-ups, world chests, cosmetics (board themes & dog outfits), Daily puzzle with streaks, Endless mode, stats, sound/music/haptics, accessibility options and an installable offline PWA.
 
 ## Run it
 
@@ -13,7 +13,13 @@ npm test                 # unit tests (Vitest)
 npm run typecheck        # TypeScript strict check
 npm run build            # production build into dist/
 npm run generate-levels  # regenerate src/data/puzzles.json (deterministic seed)
+npm run lint             # oxlint (typescript-eslint doesn't support TS 7 yet)
+npm run format           # Prettier (format:check in CI)
+npm run e2e              # Playwright smoke tests, mobile + desktop
+npm run icons            # regenerate PNG app icons in public/icons
 ```
+
+> Playwright: if the browser download fails, use an installed browser, e.g. `PW_CHANNEL=msedge npm run e2e` (PowerShell: `$env:PW_CHANNEL='msedge'`).
 
 ## Code layout
 
@@ -25,7 +31,10 @@ npm run generate-levels  # regenerate src/data/puzzles.json (deterministic seed)
 | `src/data/` | Pre-generated puzzle pack (`puzzles.json`) |
 | `src/minigames/` | Bonus mini-games (pure `logic.ts` + React view each) and the registry |
 | `src/store/` | Zustand stores: persisted save data and screen navigation |
-| `src/ui/` | Board, dog SVGs, power-up tray and all screens |
+| `src/ui/` | Board, dog SVGs, power-up tray, audio, confetti and all screens |
+| `src/workers/` | Web Worker that generates Daily/Endless puzzles off the main thread |
+| `public/` | PWA manifest, service worker, icons |
+| `e2e/` | Playwright smoke tests |
 | `scripts/generate-levels.ts` | Offline level generator |
 
 ## Documents

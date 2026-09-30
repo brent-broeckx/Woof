@@ -209,8 +209,7 @@ function findPigeonhole(s: LogicState, minK: number, maxK: number): Deduction | 
   ];
   const valueOf = (type: 'region' | 'row' | 'col', cell: number) =>
     type === 'region' ? regions[cell] : type === 'row' ? rowOf(cell, size) : colOf(cell, size);
-  const unitIndex = (type: 'region' | 'row' | 'col', idx: number) =>
-    type === 'row' ? idx : type === 'col' ? size + idx : size * 2 + idx;
+  const unitIndex = (type: 'region' | 'row' | 'col', idx: number) => (type === 'row' ? idx : type === 'col' ? size + idx : size * 2 + idx);
 
   for (let k = minK; k <= maxK; k++) {
     for (const { groupType, keyType } of cases) {

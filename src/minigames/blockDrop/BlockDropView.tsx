@@ -81,10 +81,7 @@ export default function BlockDropView({ tier, seed, onFinish }: MiniGameProps) {
     if (g.over && !finished.current) {
       finished.current = true;
       const stars = g.stars();
-      window.setTimeout(
-        () => onFinish({ stars, summary: `${g.lines}/${g.config.goalLines} lines${g.toppedOut ? ' (stacked out!)' : ''}` }),
-        600,
-      );
+      window.setTimeout(() => onFinish({ stars, summary: `${g.lines}/${g.config.goalLines} lines${g.toppedOut ? ' (stacked out!)' : ''}` }), 600);
     }
   }, [draw, rerender, onFinish]);
 
@@ -180,7 +177,9 @@ export default function BlockDropView({ tier, seed, onFinish }: MiniGameProps) {
   return (
     <div className="minigame blockdrop-game">
       <div className="mg-stats">
-        <span>🧱 {g.lines}/{g.config.goalLines} lines</span>
+        <span>
+          🧱 {g.lines}/{g.config.goalLines} lines
+        </span>
         <span>📦 {g.piecesLeft} blocks left</span>
       </div>
       <div className="bd-layout">
@@ -215,13 +214,69 @@ export default function BlockDropView({ tier, seed, onFinish }: MiniGameProps) {
         </div>
       </div>
       <div className="bd-controls">
-        <button className="btn" onPointerDown={(e) => { e.preventDefault(); act((x) => x.move(-1)); }} aria-label="Left">◀</button>
-        <button className="btn" onPointerDown={(e) => { e.preventDefault(); act((x) => x.rotate(1)); }} aria-label="Rotate">⟳</button>
-        <button className="btn" onPointerDown={(e) => { e.preventDefault(); act((x) => x.move(1)); }} aria-label="Right">▶</button>
-        <button className="btn" onPointerDown={(e) => { e.preventDefault(); act((x) => x.step()); }} aria-label="Soft drop">▼</button>
-        <button className="btn primary" onPointerDown={(e) => { e.preventDefault(); act((x) => x.hardDrop()); }} aria-label="Hard drop">⤓</button>
-        <button className="btn" onPointerDown={(e) => { e.preventDefault(); act((x) => x.holdPiece()); }} aria-label="Hold">Hold</button>
-        <button className="btn ghost" onClick={() => setPaused((p) => !p)} aria-label="Pause">{paused ? '▶' : '⏸'}</button>
+        <button
+          className="btn"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            act((x) => x.move(-1));
+          }}
+          aria-label="Left"
+        >
+          ◀
+        </button>
+        <button
+          className="btn"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            act((x) => x.rotate(1));
+          }}
+          aria-label="Rotate"
+        >
+          ⟳
+        </button>
+        <button
+          className="btn"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            act((x) => x.move(1));
+          }}
+          aria-label="Right"
+        >
+          ▶
+        </button>
+        <button
+          className="btn"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            act((x) => x.step());
+          }}
+          aria-label="Soft drop"
+        >
+          ▼
+        </button>
+        <button
+          className="btn primary"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            act((x) => x.hardDrop());
+          }}
+          aria-label="Hard drop"
+        >
+          ⤓
+        </button>
+        <button
+          className="btn"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            act((x) => x.holdPiece());
+          }}
+          aria-label="Hold"
+        >
+          Hold
+        </button>
+        <button className="btn ghost" onClick={() => setPaused((p) => !p)} aria-label="Pause">
+          {paused ? '▶' : '⏸'}
+        </button>
       </div>
     </div>
   );

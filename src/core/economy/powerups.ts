@@ -1,12 +1,5 @@
 import { attackedCells, rowOf } from '../puzzle/geometry';
-import {
-  MAX_BONES,
-  MAX_POWERUPS_PER_LEVEL,
-  isSolutionCell,
-  makeEvent,
-  withCorrectDog,
-  type GameState,
-} from '../puzzle/game';
+import { MAX_BONES, MAX_POWERUPS_PER_LEVEL, isSolutionCell, makeEvent, withCorrectDog, type GameState } from '../puzzle/game';
 import { findHint } from '../puzzle/hints';
 import { applyDeduction, createLogicState, findNextDeduction } from '../puzzle/logicSolver';
 import { createRng, hashSeed } from '../rng';
@@ -27,14 +20,72 @@ export interface PowerUpDef {
 }
 
 export const POWER_UPS: Record<PowerUpId, PowerUpDef> = {
-  sniff: { id: 'sniff', name: 'Sniff', icon: '👃', rarity: 'rare', price: 200, target: 'cell', targetPrompt: 'Tap a yard to sniff out its dog', description: 'Tap a yard: its dog is found and placed.' },
+  sniff: {
+    id: 'sniff',
+    name: 'Sniff',
+    icon: '👃',
+    rarity: 'rare',
+    price: 200,
+    target: 'cell',
+    targetPrompt: 'Tap a yard to sniff out its dog',
+    description: 'Tap a yard: its dog is found and placed.',
+  },
   shield: { id: 'shield', name: 'Bone Shield', icon: '🛡️', rarity: 'common', price: 60, target: null, description: 'Your next wrong dog costs no bone.' },
-  extraBone: { id: 'extraBone', name: 'Extra Bone', icon: '🦴', rarity: 'common', price: 60, target: null, description: `+1 bone (max ${MAX_BONES}). Also lets you continue after running out.` },
-  fetch: { id: 'fetch', name: 'Fetch', icon: '🎾', rarity: 'common', price: 60, target: 'cell', targetPrompt: 'Tap a row to throw the ball along it', description: 'Tap a row: crosses every wrong tile in it except one decoy.' },
-  flashlight: { id: 'flashlight', name: 'Flashlight', icon: '🔦', rarity: 'uncommon', price: 120, target: null, description: 'Shows the exact next logical step and explains it.' },
-  pawScan: { id: 'pawScan', name: 'Paw Scan', icon: '🐾', rarity: 'common', price: 60, target: null, description: 'Crosses every tile that a placed dog already rules out.' },
-  rewind: { id: 'rewind', name: 'Rewind', icon: '⏪', rarity: 'uncommon', price: 120, target: null, description: 'Forgives your last mistake and gives its bone back.' },
-  guideDog: { id: 'guideDog', name: 'Guide Dog', icon: '🦮', rarity: 'epic', price: 400, target: null, description: 'Walks you through the easy steps: places up to 3 dogs.' },
+  extraBone: {
+    id: 'extraBone',
+    name: 'Extra Bone',
+    icon: '🦴',
+    rarity: 'common',
+    price: 60,
+    target: null,
+    description: `+1 bone (max ${MAX_BONES}). Also lets you continue after running out.`,
+  },
+  fetch: {
+    id: 'fetch',
+    name: 'Fetch',
+    icon: '🎾',
+    rarity: 'common',
+    price: 60,
+    target: 'cell',
+    targetPrompt: 'Tap a row to throw the ball along it',
+    description: 'Tap a row: crosses every wrong tile in it except one decoy.',
+  },
+  flashlight: {
+    id: 'flashlight',
+    name: 'Flashlight',
+    icon: '🔦',
+    rarity: 'uncommon',
+    price: 120,
+    target: null,
+    description: 'Shows the exact next logical step and explains it.',
+  },
+  pawScan: {
+    id: 'pawScan',
+    name: 'Paw Scan',
+    icon: '🐾',
+    rarity: 'common',
+    price: 60,
+    target: null,
+    description: 'Crosses every tile that a placed dog already rules out.',
+  },
+  rewind: {
+    id: 'rewind',
+    name: 'Rewind',
+    icon: '⏪',
+    rarity: 'uncommon',
+    price: 120,
+    target: null,
+    description: 'Forgives your last mistake and gives its bone back.',
+  },
+  guideDog: {
+    id: 'guideDog',
+    name: 'Guide Dog',
+    icon: '🦮',
+    rarity: 'epic',
+    price: 400,
+    target: null,
+    description: 'Walks you through the easy steps: places up to 3 dogs.',
+  },
 };
 
 export const POWER_UP_IDS = Object.keys(POWER_UPS) as PowerUpId[];
@@ -49,11 +100,7 @@ export function canUseMorePowerUps(state: GameState): boolean {
   return state.powerUpsUsed < MAX_POWERUPS_PER_LEVEL;
 }
 
-export function applyPowerUp(
-  state: GameState,
-  id: PowerUpId,
-  opts: { target?: number; autoCross: boolean },
-): PowerUpResult {
+export function applyPowerUp(state: GameState, id: PowerUpId, opts: { target?: number; autoCross: boolean }): PowerUpResult {
   if (!canUseMorePowerUps(state)) return { ok: false, message: `Max ${MAX_POWERUPS_PER_LEVEL} power-ups per level.` };
   const { puzzle } = state;
   const { size } = puzzle;
@@ -87,9 +134,7 @@ export function applyPowerUp(
     case 'sniff': {
       if (opts.target === undefined) return { ok: false, message: 'Pick a yard.' };
       const region = puzzle.regions[opts.target];
-      const cell = puzzle.solution
-        .map((col, row) => row * size + col)
-        .find((c) => puzzle.regions[c] === region)!;
+      const cell = puzzle.solution.map((col, row) => row * size + col).find((c) => puzzle.regions[c] === region)!;
       if (state.marks[cell] === 'dog') return { ok: false, message: 'That yard already has its dog.' };
       return { ok: true, state: withCorrectDog(spend(state, [cell]), cell, opts.autoCross) };
     }

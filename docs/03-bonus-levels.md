@@ -19,13 +19,16 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 | 5 | Connect the Leashes (intro) |
 | 10 | Block Drop (intro) |
 | 15 | Sliding Pup (intro) |
-| 20 | Kibble Blocks (intro, Phase 5) |
-| 25 | Memory Fetch (intro, Phase 5) |
-| 30 | Nonogram Paws (intro, Phase 5) |
-| 35 | Doggy Rush Hour (intro, Phase 5) |
-| 40+ | weighted rotation |
+| 20 | Kibble Blocks (intro) |
+| 25 | Memory Fetch (intro) |
+| 30 | Nonogram Paws (intro) |
+| 35 | Doggy Rush Hour (intro) |
+| 40 | Water Bowl Sort (intro) |
+| 45 | Kennel Lamps / Lights Out (intro) |
+| 50 | Pipe Sprinklers (intro) |
+| 55+ | seeded random rotation over all 10 games (never the same game twice in a row) |
 
-Until Phase 5 games exist, the rotation just cycles the three MVP games.
+**Implemented:** all 10 games (3 MVP + 7 Phase 5) live in `src/minigames/<id>/` with pure logic, unit tests, tier configs and a reward bias (`GAME_BIAS` in `rewards.ts`).
 
 ---
 
@@ -35,6 +38,7 @@ Until Phase 5 games exist, the rotation just cycles the three MVP games.
 - **Rules:** Grid with pairs of matching colored dogs & their leash-posts. Draw a leash connecting each pair. Leashes can't cross; for 3 stars the whole grid must be filled.
 - **Grid:** 5×5 → 9×9 by tier.
 - **Stars:** ⭐ all pairs connected · ⭐⭐ + board fully filled · ⭐⭐⭐ + within move target (no redraws beyond N).
+- **Finish:** the game auto-completes the moment every pair is connected (no Done button).
 - **Generation:** pre-generated packs (random space-filling path generator + optional uniqueness check).
 
 ### 2. 🧱 Block Drop (short Tetris)

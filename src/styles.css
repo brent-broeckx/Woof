@@ -29,7 +29,12 @@ body {
   background-size: 40px 40px;
 }
 
-h1, h2, h3, .level-title, .btn, .logo {
+h1,
+h2,
+h3,
+.level-title,
+.btn,
+.logo {
   font-family: 'Fredoka', 'Nunito', sans-serif;
 }
 
@@ -103,7 +108,10 @@ button {
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 3px 0 rgba(90, 60, 40, 0.2);
-  transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+  transition:
+    transform 0.08s,
+    box-shadow 0.08s,
+    background 0.15s;
   touch-action: manipulation;
   user-select: none;
 }
@@ -203,6 +211,20 @@ button {
   justify-content: flex-end;
 }
 
+.map-screen > .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 -14px;
+  padding: 8px 14px 10px;
+  background: var(--bg);
+  box-shadow: 0 6px 12px -8px rgba(90, 60, 40, 0.35);
+}
+
+.map-screen .node {
+  scroll-margin-top: 80px;
+}
+
 .level-title {
   font-size: 1.2rem;
   font-weight: 600;
@@ -242,10 +264,20 @@ button {
   animation: bob 2.4s ease-in-out infinite;
 }
 
-.title-dog.d1 { animation-delay: 0.2s; }
-.title-dog.d2 { animation-delay: 0.4s; width: 72px; height: 72px; }
-.title-dog.d3 { animation-delay: 0.6s; }
-.title-dog.d4 { animation-delay: 0.8s; }
+.title-dog.d1 {
+  animation-delay: 0.2s;
+}
+.title-dog.d2 {
+  animation-delay: 0.4s;
+  width: 72px;
+  height: 72px;
+}
+.title-dog.d3 {
+  animation-delay: 0.6s;
+}
+.title-dog.d4 {
+  animation-delay: 0.8s;
+}
 
 .logo {
   font-size: 3.4rem;
@@ -450,6 +482,10 @@ button {
   cursor: pointer;
   transition: filter 0.2s;
   font-size: calc(min(520px, 90vw, 70vh) / var(--n) * 0.42);
+  line-height: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .cell.done::after {
@@ -647,10 +683,18 @@ button {
   transform: translateY(-3px);
 }
 
-.rarity-common { --rarity: #9bb6a0; }
-.rarity-uncommon { --rarity: #5aa0e0; }
-.rarity-rare { --rarity: #b27ee8; }
-.rarity-epic { --rarity: #f5a623; }
+.rarity-common {
+  --rarity: #9bb6a0;
+}
+.rarity-uncommon {
+  --rarity: #5aa0e0;
+}
+.rarity-rare {
+  --rarity: #b27ee8;
+}
+.rarity-epic {
+  --rarity: #f5a623;
+}
 
 .powerup-note {
   text-align: center;
@@ -743,10 +787,18 @@ button {
   animation: jump 0.7s ease-in-out infinite alternate;
 }
 
-.jump:nth-child(2) { animation-delay: 0.1s; }
-.jump:nth-child(3) { animation-delay: 0.2s; }
-.jump:nth-child(4) { animation-delay: 0.3s; }
-.jump:nth-child(5) { animation-delay: 0.4s; }
+.jump:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.jump:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.jump:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.jump:nth-child(5) {
+  animation-delay: 0.4s;
+}
 
 .stars {
   display: inline-flex;
@@ -963,11 +1015,14 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+  min-height: 0;
 }
 
 .leash-dog {
   width: 78%;
   height: 78%;
+  flex: none;
   border-radius: 50%;
   padding: 6%;
   z-index: 2;
@@ -987,9 +1042,10 @@ kbd {
 
 .leash-lines {
   position: absolute;
-  inset: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
+  /* Cells are separated by 2px gaps inside 2px padding; this box maps cell centres exactly. */
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
   pointer-events: none;
   z-index: 1;
 }
@@ -1159,59 +1215,106 @@ kbd {
 
 /* ---------- Animations ---------- */
 @keyframes pop {
-  from { transform: scale(0.3); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-5px); }
-  40% { transform: translateX(5px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
 }
 
 @keyframes glow {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes sparkle {
-  0% { filter: brightness(1.6) saturate(1.4); }
-  100% { filter: none; }
+  0% {
+    filter: brightness(1.6) saturate(1.4);
+  }
+  100% {
+    filter: none;
+  }
 }
 
 @keyframes bark {
-  50% { transform: scale(1.15) rotate(-6deg); }
+  50% {
+    transform: scale(1.15) rotate(-6deg);
+  }
 }
 
 @keyframes fadeaway {
-  0% { opacity: 0.9; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.6) translateY(-20%); }
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6) translateY(-20%);
+  }
 }
 
 @keyframes bob {
-  50% { transform: translateY(-6px); }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 @keyframes jump {
-  to { transform: translateY(-10px); }
+  to {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes pulse {
-  50% { transform: translateX(var(--offset, 0)) scale(1.07); }
+  50% {
+    transform: translateX(var(--offset, 0)) scale(1.07);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 @keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, 10px); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -1241,5 +1344,325 @@ kbd {
   }
   .bd-well canvas {
     height: min(55vh, 400px);
+  }
+}
+
+/* ---------- Phase 4: juice, accessibility, cosmetics ---------- */
+.cell.ripple:not(.powered) {
+  animation: ripple 0.55s ease-out both;
+}
+
+@keyframes ripple {
+  0% {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+  40% {
+    filter: brightness(1.22) saturate(1.2);
+    transform: scale(0.94);
+  }
+  100% {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+}
+
+/* Colour-blind friendly yard patterns (drawn over the yard colour). */
+.cell.pat {
+  background-blend-mode: normal;
+}
+.cell.pat-0 {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.18) 18%, transparent 20%);
+  background-size: 12px 12px;
+}
+.cell.pat-1 {
+  background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.14) 0 3px, transparent 3px 9px);
+}
+.cell.pat-2 {
+  background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.14) 0 3px, transparent 3px 9px);
+}
+.cell.pat-3 {
+  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.14) 0 3px, transparent 3px 9px);
+}
+.cell.pat-4 {
+  background-image: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.14) 0 3px, transparent 3px 9px);
+}
+.cell.pat-5 {
+  background-image:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.12) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.12) 75%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.12) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.12) 75%);
+  background-size: 12px 12px;
+  background-position:
+    0 0,
+    6px 6px;
+}
+.cell.pat-6 {
+  background-image: radial-gradient(circle, transparent 35%, rgba(0, 0, 0, 0.14) 37%, rgba(0, 0, 0, 0.14) 45%, transparent 47%);
+  background-size: 14px 14px;
+}
+.cell.pat-7 {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.12) 0 2px, transparent 2px 8px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 2px, transparent 2px 8px);
+}
+
+.board.high-contrast {
+  border-width: 4px;
+}
+.board.high-contrast .mark {
+  color: #000;
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 60;
+}
+.confetti-bit {
+  position: absolute;
+  top: -24px;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  animation-name: confettiFall;
+  animation-timing-function: cubic-bezier(0.3, 0.6, 0.6, 1);
+  animation-fill-mode: forwards;
+}
+.confetti-bit.emoji {
+  width: auto;
+  height: auto;
+  font-size: 1.3rem;
+}
+@keyframes confettiFall {
+  from {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--drift), 105vh) rotate(var(--rot));
+    opacity: 0.9;
+  }
+}
+
+/* Tabs & chips */
+.tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 4px;
+  border-radius: 999px;
+  margin: 4px 0 12px;
+}
+.tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 6px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.tab.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 2px 0 rgba(90, 60, 40, 0.15);
+}
+.chip.on {
+  background: var(--accent);
+  color: #fff;
+}
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.theme-swatch {
+  display: grid;
+  grid-template-columns: repeat(3, 14px);
+  gap: 2px;
+  flex-shrink: 0;
+}
+.theme-swatch span {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+.accessory-preview svg {
+  width: 44px;
+  height: 44px;
+}
+
+/* World chest */
+.chest-row {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 4px;
+}
+.chest {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink-soft);
+}
+.chest .chest-icon {
+  font-size: 1.5rem;
+}
+.chest.ready {
+  background: #ffd24a;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 3px 0 #c99a1a;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.chest.closed .chest-icon {
+  filter: grayscale(0.7);
+}
+.chest-open {
+  font-size: 3.5rem;
+  animation: pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+/* Daily */
+.streak-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 12px 0;
+}
+.streak-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 36px;
+  padding: 4px 0;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.streak-day.done {
+  background: #ffe2a8;
+  color: var(--ink);
+}
+.streak-day.today {
+  outline: 2px solid var(--accent);
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-tile {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-tile b {
+  font-size: 1.4rem;
+}
+.stat-tile span {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.stats-table th,
+.stats-table td {
+  padding: 6px 4px;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+/* ---------- Responsive: side panel on wide screens ---------- */
+.puzzle-body {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-areas: 'hud' 'banner' 'board' 'hint' 'tools' 'tray';
+}
+.puzzle-body > .hud {
+  grid-area: hud;
+}
+.puzzle-body > .target-banner {
+  grid-area: banner;
+}
+.puzzle-body > .board-wrap {
+  grid-area: board;
+}
+.puzzle-body > .hint-box {
+  grid-area: hint;
+}
+.puzzle-body > .tools {
+  grid-area: tools;
+}
+.puzzle-body > .tray-wrap {
+  grid-area: tray;
+}
+
+@media (min-width: 900px) and (min-height: 560px) {
+  .puzzle-screen {
+    max-width: 1080px;
+  }
+  .puzzle-body {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas: 'board hud' 'board banner' 'board hint' 'board tools' 'board tray';
+    column-gap: 28px;
+    align-items: start;
+  }
+  .puzzle-body > .board-wrap {
+    align-self: start;
+  }
+  .puzzle-body .board {
+    width: min(100%, 640px, 82vh);
+  }
+  .puzzle-body .cell {
+    font-size: calc(min(640px, 82vh, 60vw) / var(--n) * 0.42);
+  }
+  .puzzle-body > .hud {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+  }
+  .puzzle-body .tools {
+    margin-top: 0;
+  }
+  .puzzle-body .tray {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .screen:not(.puzzle-screen) {
+    max-width: 720px;
   }
 }

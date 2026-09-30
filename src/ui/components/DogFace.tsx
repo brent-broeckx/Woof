@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import type { AccessoryId } from '../../core/economy/cosmetics';
 
 export interface Breed {
   name: string;
@@ -31,9 +32,73 @@ interface DogFaceProps {
   breed: number;
   mood?: 'happy' | 'sad' | 'calm';
   className?: string;
+  accessory?: AccessoryId;
 }
 
-export const DogFace = memo(function DogFace({ breed, mood = 'happy', className }: DogFaceProps) {
+function Accessory({ id }: { id: AccessoryId }) {
+  switch (id) {
+    case 'bandana':
+      return (
+        <g>
+          <path d="M26 80 Q50 96 74 80 L50 99 Z" fill="#e53950" />
+          <circle cx="44" cy="88" r="1.6" fill="#fff" />
+          <circle cx="54" cy="90" r="1.6" fill="#fff" />
+        </g>
+      );
+    case 'bow':
+      return (
+        <g fill="#ff6fa8" stroke="#c2407a" strokeWidth="1.5">
+          <path d="M50 24 L34 14 L34 34 Z" />
+          <path d="M50 24 L66 14 L66 34 Z" />
+          <circle cx="50" cy="24" r="4.5" />
+        </g>
+      );
+    case 'flower':
+      return (
+        <g transform="translate(72 28)">
+          {[0, 72, 144, 216, 288].map((a) => (
+            <circle key={a} cx={Math.cos((a * Math.PI) / 180) * 6} cy={Math.sin((a * Math.PI) / 180) * 6} r="5" fill="#ffd6e8" stroke="#f28bb5" />
+          ))}
+          <circle r="4" fill="#ffd23f" />
+        </g>
+      );
+    case 'glasses':
+      return (
+        <g fill="rgba(120,200,255,0.25)" stroke="#1d1d1d" strokeWidth="3">
+          <circle cx="38" cy="51" r="9" />
+          <circle cx="62" cy="51" r="9" />
+          <path d="M47 50 L53 50" fill="none" />
+        </g>
+      );
+    case 'partyHat':
+      return (
+        <g>
+          <path d="M36 30 L50 0 L64 30 Z" fill="#7c5cff" />
+          <path d="M40 22 L60 22 M44 13 L56 13" stroke="#ffd23f" strokeWidth="3" />
+          <circle cx="50" cy="2" r="4" fill="#ff6fa8" />
+        </g>
+      );
+    case 'tophat':
+      return (
+        <g fill="#222">
+          <rect x="30" y="24" width="40" height="6" rx="2" />
+          <rect x="37" y="2" width="26" height="24" rx="2" />
+          <rect x="37" y="18" width="26" height="5" fill="#e53950" />
+        </g>
+      );
+    case 'crown':
+      return (
+        <g>
+          <path d="M32 30 L32 12 L41 21 L50 6 L59 21 L68 12 L68 30 Z" fill="#ffc933" stroke="#c9901a" strokeWidth="2" />
+          <circle cx="50" cy="22" r="3" fill="#e53950" />
+        </g>
+      );
+    default:
+      return null;
+  }
+}
+
+export const DogFace = memo(function DogFace({ breed, mood = 'happy', className, accessory = 'none' }: DogFaceProps) {
   const b = breedFor(breed);
   const dark = '#2d2320';
   return (
@@ -84,13 +149,8 @@ export const DogFace = memo(function DogFace({ breed, mood = 'happy', className 
       )}
       <ellipse cx="50" cy="64" rx="6.5" ry="4.8" fill={dark} />
       {mood === 'happy' && <path d="M45 74 Q50 84 55 74 Z" fill="#f28b9b" />}
-      <path
-        d={mood === 'sad' ? 'M43 78 Q50 73 57 78' : 'M42 71 Q46 75 50 71 Q54 75 58 71'}
-        stroke={dark}
-        strokeWidth="2.4"
-        fill="none"
-        strokeLinecap="round"
-      />
+      <path d={mood === 'sad' ? 'M43 78 Q50 73 57 78' : 'M42 71 Q46 75 50 71 Q54 75 58 71'} stroke={dark} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      {accessory !== 'none' && <Accessory id={accessory} />}
     </svg>
   );
 });

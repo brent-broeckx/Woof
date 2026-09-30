@@ -46,7 +46,8 @@ export default function SlidingPupView({ tier, seed, onFinish }: MiniGameProps) 
       <div className="slide-row">
         <div className="slide-board" style={{ ['--n' as string]: size }}>
           {tiles.map((t, i) => {
-            if (t === 0 && !solved) return <div key={`gap-${i}`} className="slide-gap" style={{ gridRow: Math.floor(i / size) + 1, gridColumn: (i % size) + 1 }} />;
+            if (t === 0 && !solved)
+              return <div key={`gap-${i}`} className="slide-gap" style={{ gridRow: Math.floor(i / size) + 1, gridColumn: (i % size) + 1 }} />;
             const home = t === 0 ? size * size - 1 : t - 1;
             const hr = Math.floor(home / size);
             const hc = home % size;

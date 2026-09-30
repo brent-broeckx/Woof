@@ -1,0 +1,141 @@
+.nonogramPaws-game {
+  align-items: center;
+  color: #3b2f2a;
+}
+
+.np-wrap {
+  --clue: 76px;
+  display: grid;
+  grid-template-columns: var(--clue) minmax(0, 1fr);
+  grid-template-rows: var(--clue) minmax(0, 1fr);
+  gap: 8px;
+  width: min(100%, 440px, 62vh);
+}
+
+.np-corner,
+.np-col-clues,
+.np-row-clues,
+.np-board {
+  background: #fffaf2;
+  border-radius: 18px;
+  box-shadow: 0 3px 0 rgba(90, 60, 40, 0.2);
+}
+
+.np-corner {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+
+.np-corner svg {
+  width: 52px;
+  height: 52px;
+}
+
+.np-col-clues {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  align-items: end;
+  padding: 8px 4px;
+}
+
+.np-col-clues div,
+.np-row-clues div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  color: #3b2f2a;
+  font-weight: 800;
+  font-size: 0.78rem;
+  line-height: 1.05;
+  text-align: center;
+  transition:
+    opacity 160ms ease,
+    color 160ms ease;
+}
+
+.np-col-clues div {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.np-row-clues {
+  display: grid;
+  grid-template-rows: repeat(var(--n), 1fr);
+  padding: 4px 8px;
+}
+
+.np-col-clues .satisfied,
+.np-row-clues .satisfied {
+  color: #9d8a7d;
+  opacity: 0.45;
+}
+
+.np-board {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 3px solid #3b2f2a;
+  touch-action: none;
+}
+
+.np-cell {
+  position: relative;
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid rgba(59, 47, 42, 0.16);
+  background: #fbf5ea;
+  color: #8d6b5b;
+  font-size: clamp(1.2rem, 5vw, 2rem);
+  font-weight: 900;
+}
+
+.np-cell:nth-child(5n) {
+  border-right-color: rgba(59, 47, 42, 0.24);
+}
+
+.np-cell.filled {
+  background: #e8805a;
+  box-shadow: inset 0 0 0 5px rgba(255, 250, 242, 0.24);
+}
+
+.np-wrap.complete .np-cell.filled {
+  animation: np-pop 420ms ease both;
+  background: #f2a65a;
+}
+
+.np-cell.empty,
+.np-cell.mistake {
+  background: #fffaf2;
+}
+
+.np-cell.mistake {
+  color: #e8546b;
+}
+
+.np-cell span {
+  pointer-events: none;
+}
+
+@keyframes np-pop {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 520px) {
+  .np-wrap {
+    --clue: 58px;
+    gap: 6px;
+  }
+  .np-col-clues div,
+  .np-row-clues div {
+    font-size: 0.68rem;
+  }
+  .np-cell {
+    min-width: 34px;
+    min-height: 34px;
+  }
+}

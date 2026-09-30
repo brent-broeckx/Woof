@@ -6,13 +6,7 @@ export interface Puzzle {
   solution: number[];
 }
 
-export type TechniqueId =
-  | 'lastCell'
-  | 'confinement'
-  | 'blocksUnit'
-  | 'pigeonhole2'
-  | 'pigeonhole3'
-  | 'contradiction';
+export type TechniqueId = 'lastCell' | 'confinement' | 'blocksUnit' | 'pigeonhole2' | 'pigeonhole3' | 'contradiction';
 
 export interface Difficulty {
   score: number;

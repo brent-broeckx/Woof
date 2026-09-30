@@ -72,8 +72,7 @@ export const makeEvent = (type: GameEvent['type'], cells: number[]): GameEvent =
 
 export const isCrossed = (m: CellMark) => m === 'x' || m === 'autoX';
 export const dogCount = (s: GameState) => s.marks.filter((m) => m === 'dog').length;
-export const isSolutionCell = (puzzle: Puzzle, cell: number) =>
-  puzzle.solution[Math.floor(cell / puzzle.size)] === cell % puzzle.size;
+export const isSolutionCell = (puzzle: Puzzle, cell: number) => puzzle.solution[Math.floor(cell / puzzle.size)] === cell % puzzle.size;
 
 /** Places a known-correct dog and optionally crosses everything it rules out. */
 export function withCorrectDog(state: GameState, cell: number, autoCross: boolean): GameState {

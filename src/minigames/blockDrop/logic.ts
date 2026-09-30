@@ -9,17 +9,80 @@ export type PieceType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
 export const PIECE_TYPES: PieceType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 
 const SHAPES: Record<PieceType, { n: number; cells: [number, number][] }> = {
-  I: { n: 4, cells: [[0, 1], [1, 1], [2, 1], [3, 1]] },
-  O: { n: 2, cells: [[0, 0], [1, 0], [0, 1], [1, 1]] },
-  T: { n: 3, cells: [[1, 0], [0, 1], [1, 1], [2, 1]] },
-  S: { n: 3, cells: [[1, 0], [2, 0], [0, 1], [1, 1]] },
-  Z: { n: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]] },
-  J: { n: 3, cells: [[0, 0], [0, 1], [1, 1], [2, 1]] },
-  L: { n: 3, cells: [[2, 0], [0, 1], [1, 1], [2, 1]] },
+  I: {
+    n: 4,
+    cells: [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+    ],
+  },
+  O: {
+    n: 2,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, 1],
+    ],
+  },
+  T: {
+    n: 3,
+    cells: [
+      [1, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+  },
+  S: {
+    n: 3,
+    cells: [
+      [1, 0],
+      [2, 0],
+      [0, 1],
+      [1, 1],
+    ],
+  },
+  Z: {
+    n: 3,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [2, 1],
+    ],
+  },
+  J: {
+    n: 3,
+    cells: [
+      [0, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+  },
+  L: {
+    n: 3,
+    cells: [
+      [2, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+  },
 };
 
 export const PIECE_COLORS: Record<PieceType | 'G', string> = {
-  I: '#7cc6e8', O: '#f5cf5b', T: '#b692e0', S: '#8fd18a', Z: '#f08f8f', J: '#7f9bea', L: '#f2a65a', G: '#b9a78f',
+  I: '#7cc6e8',
+  O: '#f5cf5b',
+  T: '#b692e0',
+  S: '#8fd18a',
+  Z: '#f08f8f',
+  J: '#7f9bea',
+  L: '#f2a65a',
+  G: '#b9a78f',
 };
 
 /** Cells ([x, y]) of a piece type in a rotation state. */
@@ -114,7 +177,14 @@ export class BlockDropGame {
   rotate(dir: 1 | -1 = 1): boolean {
     if (this.over) return false;
     const rot = this.current.rot + dir;
-    for (const [dx, dy] of [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0]]) {
+    for (const [dx, dy] of [
+      [0, 0],
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [-2, 0],
+      [2, 0],
+    ]) {
       const next = { ...this.current, rot, x: this.current.x + dx, y: this.current.y + dy };
       if (!this.collides(next)) {
         this.current = next;

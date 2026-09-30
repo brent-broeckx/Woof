@@ -17,7 +17,7 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 ---
 
 ## Phase 0 — Project setup
-- [x] Vite + React + TS strict, Vitest. *(ESLint, Prettier, Playwright still to add.)*
+- [x] Vite + React + TS strict, Vitest. oxlint, Prettier, Playwright.
 - [x] Folder structure from doc 06; path aliases.
 - [x] Git repo init, CI (typecheck + test + build) via GitHub Actions.
 - [ ] Deploy empty shell to static hosting.
@@ -58,24 +58,26 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 **Done when:** full loop: 4 puzzles → bonus → power-ups → used in puzzles.
 
 ## Phase 4 — Art, audio, juice, UX
-- [~] Dog breed SVGs (11 breeds), region palette, world background colours. *(Patterns still to do.)*
-- [x] World map screen with path & nodes.
-- [ ] Animations & sound (doc 07); haptics.
+- [x] Dog breed SVGs (11 breeds), region palette, world background colours, colour-blind **patterns** and **high-contrast** mode.
+- [x] World map screen with path & nodes, plus a **world chest** per world (unlocks at 60% of stars).
+- [x] Animations & sound (doc 07): win ripple, confetti, WebAudio SFX, generative background music, haptics — each with its own toggle.
 - [x] Settings screen incl. accessibility options.
-- [~] Treats, Pet Shop, Kennel (inventory). *(Cosmetics still to do.)*
-- [ ] Responsive pass (small phones → desktop).
+- [x] Treats, Kennel with tabs (Power-ups / Boards / Outfits); board themes and dog accessories as cosmetics.
+- [x] Responsive pass: phones stack vertically; ≥900×560 puts the HUD/tools in a side panel.
 
-## Phase 5 — More mini-games (pick subset)
-Order: **Kibble Blocks → Nonogram Paws → Doggy Rush Hour → Memory Fetch → Pipe Sprinklers → Water Bowl Sort → Lights Out**.
-- [ ] Each: pure logic + tests, tier configs, reward bias, intro demo, added to rotation.
+## Phase 5 — More mini-games
+All seven built. Intro order (every 5th level): Connect the Leashes → Block Drop → Sliding Pup → **Kibble Blocks → Memory Fetch → Nonogram Paws → Doggy Rush Hour → Water Bowl Sort → Kennel Lamps (Lights Out) → Pipe Sprinklers**, then rotate.
+- [x] Each: pure logic + tests, tier configs, reward bias, intro, added to rotation.
+- Note: bonus slots from level 20 onward changed vs. the MVP rotation.
 
 ## Phase 6 — Release & extras
-- [ ] PWA (offline, installable, icons, splash).
-- [ ] Performance & Lighthouse pass, bundle splitting.
-- [ ] Playwright smoke tests in CI.
-- [ ] Daily puzzle + streak; Endless mode (runtime generator in a Web Worker).
-- [ ] Balancing pass using local stats.
-
+- [x] PWA: manifest, service worker (offline, network-first HTML, cache-first assets), SVG + PNG icons (`npm run icons`), maskable & apple-touch icons.
+- [~] Performance: screens lazy-loaded (code split), generator in a Web Worker. *(Vendor chunk split and Lighthouse audit not done; main bundle ≈ 83 kB gzip.)*
+- [x] Playwright smoke tests (mobile + desktop) in CI.
+- [x] Daily puzzle + 7-day streak; Endless mode (5×5–10×10, 3 difficulties) generated in a Web Worker; Stats screen.
+- [~] Balancing: per-level stats (attempts, losses, best time) collected and shown as "Toughest levels"; tuning pass still to do with real play data.
+- [x] Lint/format: **oxlint** + Prettier (typescript-eslint doesn't support TypeScript 7 yet).
+- [ ] Deploy to static hosting.
 ---
 
 ## Risks & mitigations

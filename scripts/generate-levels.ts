@@ -42,9 +42,7 @@ function pick(slot: PuzzleSlot): GeneratedPuzzle {
     chosen = pool[Math.floor(pool.length * (0.35 + rng.next() * 0.3))];
   } else {
     // Hard: prefer puzzles that need the world's hardest techniques, then highest score.
-    const ranked = [...pool].sort(
-      (a, b) => b.difficulty.maxDifficulty - a.difficulty.maxDifficulty || b.difficulty.score - a.difficulty.score,
-    );
+    const ranked = [...pool].sort((a, b) => b.difficulty.maxDifficulty - a.difficulty.maxDifficulty || b.difficulty.score - a.difficulty.score);
     chosen = ranked[Math.floor(rng.next() * Math.min(4, ranked.length))];
   }
   usedKeys.add(puzzleKey(chosen));
