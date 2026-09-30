@@ -8,7 +8,6 @@ import {
   endpointColor,
   generateLeashPuzzle,
   isComplete,
-  isFilled,
   leashConfigForTier,
   leashStars,
   pointerDown,
@@ -61,7 +60,7 @@ export default function ConnectLeashesView({ tier, seed, onFinish }: MiniGamePro
   const onUp = () => {
     const next = pointerUp(state);
     setState(next);
-    if (allConnected(next) && isFilled(next)) window.setTimeout(() => finish(next), 500);
+    if (allConnected(next)) window.setTimeout(() => finish(next), 500);
   };
 
   const connected = endpoints.filter((_, k) => isComplete(state, k)).length;
@@ -81,7 +80,7 @@ export default function ConnectLeashesView({ tier, seed, onFinish }: MiniGamePro
       <div
         ref={boardRef}
         className="leash-board"
-        style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
+        style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${size}, minmax(0, 1fr))` }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
@@ -91,7 +90,11 @@ export default function ConnectLeashesView({ tier, seed, onFinish }: MiniGamePro
           const ep = endpointColor(puzzle, cell);
           const pathColor = state.paths.findIndex((p) => p.includes(cell));
           return (
-            <div key={cell} className="leash-cell" style={{ background: pathColor >= 0 ? `${LEASH_COLORS[pathColor]}33` : undefined }}>
+            <div
+              key={cell}
+              className="leash-cell"
+              style={{ backgroundImage: pathColor >= 0 ? `linear-gradient(${LEASH_COLORS[pathColor]}33, ${LEASH_COLORS[pathColor]}33)` : undefined }}
+            >
               {ep >= 0 && (
                 <div className={`leash-dog ${isComplete(state, ep) ? 'happy' : ''}`} style={{ background: LEASH_COLORS[ep] }}>
                   <DogFace breed={ep} />
@@ -119,9 +122,6 @@ export default function ConnectLeashesView({ tier, seed, onFinish }: MiniGamePro
       <div className="mg-actions">
         <button className="btn" onClick={() => setState(createLeashState(puzzle))}>
           ⟲ Clear
-        </button>
-        <button className="btn primary" disabled={!allConnected(state)} onClick={() => finish(state)}>
-          Done
         </button>
       </div>
     </div>

@@ -38,6 +38,7 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 - **Rules:** Grid with pairs of matching colored dogs & their leash-posts. Draw a leash connecting each pair. Leashes can't cross; for 3 stars the whole grid must be filled.
 - **Grid:** 5×5 → 9×9 by tier.
 - **Stars:** ⭐ all pairs connected · ⭐⭐ + board fully filled · ⭐⭐⭐ + within move target (no redraws beyond N).
+- **Finish:** the game auto-completes the moment every pair is connected (no Done button).
 - **Generation:** pre-generated packs (random space-filling path generator + optional uniqueness check).
 
 ### 2. 🧱 Block Drop (short Tetris)

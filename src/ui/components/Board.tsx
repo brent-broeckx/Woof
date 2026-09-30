@@ -240,7 +240,12 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
     <div
       ref={boardRef}
       className={`board ${onTarget ? 'targeting' : ''} ${settings.highContrast ? 'high-contrast' : ''}`}
-      style={{ gridTemplateColumns: `repeat(${size}, 1fr)`, ['--n' as string]: size, ...boardVars }}
+      style={{
+        gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${size}, minmax(0, 1fr))`,
+        ['--n' as string]: size,
+        ...boardVars,
+      }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

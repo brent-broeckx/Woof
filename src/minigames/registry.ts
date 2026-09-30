@@ -30,6 +30,7 @@ export const MINI_GAMES: Record<MiniGameId, MiniGameDefinition> = {
     rules: [
       'Drag from a dog to draw a leash to the dog of the same colour.',
       'Leashes can’t cross. Drawing over another leash cuts it.',
+      'The game ends as soon as every pair is connected.',
       '★ all pairs connected · ★★ fill every tile · ★★★ do it in few strokes.',
     ],
     component: lazy(() => import('./connectLeashes/ConnectLeashesView')),
