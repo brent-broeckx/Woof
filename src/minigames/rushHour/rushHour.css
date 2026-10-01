@@ -3,18 +3,27 @@
   color: #3b2f2a;
 }
 
-.rush-board {
+.rush-frame {
   position: relative;
-  width: min(100%, 440px, 62vh);
+  width: min(100%, 474px, calc(62vh + 34px));
+  padding: 4px 30px 6px 4px;
+  overflow: hidden;
+}
+
+.rush-board {
+  --pad: 8px;
+  --gap: 4px;
+  --cell: calc((100% - 2 * var(--pad) - 5 * var(--gap)) / 6);
+  position: relative;
+  width: 100%;
   aspect-ratio: 1;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-  gap: 4px;
-  padding: 8px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: var(--gap);
+  padding: var(--pad);
   border-radius: 24px;
-  background: linear-gradient(90deg, rgba(90, 60, 40, 0.08) 1px, transparent 1px), linear-gradient(rgba(90, 60, 40, 0.08) 1px, transparent 1px), #fbf5ea;
-  background-size: calc(100% / 6) calc(100% / 6);
+  background: #fbf5ea;
   box-shadow:
     0 3px 0 rgba(90, 60, 40, 0.2),
     inset 0 0 0 3px #fffaf2;
@@ -37,32 +46,42 @@
 
 .rush-exit {
   position: absolute;
-  right: -18px;
-  top: calc((100% - 16px) / 6 * 2 + 8px);
-  width: 28px;
-  height: calc((100% - 16px) / 6);
+  left: calc(100% - var(--pad));
+  top: calc(var(--pad) + 2 * (var(--cell) + var(--gap)));
+  width: calc(var(--pad) + 28px);
+  height: var(--cell);
   border-radius: 0 14px 14px 0;
   background: #9fdcd4;
   box-shadow: inset 0 0 0 3px rgba(59, 47, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding-left: var(--pad);
+  z-index: 1;
+  pointer-events: none;
 }
 
-.rush-exit::after {
-  content: 'EXIT';
-  position: absolute;
-  right: -22px;
-  top: 50%;
-  transform: translateY(-50%) rotate(90deg);
-  font-size: 0.7rem;
+.rush-exit b {
+  font-size: 0.8rem;
+  color: #2c7d72;
+}
+
+.rush-exit span {
+  writing-mode: vertical-rl;
+  font-size: 0.68rem;
   font-weight: 900;
+  letter-spacing: 1px;
   color: #3b2f2a;
 }
 
 .rush-vehicle {
   position: absolute;
-  left: calc(8px + var(--col) * ((100% - 16px) / 6));
-  top: calc(8px + var(--row) * ((100% - 16px) / 6));
-  width: calc(var(--w) * ((100% - 16px) / 6) - 4px);
-  height: calc(var(--h) * ((100% - 16px) / 6) - 4px);
+  left: calc(var(--pad) + var(--col) * (var(--cell) + var(--gap)));
+  top: calc(var(--pad) + var(--row) * (var(--cell) + var(--gap)));
+  width: calc(var(--w) * var(--cell) + (var(--w) - 1) * var(--gap));
+  height: calc(var(--h) * var(--cell) + (var(--h) - 1) * var(--gap));
   border: 0;
   border-radius: 18px;
   box-shadow:
@@ -78,6 +97,20 @@
   transition:
     transform 120ms ease,
     box-shadow 120ms ease;
+}
+
+.rush-vehicle.dragging {
+  transition: none;
+  z-index: 3;
+  cursor: grabbing;
+}
+
+.rush-vehicle.escaping {
+  transform: translateX(170%) !important;
+  opacity: 0;
+  transition:
+    transform 700ms cubic-bezier(0.5, 0, 0.9, 0.6),
+    opacity 700ms ease-in 150ms;
 }
 
 .rush-vehicle:active {

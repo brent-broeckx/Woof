@@ -4,7 +4,8 @@ import { POWER_UPS, POWER_UP_IDS, type PowerUpId } from '../core/economy/powerup
 import { ACCESSORIES, BOARD_THEMES, cosmeticPrice, type AccessoryId } from '../core/economy/cosmetics';
 import { rollBonusReward, rollChest, rollDailyItem, treatsForImprovement } from '../core/economy/rewards';
 import { applyDailyCompletion, emptyDaily, type DailyRecord } from '../core/progression/daily';
-import { LEVELS_PER_WORLD, type MiniGameId } from '../core/progression/levels';
+import { LEVELS_PER_WORLD, TOTAL_LEVELS, type MiniGameId } from '../core/progression/levels';
+import { debugUnlockAll } from '../debug/debugStore';
 import type { GameState } from '../core/puzzle/game';
 
 export interface Settings {
@@ -123,7 +124,7 @@ const freshSave = (): SaveData => ({
   version: 1,
   seed: Math.floor(Math.random() * 2 ** 31),
   progress: {},
-  inventory: { ...emptyInventory(), shield: 1, extraBone: 1 },
+  inventory: { ...emptyInventory(), extraBone: 1, fetch: 1 },
   treats: 0,
   pity: 0,
   settings: { ...DEFAULT_SETTINGS },
@@ -135,10 +136,20 @@ const freshSave = (): SaveData => ({
   stats: { levels: {}, totals: emptyTotals() },
 });
 
+/** Keeps only power-ups that still exist; removed ones are dropped silently. */
+export function sanitizeInventory(raw: Partial<Record<string, number>> | undefined): Record<PowerUpId, number> {
+  const inv = emptyInventory();
+  for (const id of POWER_UP_IDS) {
+    const n = raw?.[id];
+    if (typeof n === 'number' && Number.isFinite(n) && n > 0) inv[id] = Math.floor(n);
+  }
+  return inv;
+}
+
 /** Fill in fields added in later versions of the game. */
 function mergeNested(p: Partial<SaveData>) {
   return {
-    inventory: { ...emptyInventory(), ...p.inventory },
+    inventory: sanitizeInventory(p.inventory),
     settings: { ...DEFAULT_SETTINGS, ...p.settings },
     cosmetics: { ...defaultCosmetics(), ...p.cosmetics },
     chests: { ...p.chests },
@@ -334,17 +345,22 @@ export const useSave = create<SaveData & SaveActions>()(
           ...current,
           ...p,
           ...mergeNested(p),
-          inventory: p.inventory ? { ...emptyInventory(), ...p.inventory } : current.inventory,
+          inventory: p.inventory ? sanitizeInventory(p.inventory) : current.inventory,
         };
       },
     },
   ),
 );
 
-export function highestUnlocked(progress: Record<number, LevelProgress>): number {
+/** The first level the player has not finished yet. */
+export function nextUnplayed(progress: Record<number, LevelProgress>): number {
   let id = 1;
   while (progress[id]) id++;
   return id;
+}
+
+export function highestUnlocked(progress: Record<number, LevelProgress>): number {
+  return debugUnlockAll() ? TOTAL_LEVELS : nextUnplayed(progress);
 }
 
 export function exportSave(): string {

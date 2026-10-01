@@ -14,6 +14,19 @@ describe('memoryFetch', () => {
     }
   });
 
+  it('gives every pair a visually unique face', () => {
+    for (const tier of [1, 4, 8, 12, 16, 20]) {
+      const puzzle = generateMemoryPuzzle(memoryFetchConfigForTier(tier), 9);
+      const faces = new Map<string, string>();
+      for (const card of puzzle.cards.filter((c) => c.kind === 'dog')) {
+        const face = `${card.breed}|${card.accessory ?? 'none'}`;
+        const pair = card.id.slice(0, -1);
+        expect(faces.get(face) ?? pair).toBe(pair);
+        faces.set(face, pair);
+      }
+    }
+  });
+
   it('matches pairs and wins after all pairs are found', () => {
     const puzzle = generateMemoryPuzzle(memoryFetchConfigForTier(1), 2);
     let state = createMemoryState(puzzle);

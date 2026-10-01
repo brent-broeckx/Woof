@@ -17,16 +17,16 @@ export const RARITY_WEIGHTS: Record<1 | 2 | 3, Record<Rarity, number>> = {
 
 /** Each mini-game favours a couple of power-ups (docs/04 "theme bias"). */
 export const GAME_BIAS: Record<MiniGameId, PowerUpId[]> = {
-  connectLeashes: ['fetch', 'pawScan'],
-  blockDrop: ['shield', 'extraBone'],
+  connectLeashes: ['fetch', 'flashlight'],
+  blockDrop: ['extraBone', 'fetch'],
   slidingPup: ['flashlight', 'sniff'],
-  kibbleBlocks: ['pawScan', 'extraBone'],
+  kibbleBlocks: ['fetch', 'extraBone'],
   memoryFetch: ['sniff', 'guideDog'],
-  nonogramPaws: ['flashlight', 'pawScan'],
-  rushHour: ['rewind', 'guideDog'],
-  waterSort: ['rewind', 'guideDog'],
-  lightsOut: ['flashlight', 'rewind'],
-  pipeSprinklers: ['pawScan', 'flashlight'],
+  nonogramPaws: ['flashlight', 'fetch'],
+  rushHour: ['extraBone', 'guideDog'],
+  waterSort: ['sniff', 'guideDog'],
+  lightsOut: ['flashlight', 'extraBone'],
+  pipeSprinklers: ['fetch', 'flashlight'],
 };
 
 export const PITY_THRESHOLD = 4;

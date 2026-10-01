@@ -1,4 +1,9 @@
+import type { AccessoryId } from '../../core/economy/cosmetics';
 import { createRng, hashSeed } from '../../core/rng';
+
+const BREED_COUNT = 11;
+/** Big, unmistakable headwear used to tell repeated breeds apart on large boards. */
+const PAIR_HATS: AccessoryId[] = ['partyHat', 'crown', 'tophat', 'bow'];
 
 export interface MemoryConfig {
   rows: number;
@@ -10,6 +15,7 @@ export interface MemoryCard {
   id: string;
   kind: MemoryCardKind;
   breed: number;
+  accessory?: AccessoryId;
   faceUp: boolean;
   matched: boolean;
 }
@@ -43,10 +49,12 @@ export function generateMemoryPuzzle(config: MemoryConfig, seed: number): Memory
   const hasBone = total % 2 === 1;
   const pairs = Math.floor(total / 2);
   const cards: MemoryCard[] = [];
+  // Every pair gets a unique face: each breed once, then repeats wear a distinct hat.
   for (let p = 0; p < pairs; p++) {
-    const breed = p % 11;
-    cards.push({ id: `${p}a`, kind: 'dog', breed, faceUp: false, matched: false });
-    cards.push({ id: `${p}b`, kind: 'dog', breed, faceUp: false, matched: false });
+    const breed = p % BREED_COUNT;
+    const face = p < BREED_COUNT ? { breed } : { breed, accessory: PAIR_HATS[(p - BREED_COUNT) % PAIR_HATS.length] };
+    cards.push({ id: `${p}a`, kind: 'dog', ...face, faceUp: false, matched: false });
+    cards.push({ id: `${p}b`, kind: 'dog', ...face, faceUp: false, matched: false });
   }
   if (hasBone) cards.push({ id: 'bone', kind: 'bone', breed: 0, faceUp: true, matched: true });
   rng.shuffle(cards);

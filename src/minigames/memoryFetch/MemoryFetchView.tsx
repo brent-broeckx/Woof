@@ -60,7 +60,11 @@ export default function MemoryFetchView({ tier, seed, onFinish }: MiniGameProps)
               <span className="memory-card-inner">
                 <span className="memory-card-back">?</span>
                 <span className="memory-card-front">
-                  {card.kind === 'bone' ? <span className="memory-bone">🦴</span> : <DogFace breed={card.breed} mood={card.matched ? 'happy' : 'calm'} />}
+                  {card.kind === 'bone' ? (
+                    <span className="memory-bone">🦴</span>
+                  ) : (
+                    <DogFace breed={card.breed} accessory={card.accessory} mood={card.matched ? 'happy' : 'calm'} />
+                  )}
                 </span>
               </span>
             </button>

@@ -3,7 +3,7 @@ import { POWER_UPS, type PowerUpId } from '../../core/economy/powerups';
 import { MINI_GAMES } from '../../minigames/registry';
 import { BONUS_EVERY, LEVELS_PER_WORLD, WORLDS, getLevel } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
-import { highestUnlocked, useSave } from '../../store/saveStore';
+import { highestUnlocked, nextUnplayed, useSave } from '../../store/saveStore';
 import { sfx } from '../audio';
 import { Confetti } from '../components/Confetti';
 import { Modal, TopBar } from '../components/common';
@@ -13,6 +13,7 @@ export function WorldMap() {
   const progress = useSave((s) => s.progress);
   const treats = useSave((s) => s.treats);
   const unlocked = highestUnlocked(progress);
+  const current = nextUnplayed(progress);
   const currentRef = useRef<HTMLButtonElement>(null);
   const chests = useSave((s) => s.chests);
   const [chest, setChest] = useState<{ world: number; items: PowerUpId[]; treats: number } | null>(null);
@@ -60,7 +61,7 @@ export function WorldMap() {
               {ids.map((id, i) => {
                 const entry = getLevel(id);
                 const isLocked = id > unlocked;
-                const isCurrent = id === unlocked;
+                const isCurrent = id === current;
                 const s = progress[id]?.stars ?? 0;
                 const bonus = entry.kind === 'bonus';
                 return (

@@ -277,7 +277,6 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
           focusCells.has(cell) ? 'focus' : '',
           cursor === cell ? 'cursor' : '',
           isEventCell && event?.type === 'wrong' ? 'wrong' : '',
-          isEventCell && event?.type === 'shielded' ? 'shielded' : '',
           isEventCell && event?.type === 'powerUp' ? 'powered' : '',
           conflictCells.has(cell) && marks[cell] === 'dog' ? 'bark' : '',
           rippleDist !== undefined ? 'ripple' : '',

@@ -65,7 +65,7 @@ meowgames/
 interface Puzzle { size: number; regions: number[]; solution: number[] } // regions: len N*N, solution: col per row
 type CellMark = 'empty' | 'x' | 'autoX' | 'dog';
 interface PuzzleState {
-  puzzle: Puzzle; marks: CellMark[]; bones: number; shield: boolean;
+  puzzle: Puzzle; marks: CellMark[]; bones: number;
   mistakes: number; powerUpsUsed: number; history: Action[]; status: 'playing'|'won'|'lost';
 }
 ```

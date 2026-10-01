@@ -9,6 +9,8 @@ export interface Breed {
   ears: 'pointy' | 'floppy' | 'round';
   patch?: string;
   spots?: boolean;
+  /** Pale cheek/eyebrow markings (e.g. Shiba urajiro). */
+  cheeks?: string;
 }
 
 /** One breed per yard colour (same order as REGION_COLORS). */
@@ -17,7 +19,7 @@ export const BREEDS: Breed[] = [
   { name: 'Husky', fur: '#8e9aab', ear: '#6b7688', muzzle: '#ffffff', ears: 'pointy', patch: '#ffffff' },
   { name: 'Dachshund', fur: '#a0643b', ear: '#7a4726', muzzle: '#c98b5e', ears: 'floppy' },
   { name: 'Poodle', fur: '#f4efe6', ear: '#e6dccb', muzzle: '#fbf8f2', ears: 'round' },
-  { name: 'Shiba', fur: '#e59a4c', ear: '#c97a2d', muzzle: '#fff1dc', ears: 'pointy' },
+  { name: 'Shiba', fur: '#d2602a', ear: '#a9441a', muzzle: '#fff4e4', ears: 'pointy', cheeks: '#fff4e4' },
   { name: 'Beagle', fur: '#f0dcc0', ear: '#9a5b2e', muzzle: '#ffffff', ears: 'floppy', patch: '#c7813f' },
   { name: 'Pug', fur: '#e8cfa3', ear: '#4a3b30', muzzle: '#5a483b', ears: 'floppy' },
   { name: 'Dalmatian', fur: '#ffffff', ear: '#3a3a3a', muzzle: '#ffffff', ears: 'floppy', spots: true },
@@ -125,6 +127,14 @@ export const DogFace = memo(function DogFace({ breed, mood = 'happy', className,
           <circle cx="70" cy="40" r="3" />
           <circle cx="66" cy="74" r="3.5" />
           <circle cx="28" cy="68" r="2.5" />
+        </g>
+      )}
+      {b.cheeks && (
+        <g fill={b.cheeks}>
+          <ellipse cx="27" cy="66" rx="10" ry="9" />
+          <ellipse cx="73" cy="66" rx="10" ry="9" />
+          <ellipse cx="38" cy="42" rx="4.5" ry="2.6" />
+          <ellipse cx="62" cy="42" rx="4.5" ry="2.6" />
         </g>
       )}
       {b.ears === 'floppy' && (

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { MiniGameId } from '../core/progression/levels';
 
 export type Screen =
   | { name: 'title' }
@@ -9,7 +10,9 @@ export type Screen =
   | { name: 'howto' }
   | { name: 'daily' }
   | { name: 'endless' }
-  | { name: 'stats' };
+  | { name: 'stats' }
+  | { name: 'debug' }
+  | { name: 'debugGame'; game: MiniGameId; tier: number; seed: number };
 
 interface NavState {
   screen: Screen;
