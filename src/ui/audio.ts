@@ -4,7 +4,7 @@ import { useSave } from '../store/saveStore';
  * Tiny WebAudio synth: every sound is generated on the fly, so the game ships
  * without audio files. Settings are read on every call so toggles apply at once.
  */
-export type Sfx = 'pop' | 'x' | 'wrong' | 'win' | 'star' | 'power' | 'click' | 'bark' | 'reward' | 'shield';
+export type Sfx = 'pop' | 'x' | 'wrong' | 'win' | 'star' | 'power' | 'click' | 'bark' | 'reward';
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -53,7 +53,6 @@ const SOUNDS: Record<Sfx, () => void> = {
     tone(420, 0, 0.07, 'sawtooth', 0.14, 260);
     tone(460, 0.11, 0.08, 'sawtooth', 0.14, 280);
   },
-  shield: () => tone(880, 0, 0.3, 'sine', 0.2, 440),
   power: () => [0, 0.06, 0.12, 0.18].forEach((d, i) => tone(600 + i * 200, d, 0.14, 'triangle', 0.18)),
   star: () => tone(1320, 0, 0.25, 'sine', 0.2, 1760),
   reward: () => [523, 659, 784].forEach((f, i) => tone(f, i * 0.08, 0.2, 'triangle', 0.2)),

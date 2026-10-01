@@ -17,7 +17,7 @@ export interface HintView {
 
 export interface GameEvent {
   id: number;
-  type: 'dog' | 'wrong' | 'shielded' | 'powerUp';
+  type: 'dog' | 'wrong' | 'powerUp';
   cells: number[];
 }
 
@@ -26,9 +26,7 @@ export interface GameState {
   puzzle: Puzzle;
   marks: CellMark[];
   bones: number;
-  shield: boolean;
   mistakes: number;
-  lostBones: number;
   powerUpsUsed: number;
   history: CellMark[][];
   status: GameStatus;
@@ -54,9 +52,7 @@ export function createGame(levelId: number, puzzle: Puzzle): GameState {
     puzzle,
     marks: new Array(puzzle.size * puzzle.size).fill('empty'),
     bones: START_BONES,
-    shield: false,
     mistakes: 0,
-    lostBones: 0,
     powerUpsUsed: 0,
     history: [],
     status: 'playing',
@@ -132,16 +128,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (isSolutionCell(state.puzzle, cell)) return withCorrectDog(state, cell, action.autoCross);
       const marks = [...state.marks];
       marks[cell] = 'autoX';
-      if (state.shield) {
-        return { ...state, marks, shield: false, hint: null, event: makeEvent('shielded', [cell]) };
-      }
       const bones = state.bones - 1;
       return {
         ...state,
         marks,
         bones,
         mistakes: state.mistakes + 1,
-        lostBones: state.lostBones + 1,
         hint: null,
         status: bones <= 0 ? 'lost' : 'playing',
         event: makeEvent('wrong', [cell]),

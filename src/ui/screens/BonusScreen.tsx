@@ -11,17 +11,19 @@ import { Modal, Stars, TopBar } from '../components/common';
 type BonusLevel = Extract<LevelEntry, { kind: 'bonus' }>;
 type Phase = { name: 'intro' } | { name: 'play'; attempt: number } | { name: 'result'; result: MiniGameResult; items: PowerUpId[]; stars: number };
 
-export function BonusScreen({ level }: { level: BonusLevel }) {
+/** `debug` plays a mini-game from the dev debug screen without touching the save. */
+export function BonusScreen({ level, debug = false }: { level: BonusLevel; debug?: boolean }) {
   const go = useNav((s) => s.go);
   const def = MINI_GAMES[level.game];
   const [phase, setPhase] = useState<Phase>({ name: 'intro' });
   const [confirmQuit, setConfirmQuit] = useState(false);
   const Game = def.component;
-  const nextLevel = level.id < TOTAL_LEVELS ? level.id + 1 : null;
+  const nextLevel = !debug && level.id < TOTAL_LEVELS ? level.id + 1 : null;
+  const exit = () => go(debug ? { name: 'debug' } : { name: 'map' });
 
   const finish = (result: MiniGameResult) => {
     const stars = Math.max(1, result.stars);
-    const { items } = useSave.getState().completeBonus(level.id, level.game, stars);
+    const items = debug ? [] : useSave.getState().completeBonus(level.id, level.game, stars).items;
     setPhase({ name: 'result', result, items, stars });
     sfx('win');
     window.setTimeout(() => sfx('reward'), 600);
@@ -32,10 +34,10 @@ export function BonusScreen({ level }: { level: BonusLevel }) {
   return (
     <div className="screen bonus-screen">
       <TopBar
-        onBack={() => (phase.name === 'play' ? setConfirmQuit(true) : go({ name: 'map' }))}
+        onBack={() => (phase.name === 'play' ? setConfirmQuit(true) : exit())}
         title={
           <>
-            <div className="level-title">🎁 Bonus · Level {level.id}</div>
+            <div className="level-title">{debug ? `🛠️ Debug · tier ${level.tier}` : `🎁 Bonus · Level ${level.id}`}</div>
             <div className="level-sub">
               {def.icon} {def.name}
             </div>
@@ -88,8 +90,8 @@ export function BonusScreen({ level }: { level: BonusLevel }) {
             >
               Take 1★ reward
             </button>
-            <button className="btn" onClick={() => go({ name: 'map' })}>
-              Back to map
+            <button className="btn" onClick={exit}>
+              {debug ? 'Back to debug' : 'Back to map'}
             </button>
             <button className="btn ghost" onClick={() => setConfirmQuit(false)}>
               Keep playing
@@ -120,8 +122,8 @@ export function BonusScreen({ level }: { level: BonusLevel }) {
             <p className="muted">Beat your best score here to earn more power-ups.</p>
           )}
           <div className="modal-actions">
-            <button className="btn" onClick={() => go({ name: 'map' })}>
-              Map
+            <button className="btn" onClick={exit}>
+              {debug ? 'Debug' : 'Map'}
             </button>
             <button className="btn" onClick={() => setPhase({ name: 'play', attempt: attempt + 1 })}>
               Replay

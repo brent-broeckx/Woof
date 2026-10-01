@@ -1,13 +1,14 @@
 import { TOTAL_LEVELS } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
 import { currentStreak } from '../../core/progression/daily';
-import { highestUnlocked, useSave } from '../../store/saveStore';
+import { nextUnplayed, useSave } from '../../store/saveStore';
 import { DogFace } from '../components/DogFace';
+import { DEBUG_AVAILABLE } from '../../debug/debugStore';
 
 export function Title() {
   const go = useNav((s) => s.go);
   const progress = useSave((s) => s.progress);
-  const next = Math.min(TOTAL_LEVELS, highestUnlocked(progress));
+  const next = Math.min(TOTAL_LEVELS, nextUnplayed(progress));
   const started = Object.keys(progress).length > 0;
   const accessory = useSave((s) => s.cosmetics.accessory);
   const daily = useSave((s) => s.daily);
@@ -55,6 +56,11 @@ export function Title() {
             ⚙️ Settings
           </button>
         </div>
+        {DEBUG_AVAILABLE && (
+          <button className="btn ghost" onClick={() => go({ name: 'debug' })}>
+            🛠️ Debug (dev only)
+          </button>
+        )}
       </div>
     </div>
   );

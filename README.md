@@ -9,6 +9,7 @@ A web-based, dog-themed take on the mobile logic puzzle **Meowdoku**, extended w
 ```bash
 npm install
 npm run dev              # start the dev server (http://localhost:5173)
+npm run dev:mobile       # same, but reachable from your phone on the same Wi-Fi
 npm test                 # unit tests (Vitest)
 npm run typecheck        # TypeScript strict check
 npm run build            # production build into dist/
@@ -20,6 +21,16 @@ npm run icons            # regenerate PNG app icons in public/icons
 ```
 
 > Playwright: if the browser download fails, use an installed browser, e.g. `PW_CHANNEL=msedge npm run e2e` (PowerShell: `$env:PW_CHANNEL='msedge'`).
+
+### Debug menu (dev only)
+
+In `npm run dev` the title screen shows **🛠️ Debug (dev only)**:
+
+- **Unlock all levels:** every level on the map is playable. Your real progress is kept, so turning it off restores it.
+- **Play a mini-game:** launch any of the 10 bonus games at any tier with a random seed. Nothing is saved and you get no rewards.
+- **Inventory:** +5 of every power-up, +1000 treats.
+
+The debug code is compiled out of `npm run build`, so players never see it. To test on a phone, run `npm run dev:mobile`, then open the `Network:` URL it prints (e.g. `http://192.168.x.x:5173`) on the phone. The phone must be on the same Wi-Fi; allow Node through the Windows firewall if asked.
 
 ## Play it online
 
@@ -59,7 +70,7 @@ The build injects a precache list and a build-specific cache version into `sw.js
 
 ## One-paragraph pitch
 
-Place one dog in every row, every column and every colored yard — and dogs don't like each other's personal space, so no two dogs may touch, not even diagonally. Every puzzle has exactly one solution reachable by pure logic. Every 5th level is a **Bonus Park**: a short, brainy mini-game (block puzzle, connect-the-dots, sliding tiles, …). Doing well there earns power-ups such as **Sniff** (reveal a dog), **Bone Shield** (absorb one mistake) and **Fetch** (auto-cross a row) that make the main puzzles easier.
+Place one dog in every row, every column and every colored yard — and dogs don't like each other's personal space, so no two dogs may touch, not even diagonally. Every puzzle has exactly one solution reachable by pure logic. Every 5th level is a **Bonus Park**: a short, brainy mini-game (block puzzle, connect-the-dots, sliding tiles, …). Doing well there earns power-ups such as **Sniff** (reveal a dog), **Guide Dog** (places up to 3 new dogs) and **Fetch** (auto-cross a row) that make the main puzzles easier.
 
 ## Assumptions made while planning
 

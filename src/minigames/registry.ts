@@ -133,8 +133,9 @@ export const MINI_GAMES: Record<MiniGameId, MiniGameDefinition> = {
     icon: '💧',
     tagline: 'Rotate pipes to water every dog bowl',
     rules: [
-      'Tap pipes to rotate them clockwise.',
-      'Blue pipes are connected to the tap; fix leaks and water all bowls.',
+      'Tap a pipe to rotate it clockwise (right-click rotates back).',
+      'Pipes turn blue when water from the tap reaches them.',
+      'Connect the water to every thirsty dog to win.',
       'Stars are based on rotations versus the target.',
     ],
     component: lazy(() => import('./pipeSprinklers/PipeSprinklersView')),

@@ -28,13 +28,22 @@ describe('Pipe Sprinklers', () => {
     }
   });
 
-  it('computes live water flow and leak status', () => {
+  it('computes live water flow and wins once every bowl is watered', () => {
     const puzzle = generatePipeSprinklersPuzzle(pipeSprinklersConfigForTier(3), 123);
     const solved = pipeFlow(puzzle.size, puzzle.source, puzzle.solution);
     expect(solved.watered.size).toBe(puzzle.size * puzzle.size);
-    expect(solved.leaks.size).toBe(0);
     const start = pipeFlow(puzzle.size, puzzle.source, puzzle.start);
-    expect(start.watered.size < puzzle.size * puzzle.size || start.leaks.size > 0).toBe(true);
+    expect(puzzle.bowls.some((b) => !start.watered.has(b))).toBe(true);
+    expect(isPipeSolved(puzzle, puzzle.start)).toBe(false);
+  });
+
+  it('becomes unsolved as soon as one bowl goes dry', () => {
+    const puzzle = generatePipeSprinklersPuzzle(pipeSprinklersConfigForTier(10), 77);
+    expect(isPipeSolved(puzzle, puzzle.solution)).toBe(true);
+    const dryBowl = puzzle.bowls[0];
+    const broken = [...puzzle.solution];
+    broken[dryBowl] = rotateMask(broken[dryBowl], 2);
+    expect(isPipeSolved(puzzle, broken)).toBe(false);
   });
 
   it('rotates, undoes, and resets tiles', () => {

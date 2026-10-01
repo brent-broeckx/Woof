@@ -14,6 +14,8 @@ const Settings = lazy(() => import('./ui/screens/Settings').then((m) => ({ defau
 const DailyScreen = lazy(() => import('./ui/screens/DailyScreen').then((m) => ({ default: m.DailyScreen })));
 const EndlessScreen = lazy(() => import('./ui/screens/EndlessScreen').then((m) => ({ default: m.EndlessScreen })));
 const StatsScreen = lazy(() => import('./ui/screens/StatsScreen').then((m) => ({ default: m.StatsScreen })));
+// Only `npm run dev` builds include the debug screen.
+const DebugScreen = import.meta.env.DEV ? lazy(() => import('./debug/DebugScreen').then((m) => ({ default: m.DebugScreen }))) : null;
 
 const CLICKABLE = '.btn, .tool, .powerup, .node, .chip, .tab';
 
@@ -36,6 +38,18 @@ function Router() {
       return <EndlessScreen />;
     case 'stats':
       return <StatsScreen />;
+    case 'debug':
+      return DebugScreen ? <DebugScreen /> : <Title />;
+    case 'debugGame':
+      return import.meta.env.DEV ? (
+        <BonusScreen
+          key={`${screen.game}-${screen.tier}-${screen.seed}`}
+          debug
+          level={{ id: 0, world: 1, kind: 'bonus', bonusIndex: screen.tier - 1, game: screen.game, tier: screen.tier, seed: screen.seed }}
+        />
+      ) : (
+        <Title />
+      );
     case 'level': {
       if (screen.id > highestUnlocked(useSave.getState().progress)) return <WorldMap />;
       const level = getLevel(screen.id);

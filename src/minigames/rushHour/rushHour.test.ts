@@ -8,6 +8,7 @@ import {
   rushHourConfigForTier,
   rushHourStars,
   rushLegalMoves,
+  rushSlideRange,
   rushStateKey,
   solveRush,
   undoRush,
@@ -60,6 +61,23 @@ describe('Doggy Rush Hour', () => {
       positions = next!;
     }
     expect(isRushSolved(puzzle, positions)).toBe(true);
+  });
+
+  it('reports the full slide range so one drag can travel several cells', () => {
+    for (const seed of [1, 42, 777]) {
+      const puzzle = generateRushHourPuzzle(rushHourConfigForTier(3), seed);
+      puzzle.vehicles.forEach((_, v) => {
+        const { min, max } = rushSlideRange(puzzle, puzzle.start, v);
+        const tos = rushLegalMoves(puzzle, puzzle.start)
+          .filter((m) => m.vehicle === v)
+          .map((m) => m.to);
+        for (let to = min; to <= max; to++) {
+          if (to !== puzzle.start[v]) expect(tos).toContain(to);
+        }
+        expect(min).toBeLessThanOrEqual(puzzle.start[v]);
+        expect(max).toBeGreaterThanOrEqual(puzzle.start[v]);
+      });
+    }
   });
 
   it('scores stars against the optimal move count', () => {

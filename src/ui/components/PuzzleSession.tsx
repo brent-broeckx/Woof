@@ -77,7 +77,7 @@ export function PuzzleSession(props: PuzzleSessionProps) {
   useEffect(() => {
     if (persist && state.status === 'playing') saveInProgress(state);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.marks, state.bones, state.powerUpsUsed, state.status, state.shield]);
+  }, [state.marks, state.bones, state.powerUpsUsed, state.status]);
 
   // Sounds + haptics for board events.
   useEffect(() => {
@@ -88,7 +88,6 @@ export function PuzzleSession(props: PuzzleSessionProps) {
       sfx('wrong');
       haptic([40, 60, 40]);
     }
-    if (e.type === 'shielded') sfx('shield');
     if (e.type === 'powerUp') sfx('power');
   }, [state.event]);
 
@@ -199,11 +198,6 @@ export function PuzzleSession(props: PuzzleSessionProps) {
                 🦴
               </span>
             ))}
-            {state.shield && (
-              <span className="shield-badge" title="Bone Shield active">
-                🛡️
-              </span>
-            )}
           </div>
           <div className="dogs-count">
             🐶 {dogCount(state)}/{puzzle.size}
@@ -288,11 +282,6 @@ export function PuzzleSession(props: PuzzleSessionProps) {
             {inventory.extraBone > 0 && canUseMorePowerUps(state) && (
               <button className="btn primary" onClick={() => activatePowerUp('extraBone')}>
                 🦴 Use Extra Bone ({inventory.extraBone})
-              </button>
-            )}
-            {inventory.rewind > 0 && canUseMorePowerUps(state) && (
-              <button className="btn primary" onClick={() => activatePowerUp('rewind')}>
-                ⏪ Use Rewind ({inventory.rewind})
               </button>
             )}
             <button className="btn" onClick={restart}>

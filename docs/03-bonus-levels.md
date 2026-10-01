@@ -59,18 +59,19 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 ### 4. 🟦 Kibble Blocks (Block Blast / 1010!-style)
 - 8×8 grid, you get 3 polyomino pieces at a time, place them anywhere; full rows/columns clear. No gravity, no timer — pure planning.
 - Goal: reach score X in limited rounds, or clear specific marked cells ("treats").
+- Input: drag a piece onto the board (on touch it floats above your finger so it stays visible), or tap a piece then tap a cell. Board cells are always square.
 
 ### 5. 🃏 Memory Fetch (pairs)
-- Flip cards to find pairs of dog breeds. 4×3 → 6×5. Stars by number of flips. Later tiers add "shuffle after N misses".
+- Flip cards to find pairs of dog breeds. 4×3 → 6×5. Stars by number of flips. Later tiers add "shuffle after N misses". Every pair has a visually unique face (each breed once; larger boards add hats to repeats) so no two pairs look alike.
 
 ### 6. 🔢 Nonogram Paws (mini Picross)
 - 5×5 / 8×8 nonograms that reveal a dog pixel-art picture. Fits the logic-puzzle vibe very well.
 
 ### 7. 🚗 Doggy Rush Hour (Unblock Me)
-- Slide cars/crates on a 6×6 lot to get the dog van out. Pre-generated levels with known optimal solutions; stars by moves vs optimal.
+- Slide cars/crates on a 6×6 lot to get the dog van out. Pre-generated levels with known optimal solutions; stars by moves vs optimal. Vehicles follow your finger live and can slide several cells in one drag (counted as one move); the dog drives out through the visible EXIT when freed.
 
 ### 8. 🚿 Pipe Sprinklers (pipe rotation puzzle)
-- Rotate pipe tiles so water from the tap reaches every thirsty dog's bowl. Stars by rotations used.
+- Rotate pipe tiles so water from the tap reaches every thirsty dog's bowl. Pipes turn blue as soon as water reaches them; no leak markers. You win once every dog is watered. Stars by rotations used.
 
 ### 9. 💧 Water Bowl Sort (Water Sort puzzle)
 - Pour colored water between bowls until each bowl is a single color.

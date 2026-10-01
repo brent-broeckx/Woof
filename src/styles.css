@@ -21,6 +21,23 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea,
+select,
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -427,11 +444,6 @@ button {
   opacity: 0.3;
 }
 
-.shield-badge {
-  margin-left: 6px;
-  animation: pulse 1.6s ease-in-out infinite;
-}
-
 .dogs-count {
   font-size: 1.1rem;
 }
@@ -522,11 +534,6 @@ button {
 .cell.wrong {
   animation: shake 0.45s;
   background-color: #f7b2b2 !important;
-}
-
-.cell.shielded {
-  animation: shake 0.45s;
-  box-shadow: inset 0 0 0 4px #3d8fe0;
 }
 
 .cell.powered {
@@ -622,8 +629,8 @@ button {
 
 .tray {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
   margin-top: 12px;
   background: rgba(255, 255, 255, 0.55);
   border-radius: 16px;
@@ -635,7 +642,10 @@ button {
   border: none;
   background: #fff;
   border-radius: 12px;
-  padding: 6px 0 4px;
+  padding: 8px 0 6px;
+  min-height: 60px;
+  justify-content: center;
+  gap: 2px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -646,11 +656,12 @@ button {
 }
 
 .powerup .icon {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
+  line-height: 1.1;
 }
 
 .powerup .label {
-  font-size: 0.58rem;
+  font-size: 0.64rem;
   font-weight: 700;
   color: var(--ink-soft);
   white-space: nowrap;
@@ -658,6 +669,19 @@ button {
   text-overflow: ellipsis;
   max-width: 100%;
   padding: 0 2px;
+}
+
+@media (max-width: 380px) {
+  .tray {
+    gap: 5px;
+    padding: 6px;
+  }
+  .powerup .label {
+    white-space: normal;
+    font-size: 0.6rem;
+    line-height: 1.05;
+    text-align: center;
+  }
 }
 
 .powerup .count {
@@ -1330,12 +1354,6 @@ kbd {
 }
 
 @media (max-width: 420px) {
-  .tray {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .powerup .label {
-    font-size: 0.62rem;
-  }
   .bd-controls {
     grid-template-columns: repeat(4, auto);
   }
@@ -1659,10 +1677,13 @@ kbd {
   .puzzle-body .tools {
     margin-top: 0;
   }
-  .puzzle-body .tray {
-    grid-template-columns: repeat(4, 1fr);
-  }
   .screen:not(.puzzle-screen) {
     max-width: 720px;
   }
+}
+
+/* Dev-only debug screen */
+.debug-screen .toggle .row {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
