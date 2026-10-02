@@ -106,12 +106,14 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M4 — Expeditions + postcards
 
-- [ ] **Expeditions:** send 1+ pack dogs on a timed trip (e.g. 1 h / 4 h / 8 h). Dogs on a trip don't produce at home, which is the trade-off.
-- [ ] **Loot:** treats plus random extras (power-ups, postcards, rarely kibble). Seeded per expedition.
-- [ ] **Destinations** themed on the worlds (Backyard, City Park, Dog Beach, Mountain Trail, …), unlocked by progress.
-- [ ] **Postcard album:** collectible postcards per destination (no duplicates needed to finish; duplicates convert to treats). Completing a destination's set gives a reward.
-- [ ] "Expedition ready!" indicator on Home and the yard.
-- [ ] Tests: timing across reloads, loot tables, album completion.
+- [x] **Expeditions:** send 1+ pack dogs on a timed trip (e.g. 1 h / 4 h / 8 h). Dogs on a trip don't produce at home, which is the trade-off.
+- [x] **Loot:** treats plus random extras (power-ups, postcards, rarely kibble). Seeded per expedition.
+- [x] **Destinations** themed on the worlds (Backyard, City Park, Dog Beach, Mountain Trail, …), unlocked by progress.
+- [x] **Postcard album:** collectible postcards per destination (no duplicates needed to finish; duplicates convert to treats). Completing a destination's set gives a reward.
+- [x] "Expedition ready!" indicator on Home and the yard.
+- [x] Tests: timing across reloads, loot tables, album completion.
+
+*Decisions: up to 3 trips at once with up to 3 dogs each, and the main pup always stays home. Trips last 1 h, 4 h or 8 h. Loot is rolled when the trip starts (seeded), so recalling or reloading can't reroll it. Treats are the team's yard rate × hours × 1.5, plus 10% per world of the destination. Postcard chance is 35/75/100%, power-up 10/30/60% and kibble 0/10/25%. Duplicate postcards give 25 🍖 and a full set (6 per destination) gives 250 🍖 + 25 🥣. Calling a team back early brings nothing. Destinations unlock with the first level of their world.*
 
 **Done when:** you can send dogs out, come back later to collect loot, and fill the postcard album.
 

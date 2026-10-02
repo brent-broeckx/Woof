@@ -19,6 +19,8 @@ const EndlessScreen = lazy(() => import('./ui/screens/EndlessScreen').then((m) =
 const PupScreen = lazy(() => import('./ui/screens/PupScreen').then((m) => ({ default: m.PupScreen })));
 const PackScreen = lazy(() => import('./ui/screens/PackScreen').then((m) => ({ default: m.PackScreen })));
 const FairScreen = lazy(() => import('./ui/screens/FairScreen').then((m) => ({ default: m.FairScreen })));
+const ExpeditionsScreen = lazy(() => import('./ui/screens/ExpeditionsScreen').then((m) => ({ default: m.ExpeditionsScreen })));
+const AlbumScreen = lazy(() => import('./ui/screens/ExpeditionsScreen').then((m) => ({ default: m.AlbumScreen })));
 const YardScreen = lazy(() => import('./ui/screens/YardScreen').then((m) => ({ default: m.YardScreen })));
 const StatsScreen = lazy(() => import('./ui/screens/StatsScreen').then((m) => ({ default: m.StatsScreen })));
 // Only `npm run dev` builds include the debug screen.
@@ -29,7 +31,7 @@ const CLICKABLE = '.btn, .tool, .powerup, .node, .chip, .tab';
 function Router() {
   const screen = useNav((s) => s.screen);
   const hasPup = useSave((s) => !!s.pup);
-  if (!hasPup && ['title', 'pup', 'yard', 'pack', 'fair'].includes(screen.name)) return <AdoptScreen />;
+  if (!hasPup && ['title', 'pup', 'yard', 'pack', 'fair', 'expeditions', 'album'].includes(screen.name)) return <AdoptScreen />;
   switch (screen.name) {
     case 'title':
       return <Title />;
@@ -55,6 +57,10 @@ function Router() {
       return <PackScreen />;
     case 'fair':
       return <FairScreen />;
+    case 'expeditions':
+      return <ExpeditionsScreen />;
+    case 'album':
+      return <AlbumScreen />;
     case 'debug':
       return DebugScreen ? <DebugScreen /> : <Title />;
     case 'debugGame':

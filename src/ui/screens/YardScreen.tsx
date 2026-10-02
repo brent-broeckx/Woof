@@ -8,7 +8,7 @@ import { haptic, sfx } from '../audio';
 import { TopBar } from '../components/common';
 import { DogFace } from '../components/DogFace';
 import { FullnessBar, useFeed } from '../components/PupWidget';
-import { usePup, useYard } from '../hooks/usePup';
+import { usePup, useTripsReady, useYard } from '../hooks/usePup';
 
 /** How many pack dogs are drawn in the yard scene. */
 const YARD_SHOWN = 6;
@@ -36,13 +36,16 @@ export function YardScreen() {
   const treats = useSave((s) => s.treats);
   const kibble = useSave((s) => s.kibble);
   const packDogs = useSave((s) => s.pack);
+  const expeditions = useSave((s) => s.expeditions);
+  const tripsReady = useTripsReady(5000);
   const view = usePup();
   const yard = useYard();
   const { note, feed } = useFeed();
   const [burst, setBurst] = useState<{ amount: number; key: number } | null>(null);
   if (!view || !yard) return null;
   const { pup, fullness, mood } = view;
-  const pack = yardPack({ pup, pack: packDogs });
+  const pack = yardPack({ pup, pack: packDogs, expeditions });
+  const exploring = expeditions.trips.reduce((n, t) => n + t.dogs.length, 0);
   const shown = pack.slice(0, YARD_SHOWN);
   const pct = Math.min(100, (yard.jar / yard.capacity) * 100);
   const boosted = yard.mult > 1;
@@ -73,7 +76,11 @@ export function YardScreen() {
 
       <div className="row yard-nav">
         <button className="btn" onClick={() => go({ name: 'pack' })}>
-          🐕 Pack <span className="muted">({pack.length})</span>
+          🐕 Pack <span className="muted">({packDogs.length})</span>
+        </button>
+        <button className="btn yard-btn" onClick={() => go({ name: 'expeditions' })}>
+          🧭 Trips
+          {tripsReady > 0 ? <span className="yard-badge">Back!</span> : exploring > 0 && <span className="muted"> ({exploring} away)</span>}
         </button>
         <button className="btn primary" onClick={() => go({ name: 'fair' })}>
           🎪 Adoption Fair
@@ -122,6 +129,11 @@ export function YardScreen() {
           );
         })}
         {pack.length > 5 && <p className="muted text-small">…and {pack.length - 5} more in your pack.</p>}
+        {exploring > 0 && (
+          <p className="muted text-small">
+            🧭 {exploring} {exploring === 1 ? 'dog is' : 'dogs are'} on an expedition and not producing.
+          </p>
+        )}
         <div className="pup-stat-row">
           <span>
             {pup.name}'s mood: {MOOD_LABEL[mood]}

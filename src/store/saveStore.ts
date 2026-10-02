@@ -39,6 +39,20 @@ import {
   type FairState,
   type PackDog,
 } from '../core/pet/pack';
+import {
+  awayDogs,
+  claimExpedition,
+  destinationById,
+  destinationUnlocked,
+  emptyExpeditions,
+  normalizeExpeditions,
+  recallExpedition,
+  SET_REWARD,
+  shiftExpeditions,
+  startExpedition,
+  type ExpeditionLoot,
+  type ExpeditionState,
+} from '../core/pet/expeditions';
 import { collectJar, emptyYard, normalizeYard, packRate, settleYard, type Producer, type YardState } from '../core/pet/yard';
 import { shiftLastSeen } from './lastSeen';
 import type { GameState } from '../core/puzzle/game';
@@ -116,6 +130,15 @@ export interface SaveData {
   /** Every dog you own, one entry per breed (the main pup's breed included). */
   pack: PackDog[];
   fair: FairState;
+  expeditions: ExpeditionState;
+}
+
+export interface ExpeditionClaim {
+  loot: ExpeditionLoot;
+  newPostcard: boolean;
+  duplicateTreats: number;
+  /** Destination whose postcard set was just finished (its reward is included). */
+  completedSet: string | null;
 }
 
 export interface AdoptionResult {
@@ -150,6 +173,10 @@ interface SaveActions {
   /** Spend treats to level a pack dog up. */
   trainDog(breed: string): boolean;
   renameDog(breed: string, name: string): void;
+  /** Sends pack dogs (not the main pup) on a trip. */
+  sendExpedition(destination: string, hours: number, breeds: string[]): boolean;
+  claimExpedition(tripId: number): ExpeditionClaim | null;
+  recallExpedition(tripId: number): void;
   debugTimeTravel(ms: number): void;
   debugAddKibble(n: number): void;
   consumePowerUp(id: PowerUpId): boolean;
@@ -206,6 +233,7 @@ const freshSave = (): SaveData => ({
   yard: emptyYard(Date.now()),
   pack: [],
   fair: emptyFair(),
+  expeditions: emptyExpeditions(),
 });
 
 /** The persisted part of the store (shared by persist and export). */
@@ -229,17 +257,21 @@ function pickSave(s: SaveData): SaveData {
     yard: s.yard,
     pack: s.pack,
     fair: s.fair,
+    expeditions: s.expeditions,
   };
 }
 
 /** Small bond boost for the pup when you win anything. */
 const winBond = (pup: PupState | null) => (pup ? { ...pup, bondXp: pup.bondXp + WIN_XP } : pup);
 
-/** The dogs producing treats in the yard: the whole pack, main pup first. */
-export function yardPack(s: Pick<SaveData, 'pup' | 'pack'>): Producer[] {
+type YardSource = Pick<SaveData, 'pup' | 'pack'> & Partial<Pick<SaveData, 'expeditions'>>;
+
+/** The dogs producing treats in the yard: the pack minus dogs on a trip, main pup first. */
+export function yardPack(s: YardSource): Producer[] {
   if (!s.pup) return [];
   const main = s.pup.breed;
-  const pack = s.pack.some((d) => d.breed === main) ? s.pack : [newDog(main, 'starter', 0), ...s.pack];
+  const away = s.expeditions ? awayDogs(s.expeditions) : new Set<string>();
+  const pack = (s.pack.some((d) => d.breed === main) ? s.pack : [newDog(main, 'starter', 0), ...s.pack]).filter((d) => d.breed === main || !away.has(d.breed));
   return [...pack].sort((a, b) => Number(b.breed === main) - Number(a.breed === main)).map((d) => ({ breed: d.breed, level: d.level }));
 }
 
@@ -260,7 +292,7 @@ function ensurePack(pack: PackDog[], pup: PupState | null, chests: Record<number
 }
 
 /** The yard brought up to `now` (pure; does not save). */
-export function liveYard(s: Pick<SaveData, 'pup' | 'pack' | 'yard'>, now: number): YardState {
+export function liveYard(s: YardSource & Pick<SaveData, 'yard'>, now: number): YardState {
   return settleYard(s.yard, packRate(yardPack(s)), s.pup, now);
 }
 
@@ -276,6 +308,8 @@ export function sanitizeInventory(raw: Partial<Record<string, number>> | undefin
 
 /** Fill in fields added in later versions of the game. */
 function mergeNested(p: Partial<SaveData>) {
+  const pup = normalizePup(p.pup, Date.now());
+  const pack = ensurePack(normalizePack(p.pack, Date.now()), pup, { ...p.chests }, Date.now());
   return {
     inventory: sanitizeInventory(p.inventory),
     settings: { ...DEFAULT_SETTINGS, ...p.settings },
@@ -283,11 +317,12 @@ function mergeNested(p: Partial<SaveData>) {
     chests: { ...p.chests },
     daily: { ...emptyDaily(), ...p.daily },
     stats: { levels: { ...p.stats?.levels }, totals: { ...emptyTotals(), ...p.stats?.totals } },
-    pup: normalizePup(p.pup, Date.now()),
+    pup,
     kibble: typeof p.kibble === 'number' && Number.isFinite(p.kibble) ? Math.max(0, Math.floor(p.kibble)) : START_KIBBLE,
     yard: normalizeYard(p.yard, Date.now()),
-    pack: ensurePack(normalizePack(p.pack, Date.now()), normalizePup(p.pup, Date.now()), { ...p.chests }, Date.now()),
+    pack,
     fair: normalizeFair(p.fair),
+    expeditions: normalizeExpeditions(p.expeditions, new Set(pack.filter((d) => d.breed !== pup?.breed).map((d) => d.breed))),
   };
 }
 
@@ -498,9 +533,55 @@ export const useSave = create<SaveData & SaveActions>()(
         set((s) => ({ pack: s.pack.map((d) => (d.breed === breed ? { ...d, name: clean } : d)) }));
       },
 
+      sendExpedition(destination, hours, breeds) {
+        const s = get();
+        const dest = destinationById(destination);
+        if (!s.pup || !dest || !destinationUnlocked(dest, highestUnlocked(s.progress), LEVELS_PER_WORLD)) return false;
+        const team: Producer[] = [];
+        for (const breed of breeds) {
+          const dog = s.pack.find((d) => d.breed === breed);
+          if (!dog || breed === s.pup.breed) return false;
+          team.push({ breed, level: dog.level });
+        }
+        const now = Date.now();
+        const expeditions = startExpedition(s.expeditions, s.seed, team, destination, hours, now);
+        if (!expeditions) return false;
+        // Bank production while the team is still home.
+        set({ yard: liveYard(s, now), expeditions });
+        return true;
+      },
+
+      claimExpedition(tripId) {
+        const s = get();
+        const now = Date.now();
+        const r = claimExpedition(s.expeditions, tripId, now);
+        if (!r) return null;
+        const { loot } = r;
+        const inventory = { ...s.inventory };
+        for (const id of loot.items) inventory[id]++;
+        const set_ = r.completedSet ? SET_REWARD : { treats: 0, kibble: 0 };
+        set({
+          yard: liveYard(s, now),
+          expeditions: r.state,
+          inventory,
+          treats: s.treats + loot.treats + r.duplicateTreats + set_.treats,
+          kibble: s.kibble + loot.kibble + set_.kibble,
+        });
+        return { loot, newPostcard: r.newPostcard, duplicateTreats: r.duplicateTreats, completedSet: r.completedSet };
+      },
+
+      recallExpedition(tripId) {
+        const s = get();
+        set({ yard: liveYard(s, Date.now()), expeditions: recallExpedition(s.expeditions, tripId) });
+      },
+
       debugTimeTravel(ms) {
         shiftLastSeen(ms);
-        set((s) => ({ yard: { ...s.yard, settledAt: s.yard.settledAt - ms }, pup: s.pup ? shiftPupTime(s.pup, ms) : s.pup }));
+        set((s) => ({
+          yard: { ...s.yard, settledAt: s.yard.settledAt - ms },
+          pup: s.pup ? shiftPupTime(s.pup, ms) : s.pup,
+          expeditions: shiftExpeditions(s.expeditions, ms),
+        }));
       },
 
       debugAddKibble(n) {

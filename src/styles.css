@@ -2342,3 +2342,164 @@ kbd {
   width: 56px;
   height: 56px;
 }
+
+/* ---------- Expeditions + postcards ---------- */
+.expeditions-screen,
+.album-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.yard-nav > .btn {
+  padding-left: 8px;
+  padding-right: 8px;
+  gap: 4px;
+}
+.trip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.trip-card.ready {
+  outline: 3px solid var(--good);
+}
+.trip-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.trip-head h3 {
+  margin: 0;
+}
+.trip-head p {
+  margin: 0;
+}
+.trip-emoji {
+  font-size: 2rem;
+}
+.trip-dogs {
+  margin-left: auto;
+  display: flex;
+}
+.trip-dogs > * {
+  width: 40px;
+  height: 40px;
+  margin-left: -10px;
+}
+.trip-card.ready .trip-dogs > * {
+  animation: bob 1s ease-in-out infinite;
+}
+.dest-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.dest-btn,
+.team-dog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px;
+  border-radius: var(--radius);
+  border: 3px solid transparent;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+}
+.dest-btn > span {
+  font-size: 1.6rem;
+}
+.dest-btn small {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.dest-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.dest-btn.selected {
+  border-color: var(--accent);
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+.team-dog > svg,
+.team-dog > :first-child {
+  width: 48px;
+  height: 48px;
+}
+.team-dog > span {
+  font-size: 0.8rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.team-dog.selected {
+  background: #fff3c4;
+  outline: 3px solid var(--accent);
+}
+.loot-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+}
+.loot-list p {
+  margin: 4px 0;
+}
+.postcard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.postcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  aspect-ratio: 3 / 2;
+  padding: 6px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, hsl(var(--pc-hue) 70% 92%), hsl(calc(var(--pc-hue) + 40) 70% 84%));
+  border: 2px dashed hsl(var(--pc-hue) 40% 70%);
+  text-align: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 220px;
+}
+.loot-list + .postcard,
+.modal .postcard {
+  max-width: 200px;
+  margin: 8px auto;
+  transform: rotate(-3deg);
+  animation: pop 0.5s ease-out;
+}
+.postcard-art {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.postcard-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.postcard-stamp {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+.postcard.missing {
+  background: #eee7df;
+  border-color: #d8d0c8;
+  color: var(--ink-soft);
+}

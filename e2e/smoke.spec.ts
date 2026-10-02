@@ -94,3 +94,30 @@ test('adopts a pup at the adoption fair', async ({ page }) => {
   await page.getByRole('button', { name: /Pack/ }).click();
   await expect(page.getByText(/^[12] \/ 23 breeds collected/)).toBeVisible();
 });
+
+test('sends a dog on an expedition and opens the loot', async ({ page }) => {
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.chests = { 1: true };
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Yard/ }).click();
+  await page.getByRole('button', { name: /Trips/ }).click();
+  await page.getByRole('button', { name: /Pug/ }).click();
+  await page.getByRole('button', { name: /^Send 1 to Backyard/ }).click();
+  await expect(page.getByText(/^Back in/)).toBeVisible();
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{}');
+    for (const t of raw.state.expeditions.trips) t.endsAt = Date.now() - 1000;
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await expect(page.getByText('🧭 Trip back!')).toBeVisible();
+  await page.getByRole('button', { name: /Yard/ }).click();
+  await page.getByRole('button', { name: /Trips/ }).click();
+  await page.getByRole('button', { name: /Open loot/ }).click();
+  await expect(page.getByRole('heading', { name: 'Back from Backyard!' })).toBeVisible();
+  await page.getByRole('button', { name: 'Nice!' }).click();
+  await expect(page.locator('.chip').first()).not.toHaveText('🍖 0');
+});
