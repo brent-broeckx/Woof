@@ -67,7 +67,7 @@ export function Kennel() {
 
       {tab === 'powerups' && (
         <>
-          <p className="muted center">Earn 🍖 treats by beating puzzles with more stars. Win power-ups in 🎁 bonus levels.</p>
+          <p className="muted center">Your pack fills the 🍖 treat jar in the 🏡 Yard over time. Win power-ups in 🎁 bonus levels.</p>
           <div className="kennel-list">
             {POWER_UP_IDS.map((id) => {
               const def = POWER_UPS[id];

@@ -2,7 +2,7 @@
 
 A web-based, dog-themed take on the mobile logic puzzle **Meowdoku**, extended with **bonus mini-game levels** (every 5th level) that award **power-ups** for the main puzzle.
 
-> Status: **Feature-complete v1 candidate** — roadmap Phases 0–6 implemented: 100 levels in 4 worlds, 80 generated logic puzzles, **10 bonus mini-games**, 8 power-ups, world chests, cosmetics (board themes & dog outfits), Daily puzzle with streaks, Endless mode, stats, sound/music/haptics, accessibility options and an installable offline PWA. **Meta (in progress, see doc 10):** adopt a main pup, earn 🥣 kibble from every win and feed it to keep it happy, build bond levels and unlock tricks.
+> Status: **Feature-complete v1 candidate** — roadmap Phases 0–6 implemented: 100 levels in 4 worlds, 80 generated logic puzzles, **10 bonus mini-games**, 8 power-ups, world chests, cosmetics (board themes & dog outfits), Daily puzzle with streaks, Endless mode, stats, sound/music/haptics, accessibility options and an installable offline PWA. **Meta (in progress, see doc 10):** adopt a main pup, earn 🥣 kibble from every win and feed it to keep it happy, build bond levels and unlock tricks. Your pup lives in the **🏡 Yard**, filling a treat jar every hour (faster when happy, capped at 12 h) — treats now come from the yard and chests rather than puzzle wins.
 
 ## Run it
 
@@ -29,7 +29,7 @@ In `npm run dev` the title screen shows **🛠️ Debug (dev only)**:
 - **Unlock all levels:** every level on the map is playable. Your real progress is kept, so turning it off restores it.
 - **Play a mini-game:** launch any of the 10 bonus games at any tier with a random seed. Nothing is saved and you get no rewards.
 - **Inventory:** +5 of every power-up, +1000 treats, +100 kibble.
-- **Time travel:** jump the pup's clock forward 1h / 8h / 24h to test hunger, moods and the "missed you" greeting, or re-adopt from scratch.
+- **Time travel:** jump the pup's clock forward 1h / 8h / 24h to test hunger, moods, yard production and the "missed you" greeting, or re-adopt from scratch.
 
 The debug code is compiled out of `npm run build`, so players never see it. To test on a phone, run `npm run dev:mobile`, then open the `Network:` URL it prints (e.g. `http://192.168.x.x:5173`) on the phone. The phone must be on the same Wi-Fi; allow Node through the Windows firewall if asked.
 
@@ -45,7 +45,7 @@ The build injects a precache list and a build-specific cache version into `sw.js
 |------|---------|
 | `src/core/puzzle/` | Puzzle types, exact solver, human-style logic solver (hints/grading), generator, game reducer |
 | `src/core/economy/` | Power-up definitions/effects, bonus reward rolls |
-| `src/core/pet/` | Main pup (hunger decay, moods, bond, tricks, kibble rewards) and the breed catalog |
+| `src/core/pet/` | Main pup (hunger decay, moods, bond, tricks, kibble rewards), yard treat production and the breed catalog |
 | `src/core/progression/` | Worlds, level table, bonus schedule, puzzle slot sizes/difficulty |
 | `src/data/` | Pre-generated puzzle pack (`puzzles.json`) |
 | `src/minigames/` | Bonus mini-games (pure `logic.ts` + React view each) and the registry |

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { currentFullness, moodFor, type PupMood, type PupState } from '../../core/pet/pup';
-import { useSave } from '../../store/saveStore';
+import { jarCapacity, MOOD_MULT, packRate } from '../../core/pet/yard';
+import { liveYard, useSave, yardPack } from '../../store/saveStore';
 
 /** Re-renders every `ms` so time-based values (hunger, production) stay fresh. */
 export function useNow(ms = 30_000): number {
@@ -24,4 +25,27 @@ export function usePup(): PupView | null {
   if (!pup) return null;
   const fullness = currentFullness(pup, now);
   return { pup, fullness, mood: moodFor(fullness) };
+}
+
+export interface YardView {
+  /** Whole treats ready to collect. */
+  ready: number;
+  jar: number;
+  capacity: number;
+  /** Base pack rate per hour. */
+  rate: number;
+  mult: number;
+  full: boolean;
+}
+
+export function useYard(ms = 1000): YardView | null {
+  const pup = useSave((s) => s.pup);
+  const yard = useSave((s) => s.yard);
+  const now = useNow(ms);
+  if (!pup) return null;
+  const rate = packRate(yardPack({ pup }));
+  const live = liveYard({ pup, yard }, now);
+  const capacity = jarCapacity(rate);
+  const mult = MOOD_MULT[moodFor(currentFullness(pup, now))];
+  return { ready: Math.floor(live.jar), jar: live.jar, capacity, rate, mult, full: live.jar >= capacity };
 }

@@ -80,13 +80,13 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M2 — Yard + treat production
 
-- [ ] **Yard screen:** a simple scene where the pup (and later the pack) lives.
-- [ ] **Idle production:** each dog produces treats per hour, by rarity and level. The main pup is pack dog #1.
-- [ ] **Offline catch-up**, capped (e.g. 8–12 h of storage, "treat jar is full"), so returning is rewarded but daily check-ins still matter.
-- [ ] **Pup mood multiplier** on total production (e.g. Happy ×1.5, Content ×1.2, Hungry ×1.0, Sad ×0.5). This is the medium neglect cost.
-- [ ] **Collect button / treat jar** with juice (coins pop, sound).
-- [ ] Shop prices rebalanced for the new treat income (power-ups, existing themes/accessories).
-- [ ] Tests: production math, cap, multiplier, clock-skew safety (never negative, sane upper bound).
+- [x] **Yard screen:** a simple scene where the pup (and later the pack) lives.
+- [x] **Idle production:** each dog produces treats per hour, by rarity and level. The main pup is pack dog #1.
+- [x] **Offline catch-up**, capped (e.g. 8–12 h of storage, "treat jar is full"), so returning is rewarded but daily check-ins still matter.
+- [x] **Pup mood multiplier** on total production (e.g. Happy ×1.5, Content ×1.2, Hungry ×1.0, Sad ×0.5). This is the medium neglect cost.
+- [x] **Collect button / treat jar** with juice (coins pop, sound).
+- [x] Shop prices rebalanced for the new treat income (power-ups, existing themes/accessories). *Prices kept; instead puzzle wins now pay kibble only (chests still give treats) and base rates were tuned: Common 6/h → Legendary 35/h, jar holds 12 h.*
+- [x] Tests: production math, cap, multiplier, clock-skew safety (never negative, sane upper bound).
 
 **Done when:** treats accumulate while away (capped), pup mood visibly changes the rate, and the shop economy feels fair.
 

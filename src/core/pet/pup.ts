@@ -12,7 +12,6 @@ export interface PupState {
   fullnessAt: number;
   bondXp: number;
   adoptedAt: number;
-  /** Last time the player opened the game (used for the "missed you" greeting). */
   /** Total bowls eaten (for stats/achievements). */
   meals: number;
 }

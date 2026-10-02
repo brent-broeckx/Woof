@@ -12,6 +12,7 @@ export type Screen =
   | { name: 'endless' }
   | { name: 'stats' }
   | { name: 'pup' }
+  | { name: 'yard' }
   | { name: 'debug' }
   | { name: 'debugGame'; game: MiniGameId; tier: number; seed: number };
 

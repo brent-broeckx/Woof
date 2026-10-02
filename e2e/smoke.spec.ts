@@ -63,3 +63,16 @@ test('buys and equips a board theme', async ({ page }) => {
   await expect(page.getByText('Equipped')).toHaveCount(1);
   await expect(page.locator('.chip').first()).toHaveText('🍖 350');
 });
+
+test('collects treats from the yard jar', async ({ page }) => {
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.yard.settledAt -= 6 * 3_600_000;
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Yard/ }).click();
+  await expect(page.getByRole('heading', { name: 'Treat jar' })).toBeVisible();
+  await page.getByRole('button', { name: /^Collect \d+/ }).click();
+  await expect(page.getByRole('button', { name: /^Collect/ })).toBeDisabled();
+});

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { POWER_UPS, POWER_UP_IDS, type PowerUpId } from '../core/economy/powerups';
 import { ACCESSORIES, BOARD_THEMES, cosmeticPrice, type AccessoryId } from '../core/economy/cosmetics';
-import { rollBonusReward, rollChest, rollDailyItem, treatsForImprovement } from '../core/economy/rewards';
+import { rollBonusReward, rollChest, rollDailyItem } from '../core/economy/rewards';
 import { applyDailyCompletion, emptyDaily, type DailyRecord } from '../core/progression/daily';
 import { LEVELS_PER_WORLD, TOTAL_LEVELS, type MiniGameId } from '../core/progression/levels';
 import { debugUnlockAll } from '../debug/debugStore';
@@ -24,6 +24,7 @@ import {
   type PupState,
 } from '../core/pet/pup';
 import { isBreedId } from '../core/pet/breeds';
+import { collectJar, emptyYard, normalizeYard, packRate, settleYard, type Producer, type YardState } from '../core/pet/yard';
 import { shiftLastSeen } from './lastSeen';
 import type { GameState } from '../core/puzzle/game';
 
@@ -95,14 +96,16 @@ export interface SaveData {
   pup: PupState | null;
   /** Food currency earned by playing. */
   kibble: number;
+  /** Treat jar filled over time by the pack. */
+  yard: YardState;
 }
 
 interface SaveActions {
-  completePuzzle(levelId: number, outcome: PuzzleOutcome): { treats: number; kibble: number; improved: boolean };
+  completePuzzle(levelId: number, outcome: PuzzleOutcome): { kibble: number; improved: boolean };
   recordAttempt(levelId: number): void;
   recordLoss(levelId: number): void;
-  completeDaily(date: string, outcome: PuzzleOutcome): { treats: number; kibble: number; item: PowerUpId | null; streak: number; firstTime: boolean };
-  completeEndless(size: number, outcome: PuzzleOutcome): { treats: number; kibble: number };
+  completeDaily(date: string, outcome: PuzzleOutcome): { kibble: number; item: PowerUpId | null; streak: number; firstTime: boolean };
+  completeEndless(size: number, outcome: PuzzleOutcome): { kibble: number };
   openChest(worldId: number): { items: PowerUpId[]; treats: number } | null;
   buyCosmetic(id: string): boolean;
   equipTheme(id: string): void;
@@ -112,7 +115,8 @@ interface SaveActions {
   /** Spend kibble on one bowl. Fails if broke, full or no pup. */
   feedPup(): boolean;
   renamePup(name: string): void;
-  /** Marks the player as seen; returns how long they were away (ms). */
+  /** Empties the treat jar into your wallet; returns the amount. */
+  collectTreats(): number;
   debugTimeTravel(ms: number): void;
   debugAddKibble(n: number): void;
   consumePowerUp(id: PowerUpId): boolean;
@@ -166,6 +170,7 @@ const freshSave = (): SaveData => ({
   stats: { levels: {}, totals: emptyTotals() },
   pup: null,
   kibble: START_KIBBLE,
+  yard: emptyYard(Date.now()),
 });
 
 /** The persisted part of the store (shared by persist and export). */
@@ -186,11 +191,22 @@ function pickSave(s: SaveData): SaveData {
     stats: s.stats,
     pup: s.pup,
     kibble: s.kibble,
+    yard: s.yard,
   };
 }
 
 /** Small bond boost for the pup when you win anything. */
 const winBond = (pup: PupState | null) => (pup ? { ...pup, bondXp: pup.bondXp + WIN_XP } : pup);
+
+/** The dogs producing treats in the yard. For now that's just the main pup. */
+export function yardPack(s: Pick<SaveData, 'pup'>): Producer[] {
+  return s.pup ? [{ breed: s.pup.breed, level: 1 }] : [];
+}
+
+/** The yard brought up to `now` (pure; does not save). */
+export function liveYard(s: Pick<SaveData, 'pup' | 'yard'>, now: number): YardState {
+  return settleYard(s.yard, packRate(yardPack(s)), s.pup, now);
+}
 
 /** Keeps only power-ups that still exist; removed ones are dropped silently. */
 export function sanitizeInventory(raw: Partial<Record<string, number>> | undefined): Record<PowerUpId, number> {
@@ -213,6 +229,7 @@ function mergeNested(p: Partial<SaveData>) {
     stats: { levels: { ...p.stats?.levels }, totals: { ...emptyTotals(), ...p.stats?.totals } },
     pup: normalizePup(p.pup, Date.now()),
     kibble: typeof p.kibble === 'number' && Number.isFinite(p.kibble) ? Math.max(0, Math.floor(p.kibble)) : START_KIBBLE,
+    yard: normalizeYard(p.yard, Date.now()),
   };
 }
 
@@ -224,12 +241,10 @@ export const useSave = create<SaveData & SaveActions>()(
       completePuzzle(levelId, outcome) {
         const { stars, timeMs } = outcome;
         const prev = get().progress[levelId];
-        const treats = treatsForImprovement(prev?.stars ?? 0, stars);
         const kibble = kibbleForLevel(stars, !prev);
         set((s) => {
           const ls = s.stats.levels[levelId] ?? emptyLevelStats();
           return {
-            treats: s.treats + treats,
             kibble: s.kibble + kibble,
             pup: winBond(s.pup),
             inProgress: null,
@@ -255,7 +270,7 @@ export const useSave = create<SaveData & SaveActions>()(
             },
           };
         });
-        return { treats, kibble, improved: stars > (prev?.stars ?? 0) };
+        return { kibble, improved: stars > (prev?.stars ?? 0) };
       },
 
       recordAttempt(levelId) {
@@ -276,29 +291,25 @@ export const useSave = create<SaveData & SaveActions>()(
         const s = get();
         const { record, firstTime } = applyDailyCompletion(s.daily, date, outcome.stars);
         const item = firstTime ? rollDailyItem(s.seed, date, outcome.stars) : null;
-        const treats = firstTime ? 15 + 5 * Math.min(record.streak, 7) : 0;
         const kibble = kibbleForDaily(record.streak, firstTime);
         set({
           daily: record,
-          treats: s.treats + treats,
           kibble: s.kibble + kibble,
           pup: winBond(s.pup),
           inventory: item ? { ...s.inventory, [item]: s.inventory[item] + 1 } : s.inventory,
           stats: { ...s.stats, totals: addTotals(s.stats.totals, outcome, { dailySolved: firstTime ? 1 : 0 }) },
         });
-        return { treats, kibble, item, streak: record.streak, firstTime };
+        return { kibble, item, streak: record.streak, firstTime };
       },
 
       completeEndless(size, outcome) {
-        const treats = Math.max(1, size - 3) + (outcome.stars === 3 ? 2 : 0);
         const kibble = kibbleForEndless(size, outcome.stars);
         set((s) => ({
-          treats: s.treats + treats,
           kibble: s.kibble + kibble,
           pup: winBond(s.pup),
           stats: { ...s.stats, totals: addTotals(s.stats.totals, outcome, { endlessSolved: 1 }) },
         }));
-        return { treats, kibble };
+        return { kibble };
       },
 
       openChest(worldId) {
@@ -356,14 +367,16 @@ export const useSave = create<SaveData & SaveActions>()(
 
       adoptPup(name, breed) {
         if (get().pup || !isBreedId(breed)) return;
-        set({ pup: createPup(name, breed, Date.now()) });
+        const now = Date.now();
+        set({ pup: createPup(name, breed, now), yard: { ...emptyYard(now), collected: get().yard.collected } });
       },
 
       feedPup() {
         const s = get();
         const now = Date.now();
         if (!s.pup || s.kibble < FEED_COST || isFull(currentFullness(s.pup, now))) return false;
-        set({ kibble: s.kibble - FEED_COST, pup: feedPup(s.pup, now) });
+        // Bank production at the old mood before the multiplier changes.
+        set({ kibble: s.kibble - FEED_COST, yard: liveYard(s, now), pup: feedPup(s.pup, now) });
         return true;
       },
 
@@ -373,9 +386,17 @@ export const useSave = create<SaveData & SaveActions>()(
         set((s) => (s.pup ? { pup: { ...s.pup, name: clean } } : {}));
       },
 
+      collectTreats() {
+        const s = get();
+        if (!s.pup) return 0;
+        const { yard, amount } = collectJar(liveYard(s, Date.now()));
+        set({ yard, treats: s.treats + amount });
+        return amount;
+      },
+
       debugTimeTravel(ms) {
         shiftLastSeen(ms);
-        set((s) => (s.pup ? { pup: shiftPupTime(s.pup, ms) } : {}));
+        set((s) => ({ yard: { ...s.yard, settledAt: s.yard.settledAt - ms }, pup: s.pup ? shiftPupTime(s.pup, ms) : s.pup }));
       },
 
       debugAddKibble(n) {

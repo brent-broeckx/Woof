@@ -17,7 +17,6 @@ import { type TrickId } from '../../core/pet/pup';
 import { usePup } from '../hooks/usePup';
 
 export interface SessionResult {
-  treats: number;
   kibble?: number;
   lines?: ReactNode[];
 }
@@ -327,7 +326,6 @@ export function PuzzleSession(props: PuzzleSessionProps) {
               {state.powerUpsUsed === 1 ? '' : 's'}
             </p>
             {!!result.kibble && <p className="reward">+{result.kibble} 🥣 kibble</p>}
-            {result.treats > 0 && <p className="reward">+{result.treats} 🍖 treats</p>}
             {result.lines?.map((line, i) => (
               <p key={i} className="reward">
                 {line}

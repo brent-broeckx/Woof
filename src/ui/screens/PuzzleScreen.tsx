@@ -34,7 +34,7 @@ export function PuzzleScreen({ levelId, puzzleIndex }: { levelId: number; puzzle
   const onWin = useCallback(
     (o: PuzzleOutcome) => {
       const r = useSave.getState().completePuzzle(levelId, o);
-      return { treats: r.treats, kibble: r.kibble };
+      return { kibble: r.kibble };
     },
     [levelId],
   );

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { bonusGameSequence, getLevel, isBonusLevel, TOTAL_LEVELS } from '../progression/levels';
 import { POWER_UPS } from './powerups';
-import { rollBonusReward, rollChest, treatsForImprovement } from './rewards';
+import { rollBonusReward, rollChest } from './rewards';
 import { BOARD_THEMES, ACCESSORIES, cosmeticPrice } from './cosmetics';
 
 describe('world chest & cosmetics', () => {
@@ -65,11 +65,5 @@ describe('rewards', () => {
     const rarities = r.items.map((i) => POWER_UPS[i].rarity);
     expect(rarities.some((x) => x === 'rare' || x === 'epic')).toBe(true);
     expect(r.pity).toBe(0);
-  });
-
-  it('pays treat improvements only', () => {
-    expect(treatsForImprovement(0, 3)).toBe(20);
-    expect(treatsForImprovement(2, 3)).toBe(10);
-    expect(treatsForImprovement(3, 1)).toBe(0);
   });
 });

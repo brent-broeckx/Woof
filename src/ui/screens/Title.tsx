@@ -7,7 +7,7 @@ import { DEBUG_AVAILABLE } from '../../debug/debugStore';
 import { PupWidget } from '../components/PupWidget';
 import { PupAvatar } from '../components/PupAvatar';
 import { Modal } from '../components/common';
-import { usePup } from '../hooks/usePup';
+import { usePup, useYard } from '../hooks/usePup';
 
 export function Title() {
   const go = useNav((s) => s.go);
@@ -19,6 +19,7 @@ export function Title() {
   const greeting = useNav((s) => s.greeting);
   const setGreeting = useNav((s) => s.setGreeting);
   const pup = usePup();
+  const yard = useYard(15_000);
 
   return (
     <div className="screen title-screen">
@@ -38,6 +39,10 @@ export function Title() {
         </button>
         <button className="btn" onClick={() => go({ name: 'map' })}>
           🗺️ Level map
+        </button>
+        <button className={`btn yard-btn ${yard?.full ? 'jar-full' : ''}`} onClick={() => go({ name: 'yard' })}>
+          🏡 Yard
+          {yard && yard.ready > 0 && <span className="yard-badge">{yard.full ? 'Jar full!' : `🍖 ${yard.ready}`}</span>}
         </button>
         <div className="row">
           <button className="btn" onClick={() => go({ name: 'daily' })}>
