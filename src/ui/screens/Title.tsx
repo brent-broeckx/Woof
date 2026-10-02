@@ -66,6 +66,9 @@ export function Title() {
           <button className="btn" onClick={() => go({ name: 'boss' })}>
             🏔️ Boss{bossBeaten ? ' ✓' : ''}
           </button>
+          <button className="btn" onClick={() => go({ name: 'cafe' })}>
+            🐈 Cat Café
+          </button>
         </div>
         <div className="row three">
           <button className="btn" onClick={() => go({ name: 'kennel' })}>

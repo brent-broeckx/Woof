@@ -92,7 +92,7 @@ test('adopts a pup at the adoption fair', async ({ page }) => {
   await expect(page.locator('.chip').first()).toHaveText('🍖 150');
   await page.getByRole('button', { name: 'Back' }).click();
   await page.getByRole('button', { name: /Pack/ }).click();
-  await expect(page.getByText(/^[12] \/ 23 breeds collected/)).toBeVisible();
+  await expect(page.getByText(/^[12] \/ 24 breeds collected/)).toBeVisible();
 });
 
 test('sends a dog on an expedition and opens the loot', async ({ page }) => {
@@ -172,4 +172,27 @@ test('weekly boss unlocks after world 1', async ({ page }) => {
   await page.getByRole('button', { name: 'Start the climb' }).click({ timeout: 15000 });
   await expect(page.locator('.level-title')).toHaveText('Weekly Boss');
   await expect(page.locator('.cell')).toHaveCount(100);
+});
+
+test('cat café opens after level 10 with sleeping cats on the board', async ({ page }) => {
+  await page.getByRole('button', { name: /Cat Café/ }).click();
+  await expect(page.getByText(/Reach level 11/)).toBeVisible();
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.progress = Object.fromEntries(Array.from({ length: 10 }, (_, i) => [i + 1, { stars: 3 }]));
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Cat Café/ }).click();
+  await expect(page.locator('.cafe-tile')).toHaveCount(30);
+  await expect(page.getByRole('button', { name: 'Café level 2, locked' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Café level 1', exact: true }).click();
+  await expect(page.locator('.level-title')).toHaveText('Cat Café 1', { timeout: 15000 });
+  await expect(page.locator('.cell')).toHaveCount(36);
+  await expect(page.locator('.mark.cat').first()).toBeVisible();
+});
+
+test('the map shows the Snowy Woods world', async ({ page }) => {
+  await page.getByRole('button', { name: /Level map/ }).click();
+  await expect(page.getByText(/Snowy Woods/)).toBeVisible();
 });

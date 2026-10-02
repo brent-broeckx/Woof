@@ -81,7 +81,7 @@ export const BOARD_THEMES: BoardTheme[] = [
 /** Colour-blind friendly high-contrast palette (Okabe–Ito based + extras). */
 export const HIGH_CONTRAST_COLORS = ['#e69f00', '#56b4e9', '#f0e442', '#009e73', '#cc79a7', '#d55e00', '#0072b2', '#ffffff', '#999999', '#a6761d', '#b3de69'];
 
-export type AccessoryId = 'none' | 'bandana' | 'bow' | 'partyHat' | 'glasses' | 'crown' | 'flower' | 'tophat' | 'medal' | 'laurel' | 'cape';
+export type AccessoryId = 'none' | 'bandana' | 'bow' | 'partyHat' | 'glasses' | 'crown' | 'flower' | 'tophat' | 'medal' | 'laurel' | 'cape' | 'catEars';
 
 export interface Accessory {
   id: AccessoryId;
@@ -103,6 +103,7 @@ export const ACCESSORIES: Accessory[] = [
   { id: 'medal', name: 'Gold Medal', icon: '🏅', price: 0, badgeOnly: true },
   { id: 'laurel', name: 'Laurel Wreath', icon: '🌿', price: 0, badgeOnly: true },
   { id: 'cape', name: 'Hero Cape', icon: '🦸', price: 0, badgeOnly: true },
+  { id: 'catEars', name: 'Cat Ears', icon: '🐱', price: 0, badgeOnly: true },
 ];
 
 export const themeById = (id: string) => BOARD_THEMES.find((t) => t.id === id) ?? BOARD_THEMES[0];

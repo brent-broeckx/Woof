@@ -85,6 +85,12 @@ export const BREED_CATALOG: BreedDef[] = [
     rarity: 'legendary',
     look: { fur: '#7b6cf0', ear: '#5a4bd1', muzzle: '#e6e1ff', ears: 'pointy', spots: true, sparkle: true },
   },
+  {
+    id: 'malamute',
+    name: 'Malamute',
+    rarity: 'epic',
+    look: { fur: '#4d5360', ear: '#363b45', muzzle: '#ffffff', ears: 'pointy', patch: '#ffffff', cheeks: '#ffffff' },
+  },
 ];
 
 export const BOARD_BREED_COUNT = 11;

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyArcade } from './arcade';
 import { allBadgeStatus, BADGES, badgeById, badgeForCosmetic, claimableCount, normalizeBadges, pendingRewards, tierReward, type BadgeInput } from './badges';
 import { emptyBoss } from './boss';
+import { applyCafeCompletion, emptyCafe } from './catCafe';
 
 const input = (over: Partial<BadgeInput> = {}): BadgeInput => ({
   progress: {},
@@ -13,6 +14,7 @@ const input = (over: Partial<BadgeInput> = {}): BadgeInput => ({
   pack: [],
   bondXp: 0,
   boss: emptyBoss(),
+  cafe: emptyCafe(),
   ...over,
 });
 
@@ -60,5 +62,13 @@ describe('badges', () => {
   it('normalizes claimed tiers', () => {
     expect(normalizeBadges({ solver: 9, nope: 1, streak: -1, stars: 1.7 })).toEqual({ solver: 3, stars: 1 });
     expect(normalizeBadges('x')).toEqual({});
+  });
+
+  it('track Cat Café clears and give cat ears at gold', () => {
+    let cafe = emptyCafe();
+    for (let l = 1; l <= 30; l++) cafe = applyCafeCompletion(cafe, l, l <= 10 ? 3 : 2).state;
+    expect(status('cats', input({ cafe })).earned).toBe(3);
+    expect(status('purrfect', input({ cafe })).earned).toBe(2);
+    expect(badgeForCosmetic('catEars')).toMatchObject({ badge: { id: 'cats' }, tier: 3 });
   });
 });

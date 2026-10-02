@@ -16,6 +16,7 @@ export const WORLDS: World[] = [
   { id: 2, name: 'City Park', emoji: '🌳', background: '#dcefe9', accent: '#3f9a83' },
   { id: 3, name: 'Dog Beach', emoji: '🏖️', background: '#fbefd6', accent: '#d69a3c' },
   { id: 4, name: 'Mountain Trail', emoji: '🏔️', background: '#e3e8f4', accent: '#5a74b3' },
+  { id: 5, name: 'Snowy Woods', emoji: '❄️', background: '#eef4fa', accent: '#4f8fb8' },
 ];
 
 export const TOTAL_LEVELS = WORLDS.length * LEVELS_PER_WORLD;
@@ -112,10 +113,17 @@ export const PUZZLE_SIZES: number[][][] = [
     [9, 9, 9, 10],
     [9, 9, 10, 10],
   ],
+  [
+    [9, 9, 10, 9],
+    [9, 10, 10, 10],
+    [10, 10, 10, 10],
+    [10, 10, 10, 11],
+    [10, 10, 11, 11],
+  ],
 ];
 
 /** Hardest technique difficulty allowed per world (see docs/05). */
-export const WORLD_MAX_DIFFICULTY = [3, 4, 5, 6];
+export const WORLD_MAX_DIFFICULTY = [3, 4, 5, 6, 6];
 
 export type SlotRole = 'tutorial' | 'easy' | 'medium' | 'hard';
 

@@ -24,6 +24,7 @@ const AlbumScreen = lazy(() => import('./ui/screens/ExpeditionsScreen').then((m)
 const ArcadeScreen = lazy(() => import('./ui/screens/ArcadeScreen').then((m) => ({ default: m.ArcadeScreen })));
 const ArcadePlayScreen = lazy(() => import('./ui/screens/ArcadeScreen').then((m) => ({ default: m.ArcadePlayScreen })));
 const YardScreen = lazy(() => import('./ui/screens/YardScreen').then((m) => ({ default: m.YardScreen })));
+const CafeScreen = lazy(() => import('./ui/screens/CafeScreen').then((m) => ({ default: m.CafeScreen })));
 const BossScreen = lazy(() => import('./ui/screens/BossScreen').then((m) => ({ default: m.BossScreen })));
 const BadgesScreen = lazy(() => import('./ui/screens/BadgesScreen').then((m) => ({ default: m.BadgesScreen })));
 const StatsScreen = lazy(() => import('./ui/screens/StatsScreen').then((m) => ({ default: m.StatsScreen })));
@@ -55,6 +56,8 @@ function Router() {
       return <StatsScreen />;
     case 'boss':
       return <BossScreen />;
+    case 'cafe':
+      return <CafeScreen />;
     case 'badges':
       return <BadgesScreen />;
     case 'pup':

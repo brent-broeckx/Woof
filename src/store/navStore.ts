@@ -20,6 +20,7 @@ export type Screen =
   | { name: 'album' }
   | { name: 'arcade' }
   | { name: 'boss' }
+  | { name: 'cafe' }
   | { name: 'badges' }
   | { name: 'arcadePlay'; game: MiniGameId; difficulty: ArcadeDifficulty }
   | { name: 'debug' }

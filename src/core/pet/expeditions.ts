@@ -83,6 +83,20 @@ export const DESTINATIONS: Destination[] = [
       ['stars', '✨', 'Starry Sky'],
     ]),
   },
+  {
+    id: 'woods',
+    world: 5,
+    name: 'Snowy Woods',
+    emoji: '❄️',
+    postcards: cards('woods', [
+      ['snowman', '☃️', 'Snowpup Builder'],
+      ['sled', '🛷', 'Sled Run'],
+      ['owl', '🦉', 'Night Owl'],
+      ['cocoa', '☕', 'Cocoa Break'],
+      ['aurora', '🌌', 'Northern Lights'],
+      ['tracks', '🐾', 'Tracks in the Snow'],
+    ]),
+  },
 ];
 
 export const destinationById = (id: string) => DESTINATIONS.find((d) => d.id === id);

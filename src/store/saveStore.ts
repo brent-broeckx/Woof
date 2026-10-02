@@ -6,6 +6,7 @@ import { rollBonusReward, rollChest, rollDailyItem } from '../core/economy/rewar
 import { applyDailyCompletion, dateKey, emptyDaily, type DailyRecord } from '../core/progression/daily';
 import { emptyArcade, normalizeArcade, recordArcadeRun, type ArcadeDifficulty, type ArcadeRun, type ArcadeState } from '../core/progression/arcade';
 import { allBadgeStatus, normalizeBadges, pendingRewards, type BadgeInput, type BadgeReward } from '../core/progression/badges';
+import { applyCafeCompletion, emptyCafe, normalizeCafe, type CafeResult, type CafeState } from '../core/progression/catCafe';
 import { applyBossCompletion, emptyBoss, normalizeBoss, type BossResult, type BossState } from '../core/progression/boss';
 import { LEVELS_PER_WORLD, TOTAL_LEVELS, type MiniGameId } from '../core/progression/levels';
 import { debugUnlockAll } from '../debug/debugStore';
@@ -138,6 +139,8 @@ export interface SaveData {
   expeditions: ExpeditionState;
   arcade: ArcadeState;
   boss: BossState;
+  /** 🐈 Cat Café twist levels. */
+  cafe: CafeState;
   /** Badge id -> tiers whose reward was collected. */
   badges: Record<string, number>;
 }
@@ -190,6 +193,8 @@ interface SaveActions {
   completeArcade(game: MiniGameId, difficulty: ArcadeDifficulty, stars: number, timeMs: number): Omit<ArcadeRun, 'state'>;
   /** Records a weekly boss win: big first-clear reward, extra for the first flawless run. */
   completeBoss(week: string, outcome: PuzzleOutcome): Omit<BossResult, 'state'>;
+  /** Records a Cat Café win. */
+  completeCafe(level: number, outcome: PuzzleOutcome): Omit<CafeResult, 'state'>;
   /** Collects every earned tier of a badge; null if nothing to claim. */
   claimBadge(id: string): BadgeReward[] | null;
   debugTimeTravel(ms: number): void;
@@ -266,6 +271,7 @@ const freshSave = (): SaveData => ({
   expeditions: emptyExpeditions(),
   arcade: emptyArcade(),
   boss: emptyBoss(),
+  cafe: emptyCafe(),
   badges: {},
 });
 
@@ -293,6 +299,7 @@ function pickSave(s: SaveData): SaveData {
     expeditions: s.expeditions,
     arcade: s.arcade,
     boss: s.boss,
+    cafe: s.cafe,
     badges: s.badges,
   };
 }
@@ -361,6 +368,7 @@ function mergeNested(p: Partial<SaveData>) {
     expeditions: normalizeExpeditions(p.expeditions, new Set(pack.filter((d) => d.breed !== pup?.breed).map((d) => d.breed))),
     arcade: normalizeArcade(p.arcade),
     boss: normalizeBoss(p.boss),
+    cafe: normalizeCafe(p.cafe),
     badges: normalizeBadges(p.badges),
   };
 }
@@ -634,6 +642,19 @@ export const useSave = create<SaveData & SaveActions>()(
         return result;
       },
 
+      completeCafe(level, outcome) {
+        const s = get();
+        const { state, ...result } = applyCafeCompletion(s.cafe, level, outcome.stars);
+        set({
+          cafe: state,
+          kibble: s.kibble + result.kibble,
+          treats: s.treats + result.treats,
+          pup: winBond(s.pup),
+          stats: { ...s.stats, totals: addTotals(s.stats.totals, outcome) },
+        });
+        return result;
+      },
+
       claimBadge(id) {
         const s = get();
         const status = allBadgeStatus(badgeInput(s), s.badges).find((b) => b.badge.id === id);
@@ -732,7 +753,9 @@ export function highestUnlocked(progress: Record<number, LevelProgress>): number
 }
 
 /** The parts of the save that badges track. */
-export function badgeInput(s: Pick<SaveData, 'progress' | 'stats' | 'daily' | 'chests' | 'arcade' | 'expeditions' | 'pack' | 'pup' | 'boss'>): BadgeInput {
+export function badgeInput(
+  s: Pick<SaveData, 'progress' | 'stats' | 'daily' | 'chests' | 'arcade' | 'expeditions' | 'pack' | 'pup' | 'boss' | 'cafe'>,
+): BadgeInput {
   return {
     progress: s.progress,
     totals: s.stats.totals,
@@ -743,6 +766,7 @@ export function badgeInput(s: Pick<SaveData, 'progress' | 'stats' | 'daily' | 'c
     pack: s.pack,
     bondXp: s.pup?.bondXp ?? 0,
     boss: s.boss,
+    cafe: s.cafe,
   };
 }
 

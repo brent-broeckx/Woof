@@ -2,8 +2,9 @@ import { BREED_CATALOG, breedById } from '../pet/breeds';
 import { DESTINATIONS } from '../pet/expeditions';
 import { bondLevel, MAX_BOND } from '../pet/pup';
 import { medalCounts, ARCADE_SLOTS, type ArcadeState } from './arcade';
+import { cafeCleared, cafePerfect, type CafeState } from './catCafe';
 import { bossesCleared, bossesFlawless, type BossState } from './boss';
-import { getLevel, TOTAL_LEVELS } from './levels';
+import { getLevel, TOTAL_LEVELS, WORLDS } from './levels';
 
 /** Everything badges look at; built from the save. */
 export interface BadgeInput {
@@ -16,6 +17,7 @@ export interface BadgeInput {
   pack: { breed: string }[];
   bondXp: number;
   boss: BossState;
+  cafe: CafeState;
 }
 
 export interface BadgeReward {
@@ -93,7 +95,7 @@ export const BADGES: BadgeDef[] = [
     name: 'World Walker',
     icon: '🗺️',
     goal: (n) => `Open ${plural(n, 'world chest')}`,
-    tiers: [1, 2, 4],
+    tiers: [1, 2, WORLDS.length],
     metric: (s) => Object.values(s.chests).filter(Boolean).length,
   },
   {
@@ -161,6 +163,23 @@ export const BADGES: BadgeDef[] = [
     tiers: [1, 5],
     cosmetics: ['cape'],
     metric: (s) => bossesFlawless(s.boss),
+  },
+  {
+    id: 'cats',
+    name: 'Cat Whisperer',
+    icon: '🐈',
+    goal: (n) => `Clear ${plural(n, 'Cat Café level', 'Cat Café levels')}`,
+    tiers: [5, 15, 30],
+    cosmetics: [undefined, undefined, 'catEars'],
+    metric: (s) => cafeCleared(s.cafe),
+  },
+  {
+    id: 'purrfect',
+    name: 'Purrfect',
+    icon: '😸',
+    goal: (n) => `Get 3 stars on ${plural(n, 'Cat Café level', 'Cat Café levels')}`,
+    tiers: [3, 10, 30],
+    metric: (s) => cafePerfect(s.cafe),
   },
 ];
 

@@ -42,6 +42,7 @@ export const STORY_DOGS: Record<number, { breed: string; story: string }> = {
   2: { breed: 'poodle', story: 'This Poodle got lost on its way to a dog show. Your yard is fancier anyway.' },
   3: { breed: 'samoyed', story: 'A fluffy Samoyed wandered out of the snow, smiling as always. It is staying for the treats.' },
   4: { breed: 'chow', story: 'A proud Chow Chow followed you home from the last walk. It pretends not to care, but it does.' },
+  5: { breed: 'malamute', story: 'A Malamute pulled your sled out of a snowdrift and refused to leave. It has decided you need protecting.' },
 };
 
 export const emptyFair = (): FairState => ({ pulls: 0, sinceRare: 0 });

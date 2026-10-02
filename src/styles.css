@@ -569,6 +569,32 @@ button {
   color: rgba(59, 47, 42, 0.4);
   font-size: 1.2em;
 }
+.mark.cat {
+  display: grid;
+  place-items: center;
+  width: 78%;
+  height: 78%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 2px rgba(45, 35, 32, 0.25);
+  font-size: 1.15em;
+  line-height: 1;
+  animation: cat-snooze 3.2s ease-in-out infinite;
+}
+@keyframes cat-snooze {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06) translateY(-1px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mark.cat {
+    animation: none;
+  }
+}
 
 .hint-box {
   margin: 10px 0 0;
@@ -2586,6 +2612,50 @@ kbd {
 .boss-week {
   margin: 6px 0 10px;
 }
+.cafe-hero {
+  position: relative;
+}
+.cafe-cat {
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  font-size: 2rem;
+}
+.cafe-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.cafe-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px;
+  border: 2px solid rgba(59, 47, 42, 0.12);
+  border-radius: 14px;
+  background: #fff8f0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.cafe-tile small {
+  min-height: 1.1em;
+  font-size: 0.7rem;
+  color: #c98a1b;
+}
+.cafe-tile.done {
+  background: #fdeede;
+}
+.cafe-tile.current {
+  border-color: #e98bb0;
+  box-shadow: 0 0 0 3px rgba(233, 139, 176, 0.25);
+}
+.cafe-tile:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
 .badges-screen > p {
   margin: 4px 0 10px;
 }
@@ -2684,6 +2754,9 @@ kbd {
 }
 .title-buttons .row.three {
   grid-template-columns: repeat(3, 1fr);
+}
+.title-buttons .row:not(.three) > .btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 .title-buttons .row .btn {
   padding-left: 6px;

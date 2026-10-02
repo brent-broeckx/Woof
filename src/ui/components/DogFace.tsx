@@ -96,6 +96,15 @@ function Accessory({ id }: { id: AccessoryId }) {
           <circle cx="50" cy="86" r="5" fill="#ffc933" stroke="#c9901a" strokeWidth="1.5" />
         </g>
       );
+    case 'catEars':
+      return (
+        <g stroke="#2d2320" strokeWidth="2" strokeLinejoin="round">
+          <path d="M30 30 L34 6 L48 24 Z" fill="#9a9a9a" />
+          <path d="M70 30 L66 6 L52 24 Z" fill="#9a9a9a" />
+          <path d="M34 25 L36 13 L43 22 Z" fill="#f7a8c4" stroke="none" />
+          <path d="M66 25 L64 13 L57 22 Z" fill="#f7a8c4" stroke="none" />
+        </g>
+      );
     default:
       return null;
   }

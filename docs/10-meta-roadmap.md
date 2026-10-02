@@ -141,14 +141,21 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M7 — More puzzles: classic + twists
 
-- [ ] **New classic worlds** (e.g. Snowy Woods, Downtown, Farm, …) with harder curves and bigger boards, generated through the existing pipeline.
-- [ ] **Optional twist challenges** (separate from the main path), each a new rule variant in the engine, solver and generator. Candidates:
+- [x] **New classic worlds** (e.g. Snowy Woods, Downtown, Farm, …) with harder curves and bigger boards, generated through the existing pipeline.
+- [x] **Optional twist challenges** (separate from the main path), each a new rule variant in the engine, solver and generator. Candidates:
   - **Two dogs** per row/column/yard (Star Battle style)
   - **Cats** as blocked cells
   - **Fog**: parts of the board hidden until nearby dogs are placed
   - **Number hints**: some cells show how many dogs touch them
-- [ ] Each twist needs a uniqueness check and grading support before it ships.
-- [ ] Twist levels pay extra kibble and count toward achievements.
+- [x] Each twist needs a uniqueness check and grading support before it ships.
+- [x] Twist levels pay extra kibble and count toward achievements.
+
+**Decisions (implemented):**
+
+- **❄️ World 5 — Snowy Woods:** 25 more levels (125 total). Boards are 9×9 to 11×11 with max difficulty 6, plus 5 more bonus games (tiers 21–25). It has its own chest with a new story dog (🐺 Malamute, epic), a Snowy Woods expedition with 6 postcards, and World Walker gold now needs every world.
+- **🐈 Cat Café** (first twist): some cells hold sleeping cats, so no dog may go there. The engine supports `cats` throughout: the solver, the logic solver, hints, the generator (cats break alternative solutions first, then fill randomly) and the worker. There are 30 seeded levels, generated on demand. They unlock at level 11 and grow from 6×6 with 2 cats to 9×9 with more cats. The first clear of a level gives treats and kibble, and 3 stars give +10 🥣.
+- New badges: **Cat Whisperer** (gold unlocks 🐱 Cat Ears) and **Purrfect**.
+- The other twists (two dogs, fog, number hints) are still open for later.
 
 **Done when:** at least one new classic world and one twist mode are playable, unique and logic-solvable (covered by tests).
 
