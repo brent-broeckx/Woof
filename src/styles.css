@@ -2200,7 +2200,7 @@ kbd {
   }
   45%,
   55% {
-    transform: translateX(70px) scaleX(-1);
+    transform: translateX(70px);
   }
 }
 .yard-jar-card {
