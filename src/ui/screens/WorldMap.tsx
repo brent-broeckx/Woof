@@ -3,7 +3,10 @@ import { POWER_UPS, type PowerUpId } from '../../core/economy/powerups';
 import { MINI_GAMES } from '../../minigames/registry';
 import { BONUS_EVERY, LEVELS_PER_WORLD, WORLDS, getLevel } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
-import { highestUnlocked, nextUnplayed, useSave } from '../../store/saveStore';
+import { highestUnlocked, nextUnplayed, useSave, type AdoptionResult } from '../../store/saveStore';
+import { breedById } from '../../core/pet/breeds';
+import { STORY_DOGS } from '../../core/pet/pack';
+import { DogFace } from '../components/DogFace';
 import { sfx } from '../audio';
 import { Confetti } from '../components/Confetti';
 import { Modal, TopBar } from '../components/common';
@@ -16,7 +19,7 @@ export function WorldMap() {
   const current = nextUnplayed(progress);
   const currentRef = useRef<HTMLButtonElement>(null);
   const chests = useSave((s) => s.chests);
-  const [chest, setChest] = useState<{ world: number; items: PowerUpId[]; treats: number } | null>(null);
+  const [chest, setChest] = useState<{ world: number; items: PowerUpId[]; treats: number; rescued: AdoptionResult | null } | null>(null);
 
   const openChest = (world: number) => {
     const reward = useSave.getState().openChest(world);
@@ -110,6 +113,17 @@ export function WorldMap() {
               ))}
             </div>
             <p className="reward">+{chest.treats} 🍖 treats</p>
+            {chest.rescued && (
+              <div className="story-dog">
+                <DogFace breed={chest.rescued.breed} mood="happy" className="story-dog-face" />
+                <div>
+                  <b>
+                    {chest.rescued.isNew ? `You rescued a ${breedById(chest.rescued.breed).name}!` : `Your ${breedById(chest.rescued.breed).name} got a copy!`}
+                  </b>
+                  <p className="muted text-small">{STORY_DOGS[chest.world]?.story}</p>
+                </div>
+              </div>
+            )}
             <button className="btn primary" onClick={() => setChest(null)}>
               Woof!
             </button>

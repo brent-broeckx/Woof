@@ -41,10 +41,11 @@ export interface YardView {
 export function useYard(ms = 1000): YardView | null {
   const pup = useSave((s) => s.pup);
   const yard = useSave((s) => s.yard);
+  const pack = useSave((s) => s.pack);
   const now = useNow(ms);
   if (!pup) return null;
-  const rate = packRate(yardPack({ pup }));
-  const live = liveYard({ pup, yard }, now);
+  const rate = packRate(yardPack({ pup, pack }));
+  const live = liveYard({ pup, pack, yard }, now);
   const capacity = jarCapacity(rate);
   const mult = MOOD_MULT[moodFor(currentFullness(pup, now))];
   return { ready: Math.floor(live.jar), jar: live.jar, capacity, rate, mult, full: live.jar >= capacity };

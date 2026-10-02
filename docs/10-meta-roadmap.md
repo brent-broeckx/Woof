@@ -92,13 +92,15 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M3 — Pack: story dogs + Adoption Fair
 
-- [ ] **Breed catalog** with rarities (Common → Uncommon → Rare → Epic → Legendary), each with an SVG look, a name and a base production.
-- [ ] **Story dogs:** finishing each world (and later worlds) rescues a guaranteed dog with a short intro card.
-- [ ] **Adoption Fair:** spend treats for a mystery adoption. Show the odds openly in-game. Pity timer, like bonus parks (guaranteed Rare+ after N pulls). Seeded rolls so refreshing can't reroll.
-- [ ] **Duplicates upgrade** the owned dog (level ↑ → production ↑). Optionally also spend treats to level up.
-- [ ] **Pack screen:** list/grid of owned dogs, rarity, level, production, and their name (renameable).
-- [ ] Yard shows up to N pack dogs wandering around.
-- [ ] Tests: drop rates, pity, duplicate handling, determinism.
+- [x] **Breed catalog** with rarities (Common → Uncommon → Rare → Epic → Legendary), each with an SVG look, a name and a base production.
+- [x] **Story dogs:** finishing each world (and later worlds) rescues a guaranteed dog with a short intro card.
+- [x] **Adoption Fair:** spend treats for a mystery adoption. Show the odds openly in-game. Pity timer, like bonus parks (guaranteed Rare+ after N pulls). Seeded rolls so refreshing can't reroll.
+- [x] **Duplicates upgrade** the owned dog (level ↑ → production ↑). Optionally also spend treats to level up.
+- [x] **Pack screen:** list/grid of owned dogs, rarity, level, production, and their name (renameable).
+- [x] Yard shows up to N pack dogs wandering around.
+- [x] Tests: drop rates, pity, duplicate handling, determinism.
+
+*Decisions: the 23-breed catalog from M2 is reused. Adoption costs 100 🍖, odds 55/28/12/4/1 %, a Rare+ is guaranteed within 10 pulls, and a duplicate of a max-level (10) dog refunds 50 🍖. Story dogs (Pug, Poodle, Samoyed, Chow) come from each world's chest. Training costs treats; duplicates level a dog for free. The yard shows up to 6 dogs.*
 
 **Done when:** you can rescue story dogs, pull from the Adoption Fair, upgrade through duplicates, and see the pack in the yard.
 

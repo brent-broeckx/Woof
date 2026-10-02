@@ -2,7 +2,7 @@
 
 A web-based, dog-themed take on the mobile logic puzzle **Meowdoku**, extended with **bonus mini-game levels** (every 5th level) that award **power-ups** for the main puzzle.
 
-> Status: **Feature-complete v1 candidate** — roadmap Phases 0–6 implemented: 100 levels in 4 worlds, 80 generated logic puzzles, **10 bonus mini-games**, 8 power-ups, world chests, cosmetics (board themes & dog outfits), Daily puzzle with streaks, Endless mode, stats, sound/music/haptics, accessibility options and an installable offline PWA. **Meta (in progress, see doc 10):** adopt a main pup, earn 🥣 kibble from every win and feed it to keep it happy, build bond levels and unlock tricks. Your pup lives in the **🏡 Yard**, filling a treat jar every hour (faster when happy, capped at 12 h) — treats now come from the yard and chests rather than puzzle wins.
+> Status: **Feature-complete v1 candidate** — roadmap Phases 0–6 implemented: 100 levels in 4 worlds, 80 generated logic puzzles, **10 bonus mini-games**, 8 power-ups, world chests, cosmetics (board themes & dog outfits), Daily puzzle with streaks, Endless mode, stats, sound/music/haptics, accessibility options and an installable offline PWA. **Meta (in progress, see doc 10):** adopt a main pup, earn 🥣 kibble from every win and feed it to keep it happy, build bond levels and unlock tricks. Your pup lives in the **🏡 Yard**, filling a treat jar every hour (faster when happy, capped at 12 h) — treats now come from the yard and chests rather than puzzle wins. Grow a **🐕 Pack**: each world chest rescues a story dog, and the **🎪 Adoption Fair** trades treats for a random breed (odds shown, pity after 10). Duplicates and training level dogs up, and every dog adds to the yard's production.
 
 ## Run it
 
@@ -45,7 +45,7 @@ The build injects a precache list and a build-specific cache version into `sw.js
 |------|---------|
 | `src/core/puzzle/` | Puzzle types, exact solver, human-style logic solver (hints/grading), generator, game reducer |
 | `src/core/economy/` | Power-up definitions/effects, bonus reward rolls |
-| `src/core/pet/` | Main pup (hunger decay, moods, bond, tricks, kibble rewards), yard treat production and the breed catalog |
+| `src/core/pet/` | Main pup (hunger decay, moods, bond, tricks, kibble rewards), yard treat production, the breed catalog, the pack and the Adoption Fair |
 | `src/core/progression/` | Worlds, level table, bonus schedule, puzzle slot sizes/difficulty |
 | `src/data/` | Pre-generated puzzle pack (`puzzles.json`) |
 | `src/minigames/` | Bonus mini-games (pure `logic.ts` + React view each) and the registry |

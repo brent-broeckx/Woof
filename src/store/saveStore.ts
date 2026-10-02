@@ -23,7 +23,22 @@ import {
   WIN_XP,
   type PupState,
 } from '../core/pet/pup';
-import { isBreedId } from '../core/pet/breeds';
+import { breedById, isBreedId, type DogRarity } from '../core/pet/breeds';
+import {
+  addToPack,
+  emptyFair,
+  FAIR_PRICE,
+  FAIR_REFUND,
+  MAX_DOG_LEVEL,
+  newDog,
+  normalizeFair,
+  normalizePack,
+  rollFair,
+  STORY_DOGS,
+  trainCost,
+  type FairState,
+  type PackDog,
+} from '../core/pet/pack';
 import { collectJar, emptyYard, normalizeYard, packRate, settleYard, type Producer, type YardState } from '../core/pet/yard';
 import { shiftLastSeen } from './lastSeen';
 import type { GameState } from '../core/puzzle/game';
@@ -98,6 +113,19 @@ export interface SaveData {
   kibble: number;
   /** Treat jar filled over time by the pack. */
   yard: YardState;
+  /** Every dog you own, one entry per breed (the main pup's breed included). */
+  pack: PackDog[];
+  fair: FairState;
+}
+
+export interface AdoptionResult {
+  breed: string;
+  rarity: DogRarity;
+  isNew: boolean;
+  levelUp: boolean;
+  level: number;
+  /** Treats returned when the dog was already max level. */
+  refund: number;
 }
 
 interface SaveActions {
@@ -106,7 +134,7 @@ interface SaveActions {
   recordLoss(levelId: number): void;
   completeDaily(date: string, outcome: PuzzleOutcome): { kibble: number; item: PowerUpId | null; streak: number; firstTime: boolean };
   completeEndless(size: number, outcome: PuzzleOutcome): { kibble: number };
-  openChest(worldId: number): { items: PowerUpId[]; treats: number } | null;
+  openChest(worldId: number): { items: PowerUpId[]; treats: number; rescued: AdoptionResult | null } | null;
   buyCosmetic(id: string): boolean;
   equipTheme(id: string): void;
   equipAccessory(id: AccessoryId): void;
@@ -117,6 +145,11 @@ interface SaveActions {
   renamePup(name: string): void;
   /** Empties the treat jar into your wallet; returns the amount. */
   collectTreats(): number;
+  /** One Adoption Fair pull; null if you cannot afford it. */
+  adoptFromFair(): AdoptionResult | null;
+  /** Spend treats to level a pack dog up. */
+  trainDog(breed: string): boolean;
+  renameDog(breed: string, name: string): void;
   debugTimeTravel(ms: number): void;
   debugAddKibble(n: number): void;
   consumePowerUp(id: PowerUpId): boolean;
@@ -171,6 +204,8 @@ const freshSave = (): SaveData => ({
   pup: null,
   kibble: START_KIBBLE,
   yard: emptyYard(Date.now()),
+  pack: [],
+  fair: emptyFair(),
 });
 
 /** The persisted part of the store (shared by persist and export). */
@@ -192,19 +227,40 @@ function pickSave(s: SaveData): SaveData {
     pup: s.pup,
     kibble: s.kibble,
     yard: s.yard,
+    pack: s.pack,
+    fair: s.fair,
   };
 }
 
 /** Small bond boost for the pup when you win anything. */
 const winBond = (pup: PupState | null) => (pup ? { ...pup, bondXp: pup.bondXp + WIN_XP } : pup);
 
-/** The dogs producing treats in the yard. For now that's just the main pup. */
-export function yardPack(s: Pick<SaveData, 'pup'>): Producer[] {
-  return s.pup ? [{ breed: s.pup.breed, level: 1 }] : [];
+/** The dogs producing treats in the yard: the whole pack, main pup first. */
+export function yardPack(s: Pick<SaveData, 'pup' | 'pack'>): Producer[] {
+  if (!s.pup) return [];
+  const main = s.pup.breed;
+  const pack = s.pack.some((d) => d.breed === main) ? s.pack : [newDog(main, 'starter', 0), ...s.pack];
+  return [...pack].sort((a, b) => Number(b.breed === main) - Number(a.breed === main)).map((d) => ({ breed: d.breed, level: d.level }));
+}
+
+/** Display name of a pack dog (the main pup uses its own name). */
+export function dogName(s: Pick<SaveData, 'pup'>, dog: Pick<PackDog, 'breed' | 'name'>): string {
+  if (s.pup && s.pup.breed === dog.breed) return s.pup.name;
+  return dog.name || breedById(dog.breed).name;
+}
+
+/** Makes sure the main pup and every opened world's story dog are in the pack. */
+function ensurePack(pack: PackDog[], pup: PupState | null, chests: Record<number, boolean>, now: number): PackDog[] {
+  let next = pack;
+  if (pup && !next.some((d) => d.breed === pup.breed)) next = [newDog(pup.breed, 'starter', pup.adoptedAt), ...next];
+  for (const [world, dog] of Object.entries(STORY_DOGS)) {
+    if (chests[Number(world)] && !next.some((d) => d.breed === dog.breed)) next = [...next, newDog(dog.breed, 'story', now)];
+  }
+  return next;
 }
 
 /** The yard brought up to `now` (pure; does not save). */
-export function liveYard(s: Pick<SaveData, 'pup' | 'yard'>, now: number): YardState {
+export function liveYard(s: Pick<SaveData, 'pup' | 'pack' | 'yard'>, now: number): YardState {
   return settleYard(s.yard, packRate(yardPack(s)), s.pup, now);
 }
 
@@ -230,6 +286,8 @@ function mergeNested(p: Partial<SaveData>) {
     pup: normalizePup(p.pup, Date.now()),
     kibble: typeof p.kibble === 'number' && Number.isFinite(p.kibble) ? Math.max(0, Math.floor(p.kibble)) : START_KIBBLE,
     yard: normalizeYard(p.yard, Date.now()),
+    pack: ensurePack(normalizePack(p.pack, Date.now()), normalizePup(p.pup, Date.now()), { ...p.chests }, Date.now()),
+    fair: normalizeFair(p.fair),
   };
 }
 
@@ -324,8 +382,18 @@ export const useSave = create<SaveData & SaveActions>()(
         const reward = rollChest(s.seed, worldId, stars, LEVELS_PER_WORLD * 3);
         const inventory = { ...s.inventory };
         for (const id of reward.items) inventory[id]++;
-        set({ inventory, treats: s.treats + reward.treats, chests: { ...s.chests, [worldId]: true } });
-        return reward;
+        const now = Date.now();
+        const story = STORY_DOGS[worldId];
+        let rescued: AdoptionResult | null = null;
+        let pack = s.pack;
+        if (story) {
+          const r = addToPack(s.pack, story.breed, 'story', now);
+          pack = r.pack;
+          const level = pack.find((d) => d.breed === story.breed)?.level ?? 1;
+          rescued = { breed: story.breed, rarity: breedById(story.breed).rarity, isNew: r.isNew, levelUp: r.levelUp, level, refund: 0 };
+        }
+        set({ inventory, treats: s.treats + reward.treats, chests: { ...s.chests, [worldId]: true }, yard: liveYard(s, now), pack });
+        return { ...reward, rescued };
       },
 
       buyCosmetic(id) {
@@ -368,7 +436,8 @@ export const useSave = create<SaveData & SaveActions>()(
       adoptPup(name, breed) {
         if (get().pup || !isBreedId(breed)) return;
         const now = Date.now();
-        set({ pup: createPup(name, breed, now), yard: { ...emptyYard(now), collected: get().yard.collected } });
+        const pup = createPup(name, breed, now);
+        set((s) => ({ pup, yard: { ...emptyYard(now), collected: s.yard.collected }, pack: ensurePack(s.pack, pup, s.chests, now) }));
       },
 
       feedPup() {
@@ -392,6 +461,41 @@ export const useSave = create<SaveData & SaveActions>()(
         const { yard, amount } = collectJar(liveYard(s, Date.now()));
         set({ yard, treats: s.treats + amount });
         return amount;
+      },
+
+      adoptFromFair() {
+        const s = get();
+        if (!s.pup || s.treats < FAIR_PRICE) return null;
+        const now = Date.now();
+        const roll = rollFair(s.seed, s.fair);
+        const r = addToPack(s.pack, roll.breed, 'fair', now);
+        const level = r.pack.find((d) => d.breed === roll.breed)?.level ?? 1;
+        const refund = r.pack === s.pack ? FAIR_REFUND : 0;
+        // Bank production at the old rate before the pack changes.
+        set({ treats: s.treats - FAIR_PRICE + refund, fair: roll.fair, yard: liveYard(s, now), pack: r.pack });
+        return { breed: roll.breed, rarity: roll.rarity, isNew: r.isNew, levelUp: r.levelUp, level, refund };
+      },
+
+      trainDog(breed) {
+        const s = get();
+        const i = s.pack.findIndex((d) => d.breed === breed);
+        if (i < 0) return false;
+        const dog = s.pack[i];
+        const cost = trainCost(breedById(breed).rarity, dog.level);
+        if (dog.level >= MAX_DOG_LEVEL || s.treats < cost) return false;
+        const pack = [...s.pack];
+        pack[i] = { ...dog, level: dog.level + 1 };
+        set({ treats: s.treats - cost, yard: liveYard(s, Date.now()), pack });
+        return true;
+      },
+
+      renameDog(breed, name) {
+        const clean = name.trim() ? cleanName(name) : '';
+        if (get().pup?.breed === breed) {
+          if (clean) get().renamePup(clean);
+          return;
+        }
+        set((s) => ({ pack: s.pack.map((d) => (d.breed === breed ? { ...d, name: clean } : d)) }));
       },
 
       debugTimeTravel(ms) {

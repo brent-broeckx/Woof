@@ -13,6 +13,8 @@ export type Screen =
   | { name: 'stats' }
   | { name: 'pup' }
   | { name: 'yard' }
+  | { name: 'pack' }
+  | { name: 'fair' }
   | { name: 'debug' }
   | { name: 'debugGame'; game: MiniGameId; tier: number; seed: number };
 

@@ -76,3 +76,21 @@ test('collects treats from the yard jar', async ({ page }) => {
   await page.getByRole('button', { name: /^Collect \d+/ }).click();
   await expect(page.getByRole('button', { name: /^Collect/ })).toBeDisabled();
 });
+
+test('adopts a pup at the adoption fair', async ({ page }) => {
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.treats = 250;
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Yard/ }).click();
+  await page.getByRole('button', { name: /Adoption Fair/ }).click();
+  await page.getByRole('button', { name: /^Adopt a pup/ }).click();
+  await expect(page.getByRole('button', { name: 'Done' })).toBeVisible({ timeout: 5000 });
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(page.locator('.chip').first()).toHaveText('🍖 150');
+  await page.getByRole('button', { name: 'Back' }).click();
+  await page.getByRole('button', { name: /Pack/ }).click();
+  await expect(page.getByText(/^[12] \/ 23 breeds collected/)).toBeVisible();
+});
