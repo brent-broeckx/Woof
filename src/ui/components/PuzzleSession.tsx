@@ -12,9 +12,13 @@ import { Confetti } from './Confetti';
 import { DogFace } from './DogFace';
 import { Modal, Stars, TopBar, formatTime } from './common';
 import { PowerUpTray } from './PowerUpTray';
+import { PupAvatar } from './PupAvatar';
+import { type TrickId } from '../../core/pet/pup';
+import { usePup } from '../hooks/usePup';
 
 export interface SessionResult {
   treats: number;
+  kibble?: number;
   lines?: ReactNode[];
 }
 
@@ -41,6 +45,10 @@ export function PuzzleSession(props: PuzzleSessionProps) {
   const inventory = useSave((s) => s.inventory);
   const accessory = useSave((s) => s.cosmetics.accessory);
   const updateSettings = useSave((s) => s.updateSettings);
+  const pupView = usePup();
+  const pupBreed = pupView?.pup.breed ?? 0;
+  const [pupTrick, setPupTrick] = useState<{ id: TrickId; key: number } | null>(null);
+  const [pupWorried, setPupWorried] = useState(false);
 
   const [state, dispatch] = useReducer(gameReducer, null, (): GameState => {
     const saved = persist ? useSave.getState().inProgress : null;
@@ -83,10 +91,15 @@ export function PuzzleSession(props: PuzzleSessionProps) {
   useEffect(() => {
     const e = state.event;
     if (!e) return;
-    if (e.type === 'dog') sfx('pop');
+    if (e.type === 'dog') {
+      sfx('pop');
+      setPupTrick({ id: 'wag', key: Date.now() });
+    }
     if (e.type === 'wrong') {
       sfx('wrong');
       haptic([40, 60, 40]);
+      setPupWorried(true);
+      window.setTimeout(() => setPupWorried(false), 1400);
     }
     if (e.type === 'powerUp') sfx('power');
   }, [state.event]);
@@ -105,6 +118,7 @@ export function PuzzleSession(props: PuzzleSessionProps) {
     completedRef.current = true;
     const stars = computeStars(state);
     const res = onWin({ stars, timeMs: state.elapsedMs, mistakes: state.mistakes, powerUps: state.powerUpsUsed });
+    setPupTrick({ id: stars === 3 ? 'dance' : 'jump', key: Date.now() });
     window.setTimeout(() => {
       sfx('win');
       haptic([30, 50, 30, 50, 80]);
@@ -199,6 +213,9 @@ export function PuzzleSession(props: PuzzleSessionProps) {
               </span>
             ))}
           </div>
+          {pupView && (
+            <PupAvatar breed={pupView.pup.breed} mood={pupWorried || state.status === 'lost' ? 'sad' : pupView.mood} trick={pupTrick} className="hud-pup" />
+          )}
           <div className="dogs-count">
             🐶 {dogCount(state)}/{puzzle.size}
           </div>
@@ -259,7 +276,7 @@ export function PuzzleSession(props: PuzzleSessionProps) {
       {tutorialOpen && tutorial && (
         <Modal onClose={closeTutorial}>
           <div className="modal-dog">
-            <DogFace breed={0} accessory={accessory} />
+            <DogFace breed={pupBreed} accessory={accessory} />
           </div>
           <h2>{tutorial.title}</h2>
           {tutorial.lines.map((line) => (
@@ -274,7 +291,7 @@ export function PuzzleSession(props: PuzzleSessionProps) {
       {state.status === 'lost' && (
         <Modal>
           <div className="modal-dog">
-            <DogFace breed={2} mood="sad" accessory={accessory} />
+            <DogFace breed={pupBreed} mood="sad" accessory={accessory} />
           </div>
           <h2>Out of bones!</h2>
           <p>Every dog needs the right home. Want to keep going?</p>
@@ -300,7 +317,7 @@ export function PuzzleSession(props: PuzzleSessionProps) {
           <Modal>
             <div className="celebrate">
               {Array.from({ length: Math.min(puzzle.size, 5) }, (_, i) => (
-                <DogFace key={i} breed={i} className="jump" accessory={i === 2 ? accessory : 'none'} />
+                <DogFace key={i} breed={i === 2 ? pupBreed : i} className="jump" accessory={i === 2 ? accessory : 'none'} />
               ))}
             </div>
             <h2>{props.resultTitle}</h2>
@@ -309,6 +326,7 @@ export function PuzzleSession(props: PuzzleSessionProps) {
               ⏱ {formatTime(state.elapsedMs)} · ❌ {state.mistakes} mistake{state.mistakes === 1 ? '' : 's'} · ⚡ {state.powerUpsUsed} power-up
               {state.powerUpsUsed === 1 ? '' : 's'}
             </p>
+            {!!result.kibble && <p className="reward">+{result.kibble} 🥣 kibble</p>}
             {result.treats > 0 && <p className="reward">+{result.treats} 🍖 treats</p>}
             {result.lines?.map((line, i) => (
               <p key={i} className="reward">

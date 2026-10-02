@@ -31,7 +31,13 @@ export function PuzzleScreen({ levelId, puzzleIndex }: { levelId: number; puzzle
   const nextLevel = levelId < TOTAL_LEVELS ? levelId + 1 : null;
   const tip = TUTORIAL[levelId];
 
-  const onWin = useCallback((o: PuzzleOutcome) => ({ treats: useSave.getState().completePuzzle(levelId, o).treats }), [levelId]);
+  const onWin = useCallback(
+    (o: PuzzleOutcome) => {
+      const r = useSave.getState().completePuzzle(levelId, o);
+      return { treats: r.treats, kibble: r.kibble };
+    },
+    [levelId],
+  );
   const onStart = useCallback(() => useSave.getState().recordAttempt(levelId), [levelId]);
   const onLose = useCallback(() => useSave.getState().recordLoss(levelId), [levelId]);
 

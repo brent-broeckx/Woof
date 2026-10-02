@@ -16,6 +16,8 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  await page.getByRole('button', { name: /^🐾 Adopt/ }).click();
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeVisible();
 });
 
 test('solves level 1 from the title screen', async ({ page }) => {

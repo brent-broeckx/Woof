@@ -1,37 +1,12 @@
 import { memo } from 'react';
 import type { AccessoryId } from '../../core/economy/cosmetics';
+import { BOARD_BREED_COUNT, BREED_CATALOG, breedById, type BreedLook } from '../../core/pet/breeds';
 
-export interface Breed {
-  name: string;
-  fur: string;
-  ear: string;
-  muzzle: string;
-  ears: 'pointy' | 'floppy' | 'round';
-  patch?: string;
-  spots?: boolean;
-  /** Pale cheek/eyebrow markings (e.g. Shiba urajiro). */
-  cheeks?: string;
-}
-
-/** One breed per yard colour (same order as REGION_COLORS). */
-export const BREEDS: Breed[] = [
-  { name: 'Corgi', fur: '#f2a65a', ear: '#e08a3c', muzzle: '#fff4e6', ears: 'pointy' },
-  { name: 'Husky', fur: '#8e9aab', ear: '#6b7688', muzzle: '#ffffff', ears: 'pointy', patch: '#ffffff' },
-  { name: 'Dachshund', fur: '#a0643b', ear: '#7a4726', muzzle: '#c98b5e', ears: 'floppy' },
-  { name: 'Poodle', fur: '#f4efe6', ear: '#e6dccb', muzzle: '#fbf8f2', ears: 'round' },
-  { name: 'Shiba', fur: '#d2602a', ear: '#a9441a', muzzle: '#fff4e4', ears: 'pointy', cheeks: '#fff4e4' },
-  { name: 'Beagle', fur: '#f0dcc0', ear: '#9a5b2e', muzzle: '#ffffff', ears: 'floppy', patch: '#c7813f' },
-  { name: 'Pug', fur: '#e8cfa3', ear: '#4a3b30', muzzle: '#5a483b', ears: 'floppy' },
-  { name: 'Dalmatian', fur: '#ffffff', ear: '#3a3a3a', muzzle: '#ffffff', ears: 'floppy', spots: true },
-  { name: 'Golden', fur: '#f1c46b', ear: '#d9a444', muzzle: '#f7dca3', ears: 'floppy' },
-  { name: 'Frenchie', fur: '#c9c1b6', ear: '#a79c8e', muzzle: '#e9e3da', ears: 'round', patch: '#6e645a' },
-  { name: 'Collie', fur: '#3d3431', ear: '#2a2321', muzzle: '#ffffff', ears: 'pointy', patch: '#ffffff' },
-];
-
-export const breedFor = (index: number) => BREEDS[index % BREEDS.length];
+/** Board breeds are addressed by colour index; collection dogs by breed id. */
+const lookFor = (breed: number | string): BreedLook => (typeof breed === 'string' ? breedById(breed).look : BREED_CATALOG[breed % BOARD_BREED_COUNT].look);
 
 interface DogFaceProps {
-  breed: number;
+  breed: number | string;
   mood?: 'happy' | 'sad' | 'calm';
   className?: string;
   accessory?: AccessoryId;
@@ -101,7 +76,7 @@ function Accessory({ id }: { id: AccessoryId }) {
 }
 
 export const DogFace = memo(function DogFace({ breed, mood = 'happy', className, accessory = 'none' }: DogFaceProps) {
-  const b = breedFor(breed);
+  const b = lookFor(breed);
   const dark = '#2d2320';
   return (
     <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
@@ -160,6 +135,12 @@ export const DogFace = memo(function DogFace({ breed, mood = 'happy', className,
       <ellipse cx="50" cy="64" rx="6.5" ry="4.8" fill={dark} />
       {mood === 'happy' && <path d="M45 74 Q50 84 55 74 Z" fill="#f28b9b" />}
       <path d={mood === 'sad' ? 'M43 78 Q50 73 57 78' : 'M42 71 Q46 75 50 71 Q54 75 58 71'} stroke={dark} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      {b.sparkle && (
+        <g fill="#fff" className="dog-sparkle">
+          <path d="M16 20 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2 Z" />
+          <path d="M84 70 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5 l4 -1.5 Z" />
+        </g>
+      )}
       {accessory !== 'none' && <Accessory id={accessory} />}
     </svg>
   );

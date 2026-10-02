@@ -32,10 +32,11 @@ export function DailyScreen() {
   const onWin = useCallback(
     (o: PuzzleOutcome) => {
       const r = useSave.getState().completeDaily(today, o);
-      if (!r.firstTime) return { treats: 0, lines: ['Already solved today — come back tomorrow!'] };
+      if (!r.firstTime) return { treats: 0, kibble: r.kibble, lines: ['Already solved today — come back tomorrow!'] };
       if (r.item) window.setTimeout(() => sfx('reward'), 1400);
       return {
         treats: r.treats,
+        kibble: r.kibble,
         lines: [`🔥 Streak: ${r.streak} day${r.streak === 1 ? '' : 's'}`, r.item ? `🎁 ${POWER_UPS[r.item].icon} ${POWER_UPS[r.item].name}` : null].filter(
           Boolean,
         ),
