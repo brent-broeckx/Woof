@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware';
 import { POWER_UPS, POWER_UP_IDS, type PowerUpId } from '../core/economy/powerups';
 import { ACCESSORIES, BOARD_THEMES, cosmeticPrice, type AccessoryId } from '../core/economy/cosmetics';
 import { rollBonusReward, rollChest, rollDailyItem } from '../core/economy/rewards';
-import { applyDailyCompletion, emptyDaily, type DailyRecord } from '../core/progression/daily';
+import { applyDailyCompletion, dateKey, emptyDaily, type DailyRecord } from '../core/progression/daily';
+import { emptyArcade, normalizeArcade, recordArcadeRun, type ArcadeDifficulty, type ArcadeRun, type ArcadeState } from '../core/progression/arcade';
 import { LEVELS_PER_WORLD, TOTAL_LEVELS, type MiniGameId } from '../core/progression/levels';
 import { debugUnlockAll } from '../debug/debugStore';
 import {
@@ -131,6 +132,7 @@ export interface SaveData {
   pack: PackDog[];
   fair: FairState;
   expeditions: ExpeditionState;
+  arcade: ArcadeState;
 }
 
 export interface ExpeditionClaim {
@@ -177,6 +179,8 @@ interface SaveActions {
   sendExpedition(destination: string, hours: number, breeds: string[]): boolean;
   claimExpedition(tripId: number): ExpeditionClaim | null;
   recallExpedition(tripId: number): void;
+  /** Records an Arcade run: kibble (daily-capped) and personal bests. No power-ups. */
+  completeArcade(game: MiniGameId, difficulty: ArcadeDifficulty, stars: number, timeMs: number): Omit<ArcadeRun, 'state'>;
   debugTimeTravel(ms: number): void;
   debugAddKibble(n: number): void;
   consumePowerUp(id: PowerUpId): boolean;
@@ -234,6 +238,7 @@ const freshSave = (): SaveData => ({
   pack: [],
   fair: emptyFair(),
   expeditions: emptyExpeditions(),
+  arcade: emptyArcade(),
 });
 
 /** The persisted part of the store (shared by persist and export). */
@@ -258,6 +263,7 @@ function pickSave(s: SaveData): SaveData {
     pack: s.pack,
     fair: s.fair,
     expeditions: s.expeditions,
+    arcade: s.arcade,
   };
 }
 
@@ -323,6 +329,7 @@ function mergeNested(p: Partial<SaveData>) {
     pack,
     fair: normalizeFair(p.fair),
     expeditions: normalizeExpeditions(p.expeditions, new Set(pack.filter((d) => d.breed !== pup?.breed).map((d) => d.breed))),
+    arcade: normalizeArcade(p.arcade),
   };
 }
 
@@ -573,6 +580,13 @@ export const useSave = create<SaveData & SaveActions>()(
       recallExpedition(tripId) {
         const s = get();
         set({ yard: liveYard(s, Date.now()), expeditions: recallExpedition(s.expeditions, tripId) });
+      },
+
+      completeArcade(game, difficulty, stars, timeMs) {
+        const s = get();
+        const { state, ...run } = recordArcadeRun(s.arcade, game, difficulty, stars, timeMs, dateKey());
+        set({ arcade: state, kibble: s.kibble + run.kibble, pup: winBond(s.pup) });
+        return run;
       },
 
       debugTimeTravel(ms) {

@@ -121,3 +121,22 @@ test('sends a dog on an expedition and opens the loot', async ({ page }) => {
   await page.getByRole('button', { name: 'Nice!' }).click();
   await expect(page.locator('.chip').first()).not.toHaveText('🍖 0');
 });
+
+test('arcade unlocks games from cleared bonus parks', async ({ page }) => {
+  await page.getByRole('button', { name: /Arcade/ }).click();
+  await expect(page.getByText(/Clear your first Bonus Park/)).toBeVisible();
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.progress = { 1: { stars: 3 }, 2: { stars: 3 }, 3: { stars: 3 }, 4: { stars: 3 }, 5: { stars: 2 } };
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Arcade/ }).click();
+  await expect(page.getByRole('button', { name: /· Good Boy \(locked\)/ })).toBeDisabled();
+  await page.getByRole('button', { name: /· Pup$/ }).click();
+  await expect(page.getByText(/No medal yet/)).toBeVisible();
+  await page.getByRole('button', { name: 'Play!' }).click();
+  await page.getByRole('button', { name: 'Quit run' }).click();
+  await page.getByRole('button', { name: 'Back to Arcade' }).click();
+  await expect(page.getByText(/Today's kibble/)).toBeVisible();
+});

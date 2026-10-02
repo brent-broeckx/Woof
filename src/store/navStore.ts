@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { ArcadeDifficulty } from '../core/progression/arcade';
 import type { MiniGameId } from '../core/progression/levels';
 
 export type Screen =
@@ -17,6 +18,8 @@ export type Screen =
   | { name: 'fair' }
   | { name: 'expeditions' }
   | { name: 'album' }
+  | { name: 'arcade' }
+  | { name: 'arcadePlay'; game: MiniGameId; difficulty: ArcadeDifficulty }
   | { name: 'debug' }
   | { name: 'debugGame'; game: MiniGameId; tier: number; seed: number };
 

@@ -21,6 +21,8 @@ const PackScreen = lazy(() => import('./ui/screens/PackScreen').then((m) => ({ d
 const FairScreen = lazy(() => import('./ui/screens/FairScreen').then((m) => ({ default: m.FairScreen })));
 const ExpeditionsScreen = lazy(() => import('./ui/screens/ExpeditionsScreen').then((m) => ({ default: m.ExpeditionsScreen })));
 const AlbumScreen = lazy(() => import('./ui/screens/ExpeditionsScreen').then((m) => ({ default: m.AlbumScreen })));
+const ArcadeScreen = lazy(() => import('./ui/screens/ArcadeScreen').then((m) => ({ default: m.ArcadeScreen })));
+const ArcadePlayScreen = lazy(() => import('./ui/screens/ArcadeScreen').then((m) => ({ default: m.ArcadePlayScreen })));
 const YardScreen = lazy(() => import('./ui/screens/YardScreen').then((m) => ({ default: m.YardScreen })));
 const StatsScreen = lazy(() => import('./ui/screens/StatsScreen').then((m) => ({ default: m.StatsScreen })));
 // Only `npm run dev` builds include the debug screen.
@@ -61,6 +63,10 @@ function Router() {
       return <ExpeditionsScreen />;
     case 'album':
       return <AlbumScreen />;
+    case 'arcade':
+      return <ArcadeScreen />;
+    case 'arcadePlay':
+      return <ArcadePlayScreen key={`${screen.game}:${screen.difficulty}`} game={screen.game} difficulty={screen.difficulty} />;
     case 'debug':
       return DebugScreen ? <DebugScreen /> : <Title />;
     case 'debugGame':

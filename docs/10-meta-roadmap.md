@@ -119,10 +119,12 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M5 — Arcade
 
-- [ ] **Arcade screen:** replay any mini-game you've unlocked through Bonus Parks, at a chosen tier.
-- [ ] **Kibble rewards** scaled by tier and stars, with a soft daily cap on the kibble so the Arcade doesn't replace puzzles.
-- [ ] **Personal bests** per game and tier (time, moves, score), with medals (bronze/silver/gold).
-- [ ] Arcade plays don't affect power-up reward rolls (bonus parks stay the power-up source).
+- [x] **Arcade screen:** replay any mini-game you've unlocked through Bonus Parks, at a chosen tier.
+- [x] **Kibble rewards** scaled by tier and stars, with a soft daily cap on the kibble so the Arcade doesn't replace puzzles.
+- [x] **Personal bests** per game and tier (time, moves, score), with medals (bronze/silver/gold).
+- [x] Arcade plays don't affect power-up reward rolls (bonus parks stay the power-up source).
+
+*Decisions: there are 4 difficulties (Pup, Good Boy, Top Dog, Legend) that map to mini-game tiers 1/5/10/20. Each one unlocks once you've cleared a Bonus Park of that tier or higher. Medals are bronze/silver/gold for 1/2/3 stars, and a personal best means more stars, or the same stars in less time. Kibble is stars + difficulty step (1–6 per run), capped at 20 🥣 per day. Quitting a run pays nothing, and finishing gives bond XP. The Arcade never rolls power-ups.*
 
 **Done when:** every unlocked mini-game can be replayed from the Arcade, records are saved, and kibble is paid within the cap.
 

@@ -2503,3 +2503,81 @@ kbd {
   border-color: #d8d0c8;
   color: var(--ink-soft);
 }
+
+/* ---------- Arcade ---------- */
+.arcade-head {
+  display: grid;
+  gap: 8px;
+}
+.arcade-head p {
+  margin: 0;
+}
+.arcade-list {
+  display: grid;
+  gap: 12px;
+}
+.arcade-game {
+  display: grid;
+  gap: 10px;
+}
+.arcade-game.locked {
+  opacity: 0.6;
+}
+.arcade-game-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.arcade-game-head h3,
+.arcade-game-head p {
+  margin: 0;
+}
+.arcade-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+.arcade-tiers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.arcade-tier {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 2px solid rgba(90, 60, 40, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.arcade-tier:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.arcade-tier:not(:disabled):hover {
+  border-color: var(--accent);
+}
+.arcade-tier-name {
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.medal {
+  font-size: 1.5rem;
+  line-height: 1;
+  min-height: 1.5rem;
+}
+.medal.empty {
+  width: 1.5rem;
+  border-radius: 50%;
+  border: 2px dashed rgba(90, 60, 40, 0.25);
+  font-size: 0.8rem;
+  display: grid;
+  place-items: center;
+}
+.medal.m3 {
+  animation: pop 0.4s ease;
+}
