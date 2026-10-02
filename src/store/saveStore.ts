@@ -5,6 +5,8 @@ import { ACCESSORIES, BOARD_THEMES, cosmeticPrice, type AccessoryId } from '../c
 import { rollBonusReward, rollChest, rollDailyItem } from '../core/economy/rewards';
 import { applyDailyCompletion, dateKey, emptyDaily, type DailyRecord } from '../core/progression/daily';
 import { emptyArcade, normalizeArcade, recordArcadeRun, type ArcadeDifficulty, type ArcadeRun, type ArcadeState } from '../core/progression/arcade';
+import { allBadgeStatus, normalizeBadges, pendingRewards, type BadgeInput, type BadgeReward } from '../core/progression/badges';
+import { applyBossCompletion, emptyBoss, normalizeBoss, type BossResult, type BossState } from '../core/progression/boss';
 import { LEVELS_PER_WORLD, TOTAL_LEVELS, type MiniGameId } from '../core/progression/levels';
 import { debugUnlockAll } from '../debug/debugStore';
 import {
@@ -88,6 +90,8 @@ export interface Totals {
   dailySolved: number;
   endlessSolved: number;
   playMs: number;
+  /** Puzzles solved with no mistakes and no power-ups (any mode). */
+  flawless: number;
 }
 
 export interface Cosmetics {
@@ -133,6 +137,9 @@ export interface SaveData {
   fair: FairState;
   expeditions: ExpeditionState;
   arcade: ArcadeState;
+  boss: BossState;
+  /** Badge id -> tiers whose reward was collected. */
+  badges: Record<string, number>;
 }
 
 export interface ExpeditionClaim {
@@ -181,6 +188,10 @@ interface SaveActions {
   recallExpedition(tripId: number): void;
   /** Records an Arcade run: kibble (daily-capped) and personal bests. No power-ups. */
   completeArcade(game: MiniGameId, difficulty: ArcadeDifficulty, stars: number, timeMs: number): Omit<ArcadeRun, 'state'>;
+  /** Records a weekly boss win: big first-clear reward, extra for the first flawless run. */
+  completeBoss(week: string, outcome: PuzzleOutcome): Omit<BossResult, 'state'>;
+  /** Collects every earned tier of a badge; null if nothing to claim. */
+  claimBadge(id: string): BadgeReward[] | null;
   debugTimeTravel(ms: number): void;
   debugAddKibble(n: number): void;
   consumePowerUp(id: PowerUpId): boolean;
@@ -207,13 +218,28 @@ export const DEFAULT_SETTINGS: Settings = {
   highContrast: false,
 };
 
-const emptyTotals = (): Totals => ({ puzzlesSolved: 0, mistakes: 0, powerUpsUsed: 0, bonusPlayed: 0, dailySolved: 0, endlessSolved: 0, playMs: 0 });
+const emptyTotals = (): Totals => ({
+  puzzlesSolved: 0,
+  mistakes: 0,
+  powerUpsUsed: 0,
+  bonusPlayed: 0,
+  dailySolved: 0,
+  endlessSolved: 0,
+  playMs: 0,
+  flawless: 0,
+});
 const emptyLevelStats = (): LevelStats => ({ attempts: 0, wins: 0, losses: 0, mistakes: 0, powerUps: 0, totalMs: 0 });
 const defaultCosmetics = (): Cosmetics => ({ owned: ['classic', 'none'], boardTheme: 'classic', accessory: 'none' });
 
 /** Add a finished puzzle to the running totals. */
 function addTotals(t: Totals, o: PuzzleOutcome, patch: Partial<Totals> = {}): Totals {
-  const next = { ...t, mistakes: t.mistakes + o.mistakes, powerUpsUsed: t.powerUpsUsed + o.powerUps, playMs: t.playMs + o.timeMs };
+  const next = {
+    ...t,
+    mistakes: t.mistakes + o.mistakes,
+    powerUpsUsed: t.powerUpsUsed + o.powerUps,
+    playMs: t.playMs + o.timeMs,
+    flawless: t.flawless + (o.mistakes === 0 && o.powerUps === 0 ? 1 : 0),
+  };
   for (const [k, v] of Object.entries(patch) as [keyof Totals, number][]) next[k] += v;
   return next;
 }
@@ -239,6 +265,8 @@ const freshSave = (): SaveData => ({
   fair: emptyFair(),
   expeditions: emptyExpeditions(),
   arcade: emptyArcade(),
+  boss: emptyBoss(),
+  badges: {},
 });
 
 /** The persisted part of the store (shared by persist and export). */
@@ -264,6 +292,8 @@ function pickSave(s: SaveData): SaveData {
     fair: s.fair,
     expeditions: s.expeditions,
     arcade: s.arcade,
+    boss: s.boss,
+    badges: s.badges,
   };
 }
 
@@ -330,6 +360,8 @@ function mergeNested(p: Partial<SaveData>) {
     fair: normalizeFair(p.fair),
     expeditions: normalizeExpeditions(p.expeditions, new Set(pack.filter((d) => d.breed !== pup?.breed).map((d) => d.breed))),
     arcade: normalizeArcade(p.arcade),
+    boss: normalizeBoss(p.boss),
+    badges: normalizeBadges(p.badges),
   };
 }
 
@@ -589,6 +621,35 @@ export const useSave = create<SaveData & SaveActions>()(
         return run;
       },
 
+      completeBoss(week, outcome) {
+        const s = get();
+        const { state, ...result } = applyBossCompletion(s.boss, week, outcome);
+        set({
+          boss: state,
+          kibble: s.kibble + result.kibble,
+          treats: s.treats + result.treats,
+          pup: winBond(s.pup),
+          stats: { ...s.stats, totals: addTotals(s.stats.totals, outcome) },
+        });
+        return result;
+      },
+
+      claimBadge(id) {
+        const s = get();
+        const status = allBadgeStatus(badgeInput(s), s.badges).find((b) => b.badge.id === id);
+        if (!status || status.earned <= status.claimed) return null;
+        const rewards = pendingRewards(status);
+        const owned = [...s.cosmetics.owned];
+        for (const r of rewards) if (r.cosmetic && !owned.includes(r.cosmetic)) owned.push(r.cosmetic);
+        set({
+          badges: { ...s.badges, [id]: status.earned },
+          kibble: s.kibble + rewards.reduce((n, r) => n + r.kibble, 0),
+          treats: s.treats + rewards.reduce((n, r) => n + r.treats, 0),
+          cosmetics: { ...s.cosmetics, owned },
+        });
+        return rewards;
+      },
+
       debugTimeTravel(ms) {
         shiftLastSeen(ms);
         set((s) => ({
@@ -668,6 +729,21 @@ export function nextUnplayed(progress: Record<number, LevelProgress>): number {
 
 export function highestUnlocked(progress: Record<number, LevelProgress>): number {
   return debugUnlockAll() ? TOTAL_LEVELS : nextUnplayed(progress);
+}
+
+/** The parts of the save that badges track. */
+export function badgeInput(s: Pick<SaveData, 'progress' | 'stats' | 'daily' | 'chests' | 'arcade' | 'expeditions' | 'pack' | 'pup' | 'boss'>): BadgeInput {
+  return {
+    progress: s.progress,
+    totals: s.stats.totals,
+    dailyBest: s.daily.best,
+    chests: s.chests,
+    arcade: s.arcade,
+    album: s.expeditions.album,
+    pack: s.pack,
+    bondXp: s.pup?.bondXp ?? 0,
+    boss: s.boss,
+  };
 }
 
 export function exportSave(): string {

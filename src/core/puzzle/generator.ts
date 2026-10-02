@@ -9,6 +9,8 @@ export interface GenerateOptions {
   seed: number;
   /** Highest technique difficulty allowed (1-6). Puzzles needing more are rejected. */
   maxDifficulty?: number;
+  /** Lowest technique difficulty accepted; easier puzzles are rejected. */
+  minDifficulty?: number;
   maxAttempts?: number;
 }
 
@@ -114,7 +116,7 @@ export function makeUnique(size: number, regions: number[], solution: number[], 
 }
 
 export function generatePuzzle(options: GenerateOptions): GeneratedPuzzle | null {
-  const { size, seed, maxDifficulty = 6, maxAttempts = 60 } = options;
+  const { size, seed, maxDifficulty = 6, minDifficulty = 1, maxAttempts = 60 } = options;
   const rng = createRng(seed);
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const solution = randomPlacement(size, rng);
@@ -123,6 +125,7 @@ export function generatePuzzle(options: GenerateOptions): GeneratedPuzzle | null
     if (!makeUnique(size, regions, solution, rng)) continue;
     const logic = solveLogically({ size, regions }, maxDifficulty);
     if (!logic.solved) continue;
+    if (logic.difficulty.maxDifficulty < minDifficulty) continue;
     if (logic.solution.some((c, r) => c !== solution[r])) continue;
     return { size, regions: normalizeRegions(regions, size), solution, difficulty: logic.difficulty, seed };
   }

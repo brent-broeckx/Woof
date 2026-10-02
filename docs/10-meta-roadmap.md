@@ -130,10 +130,12 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M6 — Challenge: achievements + weekly boss
 
-- [ ] **Achievements/badges** with tiers. Include tough ones, for example: 50 flawless solves, 30-day Daily streak, all Arcade golds, weekly boss without power-ups, full postcard album, a Legendary dog.
-- [ ] Badge rewards: kibble/treats and some exclusive cosmetics (looks only).
-- [ ] **Weekly boss puzzle:** one large, very hard puzzle per ISO week (seeded by week, generated in the worker), best result kept. Big kibble reward and a badge for a flawless run.
-- [ ] Badge showcase on the Stats screen.
+- [x] **Achievements/badges** with tiers. Include tough ones, for example: 50 flawless solves, 30-day Daily streak, all Arcade golds, weekly boss without power-ups, full postcard album, a Legendary dog.
+- [x] Badge rewards: kibble/treats and some exclusive cosmetics (looks only).
+- [x] **Weekly boss puzzle:** one large, very hard puzzle per ISO week (seeded by week, generated in the worker), best result kept. Big kibble reward and a badge for a flawless run.
+- [x] Badge showcase on the Stats screen.
+
+*Decisions: there are 13 badges with up to 3 tiers (bronze/silver/gold). Tier rewards are 10 🥣 + 50 🍖, 25 🥣 + 150 🍖 and 50 🥣 + 300 🍖. Rewards are claimed by hand on the 🏅 Badges screen, and the title button shows how many are waiting. Four cosmetics can only be earned, not bought: the Gold Medal (Flawless Paws gold), Laurel Wreath (Daily Devotee gold), Golden Trophy board (Arcade Ace gold) and Hero Cape (first flawless boss). Flawless solves are tracked from now on; older saves count their 3★ levels instead. The weekly boss is a 10×10 puzzle at generator difficulty 5–6, seeded by ISO week, and unlocks after World 1. The first clear each week pays 50 🥣 + 150 🍖, and the first flawless (3★) clear adds 30 🥣. Only the best result is kept.*
 
 **Done when:** badges unlock and pay out, and a new boss puzzle appears each week with its own record.
 

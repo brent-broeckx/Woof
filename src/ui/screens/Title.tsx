@@ -1,7 +1,9 @@
 import { TOTAL_LEVELS } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
 import { currentStreak } from '../../core/progression/daily';
-import { nextUnplayed, useSave } from '../../store/saveStore';
+import { badgeInput, nextUnplayed, useSave } from '../../store/saveStore';
+import { claimableCount } from '../../core/progression/badges';
+import { isoWeekKey } from '../../core/progression/boss';
 import { DogFace } from '../components/DogFace';
 import { DEBUG_AVAILABLE } from '../../debug/debugStore';
 import { PupWidget } from '../components/PupWidget';
@@ -21,6 +23,8 @@ export function Title() {
   const pup = usePup();
   const yard = useYard(15_000);
   const tripsReady = useTripsReady();
+  const badgeClaims = useSave((s) => claimableCount(badgeInput(s), s.badges));
+  const bossBeaten = useSave((s) => !!s.boss.records[isoWeekKey()]);
 
   return (
     <div className="screen title-screen">
@@ -59,10 +63,16 @@ export function Title() {
           <button className="btn" onClick={() => go({ name: 'arcade' })}>
             🕹️ Arcade
           </button>
+          <button className="btn" onClick={() => go({ name: 'boss' })}>
+            🏔️ Boss{bossBeaten ? ' ✓' : ''}
+          </button>
         </div>
-        <div className="row">
+        <div className="row three">
           <button className="btn" onClick={() => go({ name: 'kennel' })}>
             🏠 Kennel
+          </button>
+          <button className="btn" onClick={() => go({ name: 'badges' })}>
+            🏅 Badges{badgeClaims > 0 && <span className="yard-badge">{badgeClaims}</span>}
           </button>
           <button className="btn" onClick={() => go({ name: 'stats' })}>
             📊 Stats

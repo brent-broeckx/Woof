@@ -140,3 +140,36 @@ test('arcade unlocks games from cleared bonus parks', async ({ page }) => {
   await page.getByRole('button', { name: 'Back to Arcade' }).click();
   await expect(page.getByText(/Today's kibble/)).toBeVisible();
 });
+
+test('claims a badge tier for rewards', async ({ page }) => {
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.stats = { ...raw.state.stats, totals: { ...raw.state.stats.totals, puzzlesSolved: 12 } };
+    raw.state.treats = 0;
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Badges/ }).click();
+  const card = page.getByLabel('Puzzle Pro badge');
+  await expect(card.getByText('12/100')).toBeVisible();
+  await card.getByRole('button', { name: 'Claim' }).click();
+  await expect(page.getByRole('heading', { name: '🏅 Puzzle Pro' })).toBeVisible();
+  await page.getByRole('button', { name: 'Woof!' }).click();
+  await expect(card.getByRole('button', { name: 'Claim' })).toHaveCount(0);
+  await expect(page.locator('.chip').first()).toHaveText(/^1\/\d+$/);
+});
+
+test('weekly boss unlocks after world 1', async ({ page }) => {
+  await page.getByRole('button', { name: /Boss/ }).click();
+  await expect(page.getByText(/Finish World 1/)).toBeVisible();
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.progress = Object.fromEntries(Array.from({ length: 25 }, (_, i) => [i + 1, { stars: 3 }]));
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Boss/ }).click();
+  await page.getByRole('button', { name: 'Start the climb' }).click({ timeout: 15000 });
+  await expect(page.locator('.level-title')).toHaveText('Weekly Boss');
+  await expect(page.locator('.cell')).toHaveCount(100);
+});

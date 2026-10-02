@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ACCESSORIES, BOARD_THEMES } from '../../core/economy/cosmetics';
+import { badgeForCosmetic, TIER_ICONS } from '../../core/progression/badges';
 import { POWER_UPS, POWER_UP_IDS } from '../../core/economy/powerups';
 import { useNav } from '../../store/navStore';
 import { useSave } from '../../store/saveStore';
@@ -31,6 +32,13 @@ export function Kennel() {
         <button className="btn small" onClick={equip}>
           Use
         </button>
+      );
+    const fromBadge = badgeForCosmetic(id);
+    if (fromBadge)
+      return (
+        <span className="chip locked" title={`Earn the ${fromBadge.badge.name} badge to unlock`}>
+          🔒 {TIER_ICONS[fromBadge.tier - 1]} {fromBadge.badge.name}
+        </span>
       );
     return (
       <button
@@ -104,7 +112,9 @@ export function Kennel() {
                 <div className="name">
                   {t.icon} {t.name}
                 </div>
-                <div className="desc">{t.price ? 'A fresh look for every yard.' : 'The original pastel yards.'}</div>
+                <div className="desc">
+                  {t.badgeOnly ? "A badge reward — can't be bought." : t.price ? 'A fresh look for every yard.' : 'The original pastel yards.'}
+                </div>
               </div>
               {cosmeticButton(t.id, t.price, cosmetics.boardTheme === t.id, () => equipTheme(t.id))}
             </div>
@@ -123,7 +133,7 @@ export function Kennel() {
                 <div className="name">
                   {a.icon} {a.name}
                 </div>
-                <div className="desc">Worn by every pup you place on the board.</div>
+                <div className="desc">{a.badgeOnly ? "A badge reward — can't be bought." : 'Worn by every pup you place on the board.'}</div>
               </div>
               {cosmeticButton(a.id, a.price, cosmetics.accessory === a.id, () => equipAccessory(a.id))}
             </div>

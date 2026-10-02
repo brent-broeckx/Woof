@@ -2581,3 +2581,112 @@ kbd {
 .medal.m3 {
   animation: pop 0.4s ease;
 }
+
+/* ---------- Weekly boss & badges ---------- */
+.boss-week {
+  margin: 6px 0 10px;
+}
+.badges-screen > p {
+  margin: 4px 0 10px;
+}
+.badge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.badge-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 2px 6px rgba(90, 60, 40, 0.1);
+}
+.badge-card.tier-0 .badge-icon {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.badge-card.claimable {
+  outline: 2px solid #f1c46b;
+}
+.badge-icon {
+  position: relative;
+  font-size: 1.9rem;
+  width: 44px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.badge-tier {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-size: 1rem;
+}
+.badge-info {
+  flex: 1;
+  min-width: 0;
+}
+.badge-info .name {
+  font-weight: 700;
+}
+.badge-info .desc {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.badge-info .bar {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(90, 60, 40, 0.12);
+  overflow: hidden;
+  margin: 5px 0 3px;
+}
+.badge-info .bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #f1c46b, #e8805a);
+  transition: width 0.5s ease;
+}
+.badge-foot {
+  font-size: 0.75rem;
+}
+.badge-showcase .badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.badge-mini {
+  position: relative;
+  font-size: 1.5rem;
+  width: 36px;
+  text-align: center;
+}
+.badge-mini small {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-size: 0.75rem;
+}
+.badge-mini.dim {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+.chip.locked {
+  opacity: 0.7;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.title-buttons .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.title-buttons .row.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+.title-buttons .row .btn {
+  padding-left: 6px;
+  padding-right: 6px;
+  white-space: nowrap;
+}

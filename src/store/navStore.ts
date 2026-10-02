@@ -19,6 +19,8 @@ export type Screen =
   | { name: 'expeditions' }
   | { name: 'album' }
   | { name: 'arcade' }
+  | { name: 'boss' }
+  | { name: 'badges' }
   | { name: 'arcadePlay'; game: MiniGameId; difficulty: ArcadeDifficulty }
   | { name: 'debug' }
   | { name: 'debugGame'; game: MiniGameId; tier: number; seed: number };

@@ -70,6 +70,32 @@ function Accessory({ id }: { id: AccessoryId }) {
           <circle cx="50" cy="22" r="3" fill="#e53950" />
         </g>
       );
+    case 'medal':
+      return (
+        <g>
+          <path d="M38 78 L46 94 M62 78 L54 94" stroke="#3d6fd8" strokeWidth="5" strokeLinecap="round" />
+          <circle cx="50" cy="94" r="7" fill="#ffc933" stroke="#c9901a" strokeWidth="2" />
+          <path d="M50 90 L51.4 93 L54.6 93.2 L52.1 95.2 L53 98.3 L50 96.5 L47 98.3 L47.9 95.2 L45.4 93.2 L48.6 93 Z" fill="#fff4c2" />
+        </g>
+      );
+    case 'laurel':
+      return (
+        <g fill="#5fa14a" stroke="#3e7a2f" strokeWidth="1">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <g key={i}>
+              <ellipse cx={30 + i * 4} cy={26 - i * 3.2} rx="5" ry="2.6" transform={`rotate(${-40 + i * 10} ${30 + i * 4} ${26 - i * 3.2})`} />
+              <ellipse cx={70 - i * 4} cy={26 - i * 3.2} rx="5" ry="2.6" transform={`rotate(${40 - i * 10} ${70 - i * 4} ${26 - i * 3.2})`} />
+            </g>
+          ))}
+        </g>
+      );
+    case 'cape':
+      return (
+        <g>
+          <path d="M24 78 Q50 90 76 78 L84 100 L16 100 Z" fill="#e53950" stroke="#a51f34" strokeWidth="1.5" />
+          <circle cx="50" cy="86" r="5" fill="#ffc933" stroke="#c9901a" strokeWidth="1.5" />
+        </g>
+      );
     default:
       return null;
   }

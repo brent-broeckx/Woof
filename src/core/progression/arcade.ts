@@ -9,6 +9,9 @@ export const ARCADE_DIFFICULTIES = [
   { id: 'legend', name: 'Legend', tier: 20 },
 ] as const;
 
+/** Every game × difficulty combination (one medal each). */
+export const ARCADE_SLOTS = MINI_GAME_IDS.length * ARCADE_DIFFICULTIES.length;
+
 export type ArcadeDifficulty = (typeof ARCADE_DIFFICULTIES)[number]['id'];
 
 /** Kibble the Arcade can pay out per local day. */
