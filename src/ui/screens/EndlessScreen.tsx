@@ -54,7 +54,7 @@ export function EndlessScreen() {
     <div className="screen endless-screen">
       <TopBar onBack={() => go({ name: 'title' })} title="♾️ Endless Park" />
       <div className="card">
-        <p className="muted center">Freshly generated puzzles, as many as you like. Every solve earns a few treats.</p>
+        <p className="muted center">Freshly generated puzzles, as many as you like. Every solve earns a little kibble.</p>
         <h3>Board size</h3>
         <div className="chip-row">
           {SIZES.map((s) => (

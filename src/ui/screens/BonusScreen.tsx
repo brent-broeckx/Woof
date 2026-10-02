@@ -9,7 +9,8 @@ import { Confetti } from '../components/Confetti';
 import { Modal, Stars, TopBar } from '../components/common';
 
 type BonusLevel = Extract<LevelEntry, { kind: 'bonus' }>;
-type Phase = { name: 'intro' } | { name: 'play'; attempt: number } | { name: 'result'; result: MiniGameResult; items: PowerUpId[]; stars: number };
+type Phase =
+  { name: 'intro' } | { name: 'play'; attempt: number } | { name: 'result'; result: MiniGameResult; items: PowerUpId[]; kibble: number; stars: number };
 
 /** `debug` plays a mini-game from the dev debug screen without touching the save. */
 export function BonusScreen({ level, debug = false }: { level: BonusLevel; debug?: boolean }) {
@@ -23,8 +24,8 @@ export function BonusScreen({ level, debug = false }: { level: BonusLevel; debug
 
   const finish = (result: MiniGameResult) => {
     const stars = Math.max(1, result.stars);
-    const items = debug ? [] : useSave.getState().completeBonus(level.id, level.game, stars).items;
-    setPhase({ name: 'result', result, items, stars });
+    const { items, kibble } = debug ? { items: [], kibble: 0 } : useSave.getState().completeBonus(level.id, level.game, stars);
+    setPhase({ name: 'result', result, items, kibble, stars });
     sfx('win');
     window.setTimeout(() => sfx('reward'), 600);
   };
@@ -106,6 +107,7 @@ export function BonusScreen({ level, debug = false }: { level: BonusLevel; debug
           <h2>{phase.result.stars >= 3 ? 'Pawsome!' : phase.result.stars >= 2 ? 'Good dog!' : 'Nice try!'}</h2>
           <Stars count={phase.stars} animate />
           <p className="result-line">{phase.result.summary}</p>
+          {phase.kibble > 0 && <p className="reward">+{phase.kibble} 🥣 kibble</p>}
           {phase.items.length > 0 ? (
             <>
               <p>You earned:</p>

@@ -3,7 +3,7 @@ import { createMemoryState, flipMemoryCard, generateMemoryPuzzle, memoryFetchCon
 
 describe('memoryFetch', () => {
   it('generates deterministic solvable decks', () => {
-    for (const tier of [1, 8, 12, 20]) {
+    for (const tier of [1, 8, 12, 20, 25]) {
       const config = memoryFetchConfigForTier(tier);
       const a = generateMemoryPuzzle(config, 55);
       const b = generateMemoryPuzzle(config, 55);
@@ -15,7 +15,7 @@ describe('memoryFetch', () => {
   });
 
   it('gives every pair a visually unique face', () => {
-    for (const tier of [1, 4, 8, 12, 16, 20]) {
+    for (const tier of [1, 4, 8, 12, 16, 20, 25]) {
       const puzzle = generateMemoryPuzzle(memoryFetchConfigForTier(tier), 9);
       const faces = new Map<string, string>();
       for (const card of puzzle.cards.filter((c) => c.kind === 'dog')) {

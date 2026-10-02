@@ -14,7 +14,7 @@ import {
 
 describe('Pipe Sprinklers', () => {
   it('generates deterministic puzzles whose solution waters every tile without leaks', () => {
-    for (const tier of [1, 6, 12, 20]) {
+    for (const tier of [1, 6, 12, 20, 25]) {
       for (const seed of [5, 44, 2026]) {
         const config = pipeSprinklersConfigForTier(tier);
         const a = generatePipeSprinklersPuzzle(config, seed);

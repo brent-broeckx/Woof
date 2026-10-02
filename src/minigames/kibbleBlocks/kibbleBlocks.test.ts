@@ -18,7 +18,7 @@ describe('kibbleBlocks', () => {
   });
 
   it('has a scripted solvable route for several tiers and seeds', () => {
-    for (const tier of [1, 6, 12, 20]) {
+    for (const tier of [1, 6, 12, 20, 25]) {
       for (const seed of [10, 99, 2026]) {
         const puzzle = generateKibblePuzzle(kibbleBlocksConfigForTier(tier), seed);
         let state = createKibbleState(puzzle);

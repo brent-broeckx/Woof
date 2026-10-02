@@ -2,13 +2,6 @@ import type { MiniGameId } from '../progression/levels';
 import { createRng, hashSeed } from '../rng';
 import { POWER_UPS, POWER_UP_IDS, type PowerUpId, type Rarity } from './powerups';
 
-/** Treats for main puzzle levels by star count (only the improvement over your best is paid). */
-export const TREATS_BY_STARS = [0, 5, 10, 20];
-
-export function treatsForImprovement(oldStars: number, newStars: number): number {
-  return Math.max(0, TREATS_BY_STARS[newStars] - TREATS_BY_STARS[oldStars]);
-}
-
 export const RARITY_WEIGHTS: Record<1 | 2 | 3, Record<Rarity, number>> = {
   1: { common: 80, uncommon: 20, rare: 0, epic: 0 },
   2: { common: 60, uncommon: 30, rare: 10, epic: 0 },

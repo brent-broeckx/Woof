@@ -74,6 +74,24 @@ export function DebugScreen() {
           <button className="btn" onClick={() => useSave.setState((s) => ({ treats: s.treats + 1000 }))}>
             +1000 🍖
           </button>
+          <button className="btn" onClick={() => useSave.getState().debugAddKibble(100)}>
+            +100 🥣
+          </button>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3>Time travel</h3>
+        <p className="muted">Pretends this much time passed (hunger, production, timers). Reload the page to see the “missed you” greeting.</p>
+        <div className="row">
+          {[1, 8, 24].map((h) => (
+            <button key={h} className="btn" onClick={() => useSave.getState().debugTimeTravel(h * 3_600_000)}>
+              +{h}h
+            </button>
+          ))}
+          <button className="btn danger" onClick={() => useSave.setState({ pup: null })}>
+            Re-adopt pup
+          </button>
         </div>
       </div>
     </div>

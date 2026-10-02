@@ -1,37 +1,12 @@
 import { memo } from 'react';
 import type { AccessoryId } from '../../core/economy/cosmetics';
+import { BOARD_BREED_COUNT, BREED_CATALOG, breedById, type BreedLook } from '../../core/pet/breeds';
 
-export interface Breed {
-  name: string;
-  fur: string;
-  ear: string;
-  muzzle: string;
-  ears: 'pointy' | 'floppy' | 'round';
-  patch?: string;
-  spots?: boolean;
-  /** Pale cheek/eyebrow markings (e.g. Shiba urajiro). */
-  cheeks?: string;
-}
-
-/** One breed per yard colour (same order as REGION_COLORS). */
-export const BREEDS: Breed[] = [
-  { name: 'Corgi', fur: '#f2a65a', ear: '#e08a3c', muzzle: '#fff4e6', ears: 'pointy' },
-  { name: 'Husky', fur: '#8e9aab', ear: '#6b7688', muzzle: '#ffffff', ears: 'pointy', patch: '#ffffff' },
-  { name: 'Dachshund', fur: '#a0643b', ear: '#7a4726', muzzle: '#c98b5e', ears: 'floppy' },
-  { name: 'Poodle', fur: '#f4efe6', ear: '#e6dccb', muzzle: '#fbf8f2', ears: 'round' },
-  { name: 'Shiba', fur: '#d2602a', ear: '#a9441a', muzzle: '#fff4e4', ears: 'pointy', cheeks: '#fff4e4' },
-  { name: 'Beagle', fur: '#f0dcc0', ear: '#9a5b2e', muzzle: '#ffffff', ears: 'floppy', patch: '#c7813f' },
-  { name: 'Pug', fur: '#e8cfa3', ear: '#4a3b30', muzzle: '#5a483b', ears: 'floppy' },
-  { name: 'Dalmatian', fur: '#ffffff', ear: '#3a3a3a', muzzle: '#ffffff', ears: 'floppy', spots: true },
-  { name: 'Golden', fur: '#f1c46b', ear: '#d9a444', muzzle: '#f7dca3', ears: 'floppy' },
-  { name: 'Frenchie', fur: '#c9c1b6', ear: '#a79c8e', muzzle: '#e9e3da', ears: 'round', patch: '#6e645a' },
-  { name: 'Collie', fur: '#3d3431', ear: '#2a2321', muzzle: '#ffffff', ears: 'pointy', patch: '#ffffff' },
-];
-
-export const breedFor = (index: number) => BREEDS[index % BREEDS.length];
+/** Board breeds are addressed by colour index; collection dogs by breed id. */
+const lookFor = (breed: number | string): BreedLook => (typeof breed === 'string' ? breedById(breed).look : BREED_CATALOG[breed % BOARD_BREED_COUNT].look);
 
 interface DogFaceProps {
-  breed: number;
+  breed: number | string;
   mood?: 'happy' | 'sad' | 'calm';
   className?: string;
   accessory?: AccessoryId;
@@ -95,16 +70,105 @@ function Accessory({ id }: { id: AccessoryId }) {
           <circle cx="50" cy="22" r="3" fill="#e53950" />
         </g>
       );
+    case 'medal':
+      return (
+        <g>
+          <path d="M38 78 L46 94 M62 78 L54 94" stroke="#3d6fd8" strokeWidth="5" strokeLinecap="round" />
+          <circle cx="50" cy="94" r="7" fill="#ffc933" stroke="#c9901a" strokeWidth="2" />
+          <path d="M50 90 L51.4 93 L54.6 93.2 L52.1 95.2 L53 98.3 L50 96.5 L47 98.3 L47.9 95.2 L45.4 93.2 L48.6 93 Z" fill="#fff4c2" />
+        </g>
+      );
+    case 'laurel':
+      return (
+        <g fill="#5fa14a" stroke="#3e7a2f" strokeWidth="1">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <g key={i}>
+              <ellipse cx={30 + i * 4} cy={26 - i * 3.2} rx="5" ry="2.6" transform={`rotate(${-40 + i * 10} ${30 + i * 4} ${26 - i * 3.2})`} />
+              <ellipse cx={70 - i * 4} cy={26 - i * 3.2} rx="5" ry="2.6" transform={`rotate(${40 - i * 10} ${70 - i * 4} ${26 - i * 3.2})`} />
+            </g>
+          ))}
+        </g>
+      );
+    case 'cape':
+      return (
+        <g>
+          <path d="M24 78 Q50 90 76 78 L84 100 L16 100 Z" fill="#e53950" stroke="#a51f34" strokeWidth="1.5" />
+          <circle cx="50" cy="86" r="5" fill="#ffc933" stroke="#c9901a" strokeWidth="1.5" />
+        </g>
+      );
+    case 'catEars':
+      return (
+        <g stroke="#2d2320" strokeWidth="2" strokeLinejoin="round">
+          <path d="M30 30 L34 6 L48 24 Z" fill="#9a9a9a" />
+          <path d="M70 30 L66 6 L52 24 Z" fill="#9a9a9a" />
+          <path d="M34 25 L36 13 L43 22 Z" fill="#f7a8c4" stroke="none" />
+          <path d="M66 25 L64 13 L57 22 Z" fill="#f7a8c4" stroke="none" />
+        </g>
+      );
+    case 'scarf':
+      return (
+        <g>
+          <path d="M26 78 Q50 92 74 78 L74 87 Q50 101 26 87 Z" fill="#4fb87a" />
+          <rect x="58" y="86" width="9" height="14" rx="2" fill="#4fb87a" />
+          <path d="M34 84 L36 92 M46 87 L47 95 M58 86 L58 94" stroke="#e9f7ee" strokeWidth="2.4" />
+        </g>
+      );
+    case 'beanie':
+      return (
+        <g>
+          <path d="M28 30 Q28 6 50 6 Q72 6 72 30 Z" fill="#4f8fb8" />
+          <rect x="26" y="24" width="48" height="9" rx="4.5" fill="#e9eef5" />
+          <path d="M40 10 L40 24 M50 7 L50 24 M60 10 L60 24" stroke="#3d7399" strokeWidth="2" />
+          <circle cx="50" cy="5" r="5.5" fill="#fff" />
+        </g>
+      );
+    case 'sunhat':
+      return (
+        <g stroke="#c9a24a" strokeWidth="1.5">
+          <ellipse cx="50" cy="28" rx="34" ry="7" fill="#f4d58d" />
+          <path d="M35 28 Q35 8 50 8 Q65 8 65 28 Z" fill="#f4d58d" />
+          <rect x="35" y="20" width="30" height="5" fill="#e86a8a" stroke="none" />
+          <circle cx="66" cy="22" r="3.4" fill="#fff" stroke="#e86a8a" />
+        </g>
+      );
+    case 'headphones':
+      return (
+        <g>
+          <path d="M22 52 Q22 12 50 12 Q78 12 78 52" stroke="#333" strokeWidth="5" fill="none" />
+          <rect x="14" y="42" width="13" height="22" rx="5" fill="#ff6fa8" stroke="#333" strokeWidth="2" />
+          <rect x="73" y="42" width="13" height="22" rx="5" fill="#ff6fa8" stroke="#333" strokeWidth="2" />
+        </g>
+      );
+    case 'pirate':
+      return (
+        <g>
+          <path d="M24 30 Q50 -6 76 30 Q50 22 24 30 Z" fill="#222" />
+          <circle cx="50" cy="16" r="4.5" fill="#fff" />
+          <path d="M44 22 L56 26 M56 22 L44 26" stroke="#fff" strokeWidth="1.8" />
+          <circle cx="62" cy="51" r="7.5" fill="#222" />
+          <path d="M30 38 L56 47 M68 46 L80 40" stroke="#222" strokeWidth="2" />
+        </g>
+      );
+    case 'wizard':
+      return (
+        <g>
+          <path d="M34 30 L58 -4 L66 30 Z" fill="#3d3a9e" />
+          <ellipse cx="50" cy="30" rx="24" ry="5" fill="#2e2b80" />
+          <path d="M48 16 l1.4 3 l3 1.4 l-3 1.4 l-1.4 3 l-1.4 -3 l-3 -1.4 l3 -1.4 Z" fill="#ffd23f" />
+          <circle cx="58" cy="10" r="1.8" fill="#ffd23f" />
+          <circle cx="56" cy="24" r="1.4" fill="#ffd23f" />
+        </g>
+      );
     default:
       return null;
   }
 }
 
 export const DogFace = memo(function DogFace({ breed, mood = 'happy', className, accessory = 'none' }: DogFaceProps) {
-  const b = breedFor(breed);
+  const b = lookFor(breed);
   const dark = '#2d2320';
   return (
-    <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className={className} aria-hidden="true">
       {b.ears === 'pointy' && (
         <g fill={b.ear}>
           <path d="M20 46 L26 8 L48 30 Z" />
@@ -160,6 +224,12 @@ export const DogFace = memo(function DogFace({ breed, mood = 'happy', className,
       <ellipse cx="50" cy="64" rx="6.5" ry="4.8" fill={dark} />
       {mood === 'happy' && <path d="M45 74 Q50 84 55 74 Z" fill="#f28b9b" />}
       <path d={mood === 'sad' ? 'M43 78 Q50 73 57 78' : 'M42 71 Q46 75 50 71 Q54 75 58 71'} stroke={dark} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      {b.sparkle && (
+        <g fill="#fff" className="dog-sparkle">
+          <path d="M16 20 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2 Z" />
+          <path d="M84 70 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5 l4 -1.5 Z" />
+        </g>
+      )}
       {accessory !== 'none' && <Accessory id={accessory} />}
     </svg>
   );

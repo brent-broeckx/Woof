@@ -4,8 +4,11 @@ import type { Puzzle } from './types';
  * Exact backtracking solver. Returns up to `limit` solutions
  * (each solution = column of the dog per row).
  */
-export function findSolutions(puzzle: Pick<Puzzle, 'size' | 'regions'>, limit = 2): number[][] {
+type Shape = Pick<Puzzle, 'size' | 'regions' | 'cats'>;
+
+export function findSolutions(puzzle: Shape, limit = 2): number[][] {
   const { size, regions } = puzzle;
+  const blocked = new Set(puzzle.cats ?? []);
   const results: number[][] = [];
   const current: number[] = new Array(size).fill(-1);
 
@@ -18,6 +21,7 @@ export function findSolutions(puzzle: Pick<Puzzle, 'size' | 'regions'>, limit = 
     for (let col = 0; col < size; col++) {
       if (usedCols & (1 << col)) continue;
       if (prevCol >= 0 && Math.abs(prevCol - col) <= 1) continue;
+      if (blocked.has(row * size + col)) continue;
       const reg = regions[row * size + col];
       if (usedRegions & (1 << reg)) continue;
       current[row] = col;
@@ -29,19 +33,20 @@ export function findSolutions(puzzle: Pick<Puzzle, 'size' | 'regions'>, limit = 
   return results;
 }
 
-export function countSolutions(puzzle: Pick<Puzzle, 'size' | 'regions'>, limit = 2): number {
+export function countSolutions(puzzle: Shape, limit = 2): number {
   return findSolutions(puzzle, limit).length;
 }
 
 /** Checks a full placement against all rules. */
-export function isValidSolution(puzzle: Pick<Puzzle, 'size' | 'regions'>, solution: number[]): boolean {
+export function isValidSolution(puzzle: Shape, solution: number[]): boolean {
   const { size, regions } = puzzle;
+  const blocked = new Set(puzzle.cats ?? []);
   if (solution.length !== size) return false;
   const cols = new Set<number>();
   const regs = new Set<number>();
   for (let r = 0; r < size; r++) {
     const c = solution[r];
-    if (c < 0 || c >= size || cols.has(c)) return false;
+    if (c < 0 || c >= size || cols.has(c) || blocked.has(r * size + c)) return false;
     cols.add(c);
     const reg = regions[r * size + c];
     if (regs.has(reg)) return false;

@@ -33,7 +33,7 @@ export interface LogicState {
   unitDone: boolean[];
 }
 
-export function createLogicState(puzzle: Pick<Puzzle, 'size' | 'regions'>, dogCells: number[] = []): LogicState {
+export function createLogicState(puzzle: Pick<Puzzle, 'size' | 'regions' | 'cats'>, dogCells: number[] = []): LogicState {
   const { size, regions } = puzzle;
   const state: LogicState = {
     size,
@@ -43,6 +43,7 @@ export function createLogicState(puzzle: Pick<Puzzle, 'size' | 'regions'>, dogCe
     dogs: new Array(size * size).fill(false),
     unitDone: new Array(size * 3).fill(false),
   };
+  for (const cat of puzzle.cats ?? []) state.cand[cat] = false;
   for (const cell of dogCells) placeDog(state, cell);
   return state;
 }
@@ -317,7 +318,7 @@ export interface LogicSolveResult {
   deductions: Deduction[];
 }
 
-export function solveLogically(puzzle: Pick<Puzzle, 'size' | 'regions'>, maxDifficulty = 6): LogicSolveResult {
+export function solveLogically(puzzle: Pick<Puzzle, 'size' | 'regions' | 'cats'>, maxDifficulty = 6): LogicSolveResult {
   const s = createLogicState(puzzle);
   const deductions: Deduction[] = [];
   const steps: Partial<Record<TechniqueId, number>> = {};
