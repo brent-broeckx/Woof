@@ -1,4 +1,5 @@
 /** Cosmetics bought with treats in the Kennel. Purely visual. */
+import { decorById } from './decor';
 
 export interface BoardTheme {
   id: string;
@@ -81,7 +82,25 @@ export const BOARD_THEMES: BoardTheme[] = [
 /** Colour-blind friendly high-contrast palette (Okabe–Ito based + extras). */
 export const HIGH_CONTRAST_COLORS = ['#e69f00', '#56b4e9', '#f0e442', '#009e73', '#cc79a7', '#d55e00', '#0072b2', '#ffffff', '#999999', '#a6761d', '#b3de69'];
 
-export type AccessoryId = 'none' | 'bandana' | 'bow' | 'partyHat' | 'glasses' | 'crown' | 'flower' | 'tophat' | 'medal' | 'laurel' | 'cape' | 'catEars';
+export type AccessoryId =
+  | 'none'
+  | 'bandana'
+  | 'bow'
+  | 'partyHat'
+  | 'glasses'
+  | 'crown'
+  | 'flower'
+  | 'tophat'
+  | 'medal'
+  | 'laurel'
+  | 'cape'
+  | 'catEars'
+  | 'scarf'
+  | 'beanie'
+  | 'sunhat'
+  | 'headphones'
+  | 'pirate'
+  | 'wizard';
 
 export interface Accessory {
   id: AccessoryId;
@@ -95,10 +114,16 @@ export const ACCESSORIES: Accessory[] = [
   { id: 'none', name: 'Just the pup', icon: '🐶', price: 0 },
   { id: 'bandana', name: 'Red Bandana', icon: '🧣', price: 100 },
   { id: 'bow', name: 'Pink Bow', icon: '🎀', price: 120 },
+  { id: 'scarf', name: 'Cozy Scarf', icon: '🧶', price: 120 },
   { id: 'flower', name: 'Daisy', icon: '🌼', price: 120 },
+  { id: 'beanie', name: 'Winter Beanie', icon: '❄️', price: 140 },
+  { id: 'sunhat', name: 'Sun Hat', icon: '👒', price: 160 },
   { id: 'glasses', name: 'Cool Shades', icon: '🕶️', price: 180 },
   { id: 'partyHat', name: 'Party Hat', icon: '🥳', price: 200 },
+  { id: 'headphones', name: 'Headphones', icon: '🎧', price: 220 },
   { id: 'tophat', name: 'Top Hat', icon: '🎩', price: 260 },
+  { id: 'pirate', name: 'Pirate Hat', icon: '🏴‍☠️', price: 280 },
+  { id: 'wizard', name: 'Wizard Hat', icon: '🧙', price: 350 },
   { id: 'crown', name: 'Royal Crown', icon: '👑', price: 400 },
   { id: 'medal', name: 'Gold Medal', icon: '🏅', price: 0, badgeOnly: true },
   { id: 'laurel', name: 'Laurel Wreath', icon: '🌿', price: 0, badgeOnly: true },
@@ -111,6 +136,8 @@ const cosmeticDef = (id: string) => BOARD_THEMES.find((t) => t.id === id) ?? ACC
 export const isBadgeCosmetic = (id: string) => !!cosmeticDef(id)?.badgeOnly;
 /** Treat price; Infinity for unknown and badge-only cosmetics. */
 export function cosmeticPrice(id: string): number {
+  const decor = decorById(id);
+  if (decor) return decor.world ? Infinity : decor.price;
   const def = cosmeticDef(id);
   return !def || def.badgeOnly ? Infinity : def.price;
 }

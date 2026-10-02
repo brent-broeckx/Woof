@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ACCESSORIES, BOARD_THEMES } from '../../core/economy/cosmetics';
+import { DECOR, decorUnlocked } from '../../core/economy/decor';
+import { WORLDS } from '../../core/progression/levels';
 import { badgeForCosmetic, TIER_ICONS } from '../../core/progression/badges';
 import { POWER_UPS, POWER_UP_IDS } from '../../core/economy/powerups';
 import { useNav } from '../../store/navStore';
@@ -8,13 +10,14 @@ import { sfx } from '../audio';
 import { DogFace } from '../components/DogFace';
 import { TopBar } from '../components/common';
 
-type Tab = 'powerups' | 'themes' | 'accessories';
+type Tab = 'powerups' | 'themes' | 'accessories' | 'decor';
 
 export function Kennel() {
   const go = useNav((s) => s.go);
   const inventory = useSave((s) => s.inventory);
   const treats = useSave((s) => s.treats);
   const cosmetics = useSave((s) => s.cosmetics);
+  const chests = useSave((s) => s.chests);
   const { buyPowerUp, buyCosmetic, equipTheme, equipAccessory } = useSave.getState();
   const [tab, setTab] = useState<Tab>('powerups');
   const [flash, setFlash] = useState<string | null>(null);
@@ -65,6 +68,7 @@ export function Kennel() {
             ['powerups', '⚡ Power-ups'],
             ['themes', '🎨 Boards'],
             ['accessories', '🎀 Outfits'],
+            ['decor', '🌳 Decor'],
           ] as [Tab, string][]
         ).map(([id, label]) => (
           <button key={id} role="tab" aria-selected={tab === id} className={`tab ${tab === id ? 'on' : ''}`} onClick={() => setTab(id)}>
@@ -139,6 +143,40 @@ export function Kennel() {
             </div>
           ))}
         </div>
+      )}
+
+      {tab === 'decor' && (
+        <>
+          <p className="muted center">Decor is just for looks. Place it with 🎨 Decorate in the 🏡 Yard.</p>
+          <div className="kennel-list">
+            {DECOR.map((d) => {
+              const unlocked = decorUnlocked(d.id, cosmetics.owned, chests);
+              const world = d.world ? WORLDS[d.world - 1] : undefined;
+              return (
+                <div key={d.id} className={`kennel-item ${flash === d.id ? 'flash' : ''}`}>
+                  <div className="icon decor-icon">{d.emoji}</div>
+                  <div className="info">
+                    <div className="name">{d.name}</div>
+                    <div className="desc">
+                      {world ? `A souvenir from the ${world.name} chest.` : d.price ? 'Brightens up the yard.' : 'Part of every yard.'}
+                    </div>
+                  </div>
+                  {unlocked ? (
+                    <span className="chip on">Owned</span>
+                  ) : world ? (
+                    <span className="chip locked">
+                      🔒 {world.emoji} World {world.id}
+                    </span>
+                  ) : (
+                    <button className="btn small" disabled={treats < d.price} onClick={() => buyCosmetic(d.id) && bought(d.id)}>
+                      🍖 {d.price}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

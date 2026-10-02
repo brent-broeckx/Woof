@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { POWER_UPS, POWER_UP_IDS, type PowerUpId } from '../core/economy/powerups';
 import { ACCESSORIES, BOARD_THEMES, cosmeticPrice, type AccessoryId } from '../core/economy/cosmetics';
+import { DECOR_SLOTS, decorUnlocked, defaultLayout, normalizeLayout, type DecorLayout } from '../core/economy/decor';
 import { rollBonusReward, rollChest, rollDailyItem } from '../core/economy/rewards';
 import { applyDailyCompletion, dateKey, emptyDaily, type DailyRecord } from '../core/progression/daily';
 import { emptyArcade, normalizeArcade, recordArcadeRun, type ArcadeDifficulty, type ArcadeRun, type ArcadeState } from '../core/progression/arcade';
@@ -99,6 +100,8 @@ export interface Cosmetics {
   owned: string[];
   boardTheme: string;
   accessory: AccessoryId;
+  /** Decor item per yard grid slot (row by row). */
+  decor: DecorLayout;
 }
 
 export interface PuzzleOutcome {
@@ -173,6 +176,8 @@ interface SaveActions {
   buyCosmetic(id: string): boolean;
   equipTheme(id: string): void;
   equipAccessory(id: AccessoryId): void;
+  /** Puts an unlocked decor item in a yard slot (null clears it). */
+  placeDecor(slot: number, id: string | null): boolean;
   completeBonus(levelId: number, game: MiniGameId, stars: number): { items: PowerUpId[]; kibble: number };
   adoptPup(name: string, breed: string): void;
   /** Spend kibble on one bowl. Fails if broke, full or no pup. */
@@ -234,7 +239,7 @@ const emptyTotals = (): Totals => ({
   flawless: 0,
 });
 const emptyLevelStats = (): LevelStats => ({ attempts: 0, wins: 0, losses: 0, mistakes: 0, powerUps: 0, totalMs: 0 });
-const defaultCosmetics = (): Cosmetics => ({ owned: ['classic', 'none'], boardTheme: 'classic', accessory: 'none' });
+const defaultCosmetics = (): Cosmetics => ({ owned: ['classic', 'none'], boardTheme: 'classic', accessory: 'none', decor: defaultLayout() });
 
 /** Add a finished puzzle to the running totals. */
 function addTotals(t: Totals, o: PuzzleOutcome, patch: Partial<Totals> = {}): Totals {
@@ -356,7 +361,7 @@ function mergeNested(p: Partial<SaveData>) {
   return {
     inventory: sanitizeInventory(p.inventory),
     settings: { ...DEFAULT_SETTINGS, ...p.settings },
-    cosmetics: { ...defaultCosmetics(), ...p.cosmetics },
+    cosmetics: { ...defaultCosmetics(), ...p.cosmetics, decor: normalizeLayout(p.cosmetics?.decor) },
     chests: { ...p.chests },
     daily: { ...emptyDaily(), ...p.daily },
     stats: { levels: { ...p.stats?.levels }, totals: { ...emptyTotals(), ...p.stats?.totals } },
@@ -494,6 +499,16 @@ export const useSave = create<SaveData & SaveActions>()(
       equipAccessory(id) {
         if (!get().cosmetics.owned.includes(id) || !ACCESSORIES.some((a) => a.id === id)) return;
         set((s) => ({ cosmetics: { ...s.cosmetics, accessory: id } }));
+      },
+
+      placeDecor(slot, id) {
+        const s = get();
+        if (!Number.isInteger(slot) || slot < 0 || slot >= DECOR_SLOTS) return false;
+        if (id !== null && !decorUnlocked(id, s.cosmetics.owned, s.chests)) return false;
+        const decor = [...s.cosmetics.decor];
+        decor[slot] = id;
+        set({ cosmetics: { ...s.cosmetics, decor } });
+        return true;
       },
 
       completeBonus(levelId, game, stars) {

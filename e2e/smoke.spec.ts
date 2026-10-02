@@ -196,3 +196,32 @@ test('the map shows the Snowy Woods world', async ({ page }) => {
   await page.getByRole('button', { name: /Level map/ }).click();
   await expect(page.getByText(/Snowy Woods/)).toBeVisible();
 });
+
+test('decorates the yard and takes a photo', async ({ page }) => {
+  await page.getByRole('button', { name: /Yard/ }).click();
+  await page.getByRole('button', { name: '🎨 Decorate' }).click();
+  await page.locator('.decor-choice', { hasText: 'Daisies' }).click();
+  await page.getByRole('button', { name: 'Yard spot 2, empty' }).click();
+  await expect(page.getByRole('button', { name: 'Yard spot 2: Daisies' })).toBeVisible();
+  await page.getByRole('button', { name: '✓ Done' }).click();
+  await expect(page.locator('.yard-deco')).toHaveCount(4);
+  await page.getByRole('button', { name: '📸 Photo' }).click();
+  await expect(page.locator('img.yard-photo')).toBeVisible();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Save image' }).click();
+  expect((await download).suggestedFilename()).toMatch(/-yard\.png$/);
+});
+
+test('buys yard decor in the kennel', async ({ page }) => {
+  await page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('woofdoku-save') ?? '{"state":{},"version":1}');
+    raw.state.treats = 100;
+    localStorage.setItem('woofdoku-save', JSON.stringify(raw));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: /Kennel/ }).click();
+  await page.getByRole('tab', { name: /Decor/ }).click();
+  await page.getByRole('button', { name: '🍖 40' }).first().click();
+  await expect(page.locator('.chip').first()).toHaveText('🍖 60');
+  await expect(page.getByText('Owned')).toHaveCount(4);
+});

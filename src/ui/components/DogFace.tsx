@@ -105,6 +105,60 @@ function Accessory({ id }: { id: AccessoryId }) {
           <path d="M66 25 L64 13 L57 22 Z" fill="#f7a8c4" stroke="none" />
         </g>
       );
+    case 'scarf':
+      return (
+        <g>
+          <path d="M26 78 Q50 92 74 78 L74 87 Q50 101 26 87 Z" fill="#4fb87a" />
+          <rect x="58" y="86" width="9" height="14" rx="2" fill="#4fb87a" />
+          <path d="M34 84 L36 92 M46 87 L47 95 M58 86 L58 94" stroke="#e9f7ee" strokeWidth="2.4" />
+        </g>
+      );
+    case 'beanie':
+      return (
+        <g>
+          <path d="M28 30 Q28 6 50 6 Q72 6 72 30 Z" fill="#4f8fb8" />
+          <rect x="26" y="24" width="48" height="9" rx="4.5" fill="#e9eef5" />
+          <path d="M40 10 L40 24 M50 7 L50 24 M60 10 L60 24" stroke="#3d7399" strokeWidth="2" />
+          <circle cx="50" cy="5" r="5.5" fill="#fff" />
+        </g>
+      );
+    case 'sunhat':
+      return (
+        <g stroke="#c9a24a" strokeWidth="1.5">
+          <ellipse cx="50" cy="28" rx="34" ry="7" fill="#f4d58d" />
+          <path d="M35 28 Q35 8 50 8 Q65 8 65 28 Z" fill="#f4d58d" />
+          <rect x="35" y="20" width="30" height="5" fill="#e86a8a" stroke="none" />
+          <circle cx="66" cy="22" r="3.4" fill="#fff" stroke="#e86a8a" />
+        </g>
+      );
+    case 'headphones':
+      return (
+        <g>
+          <path d="M22 52 Q22 12 50 12 Q78 12 78 52" stroke="#333" strokeWidth="5" fill="none" />
+          <rect x="14" y="42" width="13" height="22" rx="5" fill="#ff6fa8" stroke="#333" strokeWidth="2" />
+          <rect x="73" y="42" width="13" height="22" rx="5" fill="#ff6fa8" stroke="#333" strokeWidth="2" />
+        </g>
+      );
+    case 'pirate':
+      return (
+        <g>
+          <path d="M24 30 Q50 -6 76 30 Q50 22 24 30 Z" fill="#222" />
+          <circle cx="50" cy="16" r="4.5" fill="#fff" />
+          <path d="M44 22 L56 26 M56 22 L44 26" stroke="#fff" strokeWidth="1.8" />
+          <circle cx="62" cy="51" r="7.5" fill="#222" />
+          <path d="M30 38 L56 47 M68 46 L80 40" stroke="#222" strokeWidth="2" />
+        </g>
+      );
+    case 'wizard':
+      return (
+        <g>
+          <path d="M34 30 L58 -4 L66 30 Z" fill="#3d3a9e" />
+          <ellipse cx="50" cy="30" rx="24" ry="5" fill="#2e2b80" />
+          <path d="M48 16 l1.4 3 l3 1.4 l-3 1.4 l-1.4 3 l-1.4 -3 l-3 -1.4 l3 -1.4 Z" fill="#ffd23f" />
+          <circle cx="58" cy="10" r="1.8" fill="#ffd23f" />
+          <circle cx="56" cy="24" r="1.4" fill="#ffd23f" />
+        </g>
+      );
     default:
       return null;
   }
@@ -114,7 +168,7 @@ export const DogFace = memo(function DogFace({ breed, mood = 'happy', className,
   const b = lookFor(breed);
   const dark = '#2d2320';
   return (
-    <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className={className} aria-hidden="true">
       {b.ears === 'pointy' && (
         <g fill={b.ear}>
           <path d="M20 46 L26 8 L48 30 Z" />

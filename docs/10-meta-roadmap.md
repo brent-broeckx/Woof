@@ -161,10 +161,17 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Phase M8 — Cosmetics + photo mode
 
-- [ ] **Yard decor** (dog houses, toys, trees, fences, paths, flowers) placed on a simple grid. Looks only.
-- [ ] **Pup outfits** (extends the current accessories). Looks only.
-- [ ] Bought with treats. Some come from badges and story progress.
-- [ ] **Yard photo mode:** render the yard (pup, pack and decor) to a PNG and save or share it through the Web Share API, with a download fallback.
+- [x] **Yard decor** (dog houses, toys, trees, fences, paths, flowers) placed on a simple grid. Looks only.
+- [x] **Pup outfits** (extends the current accessories). Looks only.
+- [x] Bought with treats. Some come from badges and story progress.
+- [x] **Yard photo mode:** render the yard (pup, pack and decor) to a PNG and save or share it through the Web Share API, with a download fallback.
+
+**Decisions (implemented):**
+
+- **🌳 Decor grid:** the yard has a 6×3 grid of spots (back row by the fence, middle, front). In **🎨 Decorate** mode you pick an item and tap spots to place it; tapping the same item again or using 🧹 Clear empties a spot. Items can be placed more than once.
+- **23 decor items:** 3 free starters (oak tree, dog house, daisies, placed in a default layout), 15 bought in the new Kennel **Decor** tab (🍖 40–300), and 5 story souvenirs, one per world chest (📫 ⛲ 🌴 ⛺ ☃️). Story items unlock from opened chests, so old saves need no migration.
+- **6 new outfits:** Cozy Scarf, Winter Beanie, Sun Hat, Headphones, Pirate Hat and Wizard Hat (🍖 120–350), drawn as SVG on the dog face.
+- **📸 Photo:** draws the yard scene (sky, grass, fence, decor, dogs) onto a canvas at 3× scale with a caption strip, without extra libraries. Share uses the Web Share API with files where supported; "Save image" always downloads the PNG.
 
 **Done when:** you can decorate the yard, dress the pup, and export a photo of it.
 

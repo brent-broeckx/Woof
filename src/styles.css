@@ -2084,22 +2084,84 @@ kbd {
 .yard-deco {
   position: absolute;
   z-index: 1;
+  width: 15%;
+  text-align: center;
+  font-size: 2.3rem;
+  line-height: 1;
+  pointer-events: none;
+}
+.yard-deco.row-0 {
   font-size: 2.6rem;
+}
+.yard-deco.row-2 {
+  font-size: 2rem;
+}
+.decor-slot {
+  position: absolute;
+  z-index: 3;
+  width: 15%;
+  height: 17%;
+  padding: 0;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+.decor-slot:hover,
+.decor-slot:focus-visible {
+  background: rgba(255, 255, 255, 0.4);
+}
+.yard-scene.editing .yard-dog {
+  opacity: 0.45;
+}
+.yard-tools {
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+.decor-palette {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.decor-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 6px;
+}
+.decor-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  font: inherit;
+  cursor: pointer;
+}
+.decor-choice span {
+  font-size: 1.6rem;
   line-height: 1;
 }
-.yard-deco.tree {
-  left: 6%;
-  bottom: 38%;
-  font-size: 3.6rem;
+.decor-choice small {
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  text-align: center;
 }
-.yard-deco.bush {
-  right: 30%;
-  bottom: 10%;
-  font-size: 1.6rem;
+.decor-choice.on {
+  border-color: var(--accent, #f28b4b);
+  background: #fff;
 }
-.yard-deco.house {
-  right: 6%;
-  bottom: 36%;
+.yard-photo {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  margin: 8px 0 12px;
+  box-shadow: var(--shadow);
+}
+.kennel-item .icon.decor-icon {
+  font-size: 2rem;
 }
 .yard-dog {
   position: absolute;
