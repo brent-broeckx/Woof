@@ -24,7 +24,7 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 | 30 | Nonogram Paws (intro) |
 | 35 | Doggy Rush Hour (intro) |
 | 40 | Water Bowl Sort (intro) |
-| 45 | Kennel Lamps / Lights Out (intro) |
+| 45 | Bubble Bark / bubble shooter (intro) |
 | 50 | Pipe Sprinklers (intro) |
 | 55+ | seeded random rotation over all 10 games (never the same game twice in a row) |
 
@@ -76,8 +76,15 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 ### 9. 💧 Water Bowl Sort (Water Sort puzzle)
 - Pour colored water between bowls until each bowl is a single color.
 
-### 10. 💡 Lights Out: Kennel Lamps
-- Toggling a kennel light flips it and its neighbors; turn all off.
+### 10. 🫧 Bubble Bark (classic bubble shooter)
+- Replaces the removed *Kennel Lamps / Lights Out* game in the same rotation slot.
+- **Board:** glossy paw-print bubbles on an offset hex grid (8 / 7 per row) hanging from the ceiling.
+- **Controls:** drag to aim and release to shoot (a dotted guide shows the path and wall bounces). Release below the launcher to cancel. Tap the launcher/next bubble or press **S** to swap; ← → aim and Space shoots.
+- **Rules:** a shot sticks to the first bubble or the ceiling it touches and snaps to the nearest free cell. 3+ connected bubbles of one colour pop, and any bubbles cut off from the ceiling drop. Shot colours only come from colours still on the board.
+- **Pressure:** after `missesPerDrop` shots in a row without a pop, the ceiling drops one row. If bubbles cross the red line, the round ends early.
+- **Limit:** a shot budget of `ceil(startingBubbles × shotFactor)`.
+- **Stars:** board cleared = ⭐⭐⭐ · ≥70% cleared = ⭐⭐ · otherwise ⭐.
+- **Tiers:** 3→6 colours, 4→8 starting rows, shot factor 0.6→0.32, ceiling drop every 6→3 misses.
 
 ### 11. 🧠 Simon Barks (sequence memory)
 - Repeat growing sequences of dog barks/colors. Very short; good as a "break" game.
@@ -94,7 +101,7 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 | Doggy Rush Hour | ★★★ | ★★★ | M (levels) | ★★★ | P5 medium |
 | Pipe Sprinklers | ★★ | ★★ | M | ★★★ | P5 low |
 | Water Bowl Sort | ★★ | ★★ | S | ★★★ | P5 low |
-| Lights Out | ★ | ★★★ | S | ★★★ | P5 low |
+| Bubble Bark | ★★★ | ★★ | M | ★★★ | built (replaced Lights Out) |
 | Simon Barks | ★ | ★ | S | ★★★ | optional |
 
 ## Shared bonus result screen

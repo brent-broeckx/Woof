@@ -45,14 +45,14 @@ describe('arcade', () => {
   });
 
   it('keeps the best record and reports new medals', () => {
-    let run = recordArcadeRun(emptyArcade(), 'lightsOut', 'pup', 2, 5000, 'd');
+    let run = recordArcadeRun(emptyArcade(), 'bubbleShooter', 'pup', 2, 5000, 'd');
     expect(run).toMatchObject({ newBest: true, newMedal: 2 });
-    run = recordArcadeRun(run.state, 'lightsOut', 'pup', 1, 1000, 'd');
+    run = recordArcadeRun(run.state, 'bubbleShooter', 'pup', 1, 1000, 'd');
     expect(run).toMatchObject({ newBest: false, newMedal: 0 });
-    run = recordArcadeRun(run.state, 'lightsOut', 'pup', 2, 4000, 'd');
+    run = recordArcadeRun(run.state, 'bubbleShooter', 'pup', 2, 4000, 'd');
     expect(run).toMatchObject({ newBest: true, newMedal: 0 });
-    expect(run.state.records['lightsOut:pup']).toEqual({ stars: 2, timeMs: 4000 });
-    run = recordArcadeRun(run.state, 'lightsOut', 'pup', 3, 9000, 'd');
+    expect(run.state.records['bubbleShooter:pup']).toEqual({ stars: 2, timeMs: 4000 });
+    run = recordArcadeRun(run.state, 'bubbleShooter', 'pup', 3, 9000, 'd');
     expect(run.newMedal).toBe(3);
     run = recordArcadeRun(run.state, 'rushHour', 'pup', 0, 9000, 'd');
     expect(run.state.records['rushHour:pup'].stars).toBe(1);

@@ -22,7 +22,16 @@ export const WORLDS: World[] = [
 export const TOTAL_LEVELS = WORLDS.length * LEVELS_PER_WORLD;
 
 export type MiniGameId =
-  'connectLeashes' | 'blockDrop' | 'slidingPup' | 'kibbleBlocks' | 'memoryFetch' | 'nonogramPaws' | 'rushHour' | 'waterSort' | 'lightsOut' | 'pipeSprinklers';
+  | 'connectLeashes'
+  | 'blockDrop'
+  | 'slidingPup'
+  | 'kibbleBlocks'
+  | 'memoryFetch'
+  | 'nonogramPaws'
+  | 'rushHour'
+  | 'waterSort'
+  | 'bubbleShooter'
+  | 'pipeSprinklers';
 /** Introduction order: one new game every bonus level, then a weighted rotation. */
 export const MINI_GAME_IDS: MiniGameId[] = [
   'connectLeashes',
@@ -33,7 +42,7 @@ export const MINI_GAME_IDS: MiniGameId[] = [
   'nonogramPaws',
   'rushHour',
   'waterSort',
-  'lightsOut',
+  'bubbleShooter',
   'pipeSprinklers',
 ];
 
