@@ -179,6 +179,8 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 
 ## Future: social (needs a backend)
 
+> Planned in detail in [doc 11 — Social plan](11-social-plan.md): Supabase, optional accounts, cloud sync, leaderboards and friends.
+
 Parked on purpose. Revisit if we add a light backend (e.g. Supabase/Firebase free tier) and simple accounts:
 
 - Visit friends' and family members' yards

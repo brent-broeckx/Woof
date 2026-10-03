@@ -70,6 +70,7 @@ The build injects a precache list and a build-specific cache version into `sw.js
 | 8 | [docs/08-roadmap.md](docs/08-roadmap.md) | Phased milestones, tasks, acceptance criteria, risks |
 | 9 | [docs/09-open-questions.md](docs/09-open-questions.md) | Decisions we should confirm before building |
 | 10 | [docs/10-meta-roadmap.md](docs/10-meta-roadmap.md) | Next roadmap: main pup + kibble, yard idle, pack & Adoption Fair, expeditions, Arcade, achievements, weekly boss, new puzzles, cosmetics |
+| 11 | [docs/11-social-plan.md](docs/11-social-plan.md) | Social plan (not started): Supabase, optional accounts, cloud save sync, leaderboards, friends, yard visits, challenges |
 
 ## One-paragraph pitch
 
