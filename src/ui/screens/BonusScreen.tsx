@@ -1,6 +1,6 @@
 import { Suspense, useState } from 'react';
 import { POWER_UPS, type PowerUpId } from '../../core/economy/powerups';
-import { TOTAL_LEVELS, type LevelEntry } from '../../core/progression/levels';
+import { type LevelEntry } from '../../core/progression/levels';
 import { MINI_GAMES, type MiniGameResult } from '../../minigames/registry';
 import { useNav } from '../../store/navStore';
 import { useSave } from '../../store/saveStore';
@@ -19,7 +19,7 @@ export function BonusScreen({ level, debug = false }: { level: BonusLevel; debug
   const [phase, setPhase] = useState<Phase>({ name: 'intro' });
   const [confirmQuit, setConfirmQuit] = useState(false);
   const Game = def.component;
-  const nextLevel = !debug && level.id < TOTAL_LEVELS ? level.id + 1 : null;
+  const nextLevel = debug ? null : level.id + 1;
   const exit = () => go(debug ? { name: 'debug' } : { name: 'map' });
 
   const finish = (result: MiniGameResult) => {

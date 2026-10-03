@@ -71,10 +71,22 @@ export function bonusGameSequence(count: number): MiniGameId[] {
   return seq;
 }
 
-const BONUS_SEQUENCE = bonusGameSequence(Math.ceil(TOTAL_LEVELS / BONUS_EVERY));
+/** Hardest mini-game tier: the last bonus level of the last world. */
+export const MAX_BONUS_TIER = TOTAL_LEVELS / BONUS_EVERY;
+
+// The rotation is generated sequentially, so growing it keeps every earlier entry the same.
+let bonusSequence = bonusGameSequence(MAX_BONUS_TIER);
+function bonusGameAt(index: number): MiniGameId {
+  if (index >= bonusSequence.length) bonusSequence = bonusGameSequence(Math.max(index + 1, bonusSequence.length * 2));
+  return bonusSequence[index];
+}
+
+/** Levels past the last world: endless extra levels once every world is done. */
+export const isExtraLevel = (id: number) => id > TOTAL_LEVELS;
 
 export function getLevel(id: number): LevelEntry {
-  const world = worldOf(id);
+  // Extra levels have no world of their own, so they reuse the last world's look.
+  const world = Math.min(worldOf(id), WORLDS.length);
   if (isBonusLevel(id)) {
     const bonusIndex = id / BONUS_EVERY - 1;
     return {
@@ -82,8 +94,8 @@ export function getLevel(id: number): LevelEntry {
       world,
       kind: 'bonus',
       bonusIndex,
-      game: BONUS_SEQUENCE[bonusIndex],
-      tier: bonusIndex + 1,
+      game: bonusGameAt(bonusIndex),
+      tier: Math.min(bonusIndex + 1, MAX_BONUS_TIER),
       seed: hashSeed('bonus', id),
     };
   }
@@ -133,6 +145,25 @@ export const PUZZLE_SIZES: number[][][] = [
 
 /** Hardest technique difficulty allowed per world (see docs/05). */
 export const WORLD_MAX_DIFFICULTY = [3, 4, 5, 6, 6];
+
+export interface ExtraPuzzleSpec {
+  size: number;
+  seed: number;
+  maxDifficulty: number;
+  minDifficulty?: number;
+}
+
+/**
+ * Extra levels are generated on the fly (deterministic per level id) and follow the
+ * last world's rhythm: easy 9×9, then medium and hard 10×10 before each bonus.
+ */
+export function extraPuzzleSpec(id: number): ExtraPuzzleSpec {
+  const pos = (id % BONUS_EVERY) - 1;
+  const maxDifficulty = WORLD_MAX_DIFFICULTY[WORLD_MAX_DIFFICULTY.length - 1];
+  const seed = hashSeed('extra-level', id);
+  if (pos === 0) return { size: 9, seed, maxDifficulty };
+  return { size: 10, seed, maxDifficulty, minDifficulty: pos === 3 ? 5 : 4 };
+}
 
 export type SlotRole = 'tutorial' | 'easy' | 'medium' | 'hard';
 

@@ -348,6 +348,10 @@ button {
   opacity: 0.75;
 }
 
+.extra-world {
+  background: linear-gradient(160deg, #fff4cf 0%, #e3f6ff 100%);
+}
+
 .nodes {
   display: flex;
   flex-direction: column;

@@ -88,7 +88,7 @@ export const BADGES: BadgeDef[] = [
     icon: '⭐',
     goal: (n) => `Collect ${plural(n, 'star')} on the world map`,
     tiers: [30, 150, TOTAL_LEVELS * 3],
-    metric: (s) => Object.values(s.progress).reduce((a, p) => a + p.stars, 0),
+    metric: (s) => Object.entries(s.progress).reduce((a, [id, p]) => a + (Number(id) <= TOTAL_LEVELS ? p.stars : 0), 0),
   },
   {
     id: 'worlds',

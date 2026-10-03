@@ -764,7 +764,7 @@ export function nextUnplayed(progress: Record<number, LevelProgress>): number {
 }
 
 export function highestUnlocked(progress: Record<number, LevelProgress>): number {
-  return debugUnlockAll() ? TOTAL_LEVELS : nextUnplayed(progress);
+  return debugUnlockAll() ? Math.max(TOTAL_LEVELS, nextUnplayed(progress)) : nextUnplayed(progress);
 }
 
 /** The parts of the save that badges track. */

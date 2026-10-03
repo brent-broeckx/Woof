@@ -8,7 +8,8 @@ export function StatsScreen() {
   const go = useNav((s) => s.go);
   const { stats, progress, daily, inventory, treats } = useSave();
   const t = stats.totals;
-  const levelsDone = Object.keys(progress).length;
+  const levelsDone = Object.keys(progress).filter((id) => Number(id) <= TOTAL_LEVELS).length;
+  const extraDone = Object.keys(progress).length - levelsDone;
   const stars = Object.values(progress).reduce((a, p) => a + p.stars, 0);
   const threeStars = Object.values(progress).filter((p) => p.stars === 3).length;
   const items = Object.values(inventory).reduce((a, n) => a + n, 0);
@@ -21,6 +22,7 @@ export function StatsScreen() {
 
   const tiles: [string, string | number][] = [
     ['Levels cleared', `${levelsDone}/${TOTAL_LEVELS}`],
+    ...(extraDone > 0 ? ([['Extra levels', extraDone]] as [string, number][]) : []),
     ['Stars', stars],
     ['Perfect ★★★', threeStars],
     ['Puzzles solved', t.puzzlesSolved + t.dailySolved + t.endlessSolved],
