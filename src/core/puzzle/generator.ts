@@ -9,7 +9,11 @@ export interface GenerateOptions {
   seed: number;
   /** Highest technique difficulty allowed (1-6). Puzzles needing more are rejected. */
   maxDifficulty?: number;
+  /** Lowest technique difficulty accepted; easier puzzles are rejected. */
+  minDifficulty?: number;
   maxAttempts?: number;
+  /** Twist: number of sleeping cats (cells where no dog may go). */
+  cats?: number;
 }
 
 export interface GeneratedPuzzle extends Puzzle {
@@ -86,10 +90,10 @@ function regionConnectedWithout(regions: number[], size: number, reg: number, re
  * Moving an alternate solution's dog cell into a neighbouring region gives that
  * region two dogs in the alternate solution, killing it, while the intended one survives.
  */
-export function makeUnique(size: number, regions: number[], solution: number[], rng: Rng, maxIterations = 300): boolean {
+export function makeUnique(size: number, regions: number[], solution: number[], rng: Rng, maxIterations = 300, cats: number[] = []): boolean {
   const solCells = new Set(solution.map((c, r) => r * size + c));
   for (let it = 0; it < maxIterations; it++) {
-    const sols = findSolutions({ size, regions }, 2);
+    const sols = findSolutions({ size, regions, cats }, 2);
     const alt = sols.find((s) => s.some((c, r) => c !== solution[r]));
     if (!alt) return true;
     const candidates = rng.shuffle(alt.map((c, r) => r * size + c).filter((cell) => !solCells.has(cell)));
@@ -114,19 +118,41 @@ export function makeUnique(size: number, regions: number[], solution: number[], 
 }
 
 export function generatePuzzle(options: GenerateOptions): GeneratedPuzzle | null {
-  const { size, seed, maxDifficulty = 6, maxAttempts = 60 } = options;
+  const { size, seed, maxDifficulty = 6, minDifficulty = 1, maxAttempts = 60 } = options;
   const rng = createRng(seed);
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const solution = randomPlacement(size, rng);
     if (!solution) return null;
     const regions = growRegions(size, solution, rng);
-    if (!makeUnique(size, regions, solution, rng)) continue;
-    const logic = solveLogically({ size, regions }, maxDifficulty);
+    const cats = options.cats ? placeCats(size, regions, solution, options.cats, rng) : [];
+    if (!makeUnique(size, regions, solution, rng, 300, cats)) continue;
+    const logic = solveLogically({ size, regions, cats }, maxDifficulty);
     if (!logic.solved) continue;
+    if (logic.difficulty.maxDifficulty < minDifficulty) continue;
     if (logic.solution.some((c, r) => c !== solution[r])) continue;
-    return { size, regions: normalizeRegions(regions, size), solution, difficulty: logic.difficulty, seed };
+    const puzzle: GeneratedPuzzle = { size, regions: normalizeRegions(regions, size), solution, difficulty: logic.difficulty, seed };
+    if (cats.length) puzzle.cats = [...cats].sort((a, b) => a - b);
+    return puzzle;
   }
   return null;
+}
+
+/**
+ * Pick `count` cat cells. Cats first go on cells used by alternate solutions
+ * (so they do real work), then random non-solution cells fill the quota.
+ */
+export function placeCats(size: number, regions: number[], solution: number[], count: number, rng: Rng): number[] {
+  const solCells = new Set(solution.map((c, r) => r * size + c));
+  const cats: number[] = [];
+  while (cats.length < count) {
+    const alt = findSolutions({ size, regions, cats }, 2).find((s) => s.some((c, r) => c !== solution[r]));
+    if (!alt) break;
+    const options = alt.map((c, r) => r * size + c).filter((cell) => !solCells.has(cell));
+    cats.push(rng.pick(options));
+  }
+  const free = rng.shuffle([...Array(size * size).keys()].filter((cell) => !solCells.has(cell) && !cats.includes(cell)));
+  while (cats.length < count && free.length) cats.push(free.pop()!);
+  return cats;
 }
 
 /** Renumber regions in reading order of their first cell (nicer colour ordering). */

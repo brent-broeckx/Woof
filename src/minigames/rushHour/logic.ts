@@ -102,6 +102,19 @@ export function rushLegalMoves(puzzle: Pick<RushPuzzle, 'vehicles'>, positions: 
   return moves;
 }
 
+/** How far a vehicle can slide in one move: the inclusive range of legal positions along its axis. */
+export function rushSlideRange(puzzle: Pick<RushPuzzle, 'vehicles'>, positions: readonly number[], vehicle: number): { min: number; max: number } {
+  const pos = positions[vehicle];
+  let min = pos;
+  let max = pos;
+  for (const m of rushLegalMoves(puzzle, positions)) {
+    if (m.vehicle !== vehicle) continue;
+    min = Math.min(min, m.to);
+    max = Math.max(max, m.to);
+  }
+  return { min, max };
+}
+
 export function moveRushVehicle(puzzle: RushPuzzle, positions: readonly number[], vehicle: number, to: number): number[] | null {
   if (!rushLegalMoves(puzzle, positions).some((m) => m.vehicle === vehicle && m.to === to)) return null;
   const next = [...positions];

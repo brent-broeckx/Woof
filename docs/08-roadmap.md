@@ -52,7 +52,7 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 - [x] **Sliding Pup** (parity-safe shuffle, move targets).
 - [x] Bonus schedule every 5th level; rotation; tier configs.
 - [x] Inventory store; seeded reward rolls, pity timer, theme bias.
-- [x] Power-ups: Sniff, Bone Shield, Extra Bone, Fetch, Flashlight, Paw Scan, Rewind, Guide Dog (+ max-3 rule, 3★ rule).
+- [x] Power-ups: Sniff, Extra Bone, Fetch, Flashlight, Guide Dog (Bone Shield, Paw Scan, Rewind removed) (+ max-3 rule, 3★ rule).
 - [x] Power-up tray; "continue with Extra Bone" on fail screen.
 
 **Done when:** full loop: 4 puzzles → bonus → power-ups → used in puzzles.

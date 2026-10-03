@@ -2,6 +2,7 @@ import { TOTAL_LEVELS } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
 import { useSave } from '../../store/saveStore';
 import { TopBar, formatTime } from '../components/common';
+import { tierIcon, useBadges } from '../hooks/useBadges';
 
 export function StatsScreen() {
   const go = useNav((s) => s.go);
@@ -33,6 +34,8 @@ export function StatsScreen() {
     ['Time played', formatTime(t.playMs)],
   ];
 
+  const badges = useBadges();
+
   return (
     <div className="screen stats-screen">
       <TopBar onBack={() => go({ name: 'title' })} title="📊 Stats" />
@@ -43,6 +46,20 @@ export function StatsScreen() {
             <span>{label}</span>
           </div>
         ))}
+      </div>
+      <div className="card badge-showcase">
+        <h3>🏅 Badges</h3>
+        <div className="badge-row">
+          {badges.map((b) => (
+            <span key={b.badge.id} className={`badge-mini ${b.earned ? '' : 'dim'}`} title={b.badge.name}>
+              {b.badge.icon}
+              <small>{tierIcon(b.earned)}</small>
+            </span>
+          ))}
+        </div>
+        <button className="btn small" onClick={() => go({ name: 'badges' })}>
+          See all badges
+        </button>
       </div>
       {hardest.length > 0 && (
         <div className="card">

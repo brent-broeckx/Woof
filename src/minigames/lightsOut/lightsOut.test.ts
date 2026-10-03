@@ -13,7 +13,7 @@ import {
 
 describe('lightsOut', () => {
   it('generates deterministic solvable puzzles and minimal solutions', () => {
-    for (const tier of [1, 7, 14, 20]) {
+    for (const tier of [1, 7, 14, 20, 25]) {
       for (const seed of [1, 22, 333]) {
         const puzzle = generateLightsOutPuzzle(lightsOutConfigForTier(tier), seed);
         expect(puzzle).toEqual(generateLightsOutPuzzle(lightsOutConfigForTier(tier), seed));

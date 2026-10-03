@@ -2,13 +2,6 @@ import type { MiniGameId } from '../progression/levels';
 import { createRng, hashSeed } from '../rng';
 import { POWER_UPS, POWER_UP_IDS, type PowerUpId, type Rarity } from './powerups';
 
-/** Treats for main puzzle levels by star count (only the improvement over your best is paid). */
-export const TREATS_BY_STARS = [0, 5, 10, 20];
-
-export function treatsForImprovement(oldStars: number, newStars: number): number {
-  return Math.max(0, TREATS_BY_STARS[newStars] - TREATS_BY_STARS[oldStars]);
-}
-
 export const RARITY_WEIGHTS: Record<1 | 2 | 3, Record<Rarity, number>> = {
   1: { common: 80, uncommon: 20, rare: 0, epic: 0 },
   2: { common: 60, uncommon: 30, rare: 10, epic: 0 },
@@ -17,16 +10,16 @@ export const RARITY_WEIGHTS: Record<1 | 2 | 3, Record<Rarity, number>> = {
 
 /** Each mini-game favours a couple of power-ups (docs/04 "theme bias"). */
 export const GAME_BIAS: Record<MiniGameId, PowerUpId[]> = {
-  connectLeashes: ['fetch', 'pawScan'],
-  blockDrop: ['shield', 'extraBone'],
+  connectLeashes: ['fetch', 'flashlight'],
+  blockDrop: ['extraBone', 'fetch'],
   slidingPup: ['flashlight', 'sniff'],
-  kibbleBlocks: ['pawScan', 'extraBone'],
+  kibbleBlocks: ['fetch', 'extraBone'],
   memoryFetch: ['sniff', 'guideDog'],
-  nonogramPaws: ['flashlight', 'pawScan'],
-  rushHour: ['rewind', 'guideDog'],
-  waterSort: ['rewind', 'guideDog'],
-  lightsOut: ['flashlight', 'rewind'],
-  pipeSprinklers: ['pawScan', 'flashlight'],
+  nonogramPaws: ['flashlight', 'fetch'],
+  rushHour: ['extraBone', 'guideDog'],
+  waterSort: ['sniff', 'guideDog'],
+  lightsOut: ['flashlight', 'extraBone'],
+  pipeSprinklers: ['fetch', 'flashlight'],
 };
 
 export const PITY_THRESHOLD = 4;

@@ -1,10 +1,10 @@
-import { attackedCells, rowOf } from '../puzzle/geometry';
+import { rowOf } from '../puzzle/geometry';
 import { MAX_BONES, MAX_POWERUPS_PER_LEVEL, isSolutionCell, makeEvent, withCorrectDog, type GameState } from '../puzzle/game';
 import { findHint } from '../puzzle/hints';
 import { applyDeduction, createLogicState, findNextDeduction } from '../puzzle/logicSolver';
 import { createRng, hashSeed } from '../rng';
 
-export type PowerUpId = 'sniff' | 'shield' | 'extraBone' | 'fetch' | 'flashlight' | 'pawScan' | 'rewind' | 'guideDog';
+export type PowerUpId = 'sniff' | 'extraBone' | 'fetch' | 'flashlight' | 'guideDog';
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic';
 
 export interface PowerUpDef {
@@ -30,7 +30,6 @@ export const POWER_UPS: Record<PowerUpId, PowerUpDef> = {
     targetPrompt: 'Tap a yard to sniff out its dog',
     description: 'Tap a yard: its dog is found and placed.',
   },
-  shield: { id: 'shield', name: 'Bone Shield', icon: '🛡️', rarity: 'common', price: 60, target: null, description: 'Your next wrong dog costs no bone.' },
   extraBone: {
     id: 'extraBone',
     name: 'Extra Bone',
@@ -59,24 +58,6 @@ export const POWER_UPS: Record<PowerUpId, PowerUpDef> = {
     target: null,
     description: 'Shows the exact next logical step and explains it.',
   },
-  pawScan: {
-    id: 'pawScan',
-    name: 'Paw Scan',
-    icon: '🐾',
-    rarity: 'common',
-    price: 60,
-    target: null,
-    description: 'Crosses every tile that a placed dog already rules out.',
-  },
-  rewind: {
-    id: 'rewind',
-    name: 'Rewind',
-    icon: '⏪',
-    rarity: 'uncommon',
-    price: 120,
-    target: null,
-    description: 'Forgives your last mistake and gives its bone back.',
-  },
   guideDog: {
     id: 'guideDog',
     name: 'Guide Dog',
@@ -84,7 +65,7 @@ export const POWER_UPS: Record<PowerUpId, PowerUpDef> = {
     rarity: 'epic',
     price: 400,
     target: null,
-    description: 'Walks you through the easy steps: places up to 3 dogs.',
+    description: 'Places up to 3 new dogs for you.',
   },
 };
 
@@ -105,31 +86,14 @@ export function applyPowerUp(state: GameState, id: PowerUpId, opts: { target?: n
   const { puzzle } = state;
   const { size } = puzzle;
   if (state.status === 'won') return { ok: false, message: 'Level already solved!' };
-  if (state.status === 'lost' && id !== 'extraBone' && id !== 'rewind') {
-    return { ok: false, message: 'Out of bones — use an Extra Bone or Rewind.' };
+  if (state.status === 'lost' && id !== 'extraBone') {
+    return { ok: false, message: 'Out of bones — use an Extra Bone.' };
   }
 
   switch (id) {
-    case 'shield':
-      if (state.shield) return { ok: false, message: 'Bone Shield is already active.' };
-      return { ok: true, state: { ...spend(state), shield: true } };
-
     case 'extraBone':
       if (state.bones >= MAX_BONES) return { ok: false, message: `You already have ${MAX_BONES} bones.` };
       return { ok: true, state: { ...spend(state), bones: state.bones + 1, status: 'playing' } };
-
-    case 'rewind':
-      if (state.lostBones === 0) return { ok: false, message: 'No mistakes to rewind.' };
-      return {
-        ok: true,
-        state: {
-          ...spend(state),
-          bones: state.bones + 1,
-          lostBones: state.lostBones - 1,
-          mistakes: Math.max(0, state.mistakes - 1),
-          status: 'playing',
-        },
-      };
 
     case 'sniff': {
       if (opts.target === undefined) return { ok: false, message: 'Pick a yard.' };
@@ -155,22 +119,6 @@ export function applyPowerUp(state: GameState, id: PowerUpId, opts: { target?: n
       return { ok: true, state: { ...spend(state, crossed), marks, history: [] } };
     }
 
-    case 'pawScan': {
-      const marks = [...state.marks];
-      const crossed: number[] = [];
-      marks.forEach((m, cell) => {
-        if (m !== 'dog') return;
-        for (const a of attackedCells(cell, puzzle)) {
-          if (marks[a] === 'empty') {
-            marks[a] = 'autoX';
-            crossed.push(a);
-          }
-        }
-      });
-      if (!crossed.length) return { ok: false, message: 'Every blocked tile is already crossed.' };
-      return { ok: true, state: { ...spend(state, crossed), marks, history: [] } };
-    }
-
     case 'flashlight': {
       const hint = findHint(puzzle, state.marks);
       if (!hint) return { ok: false, message: 'No hint available.' };
@@ -184,36 +132,30 @@ export function applyPowerUp(state: GameState, id: PowerUpId, opts: { target?: n
     }
 
     case 'guideDog': {
+      const remaining = size - state.marks.filter((m) => m === 'dog').length;
+      if (remaining <= 0) return { ok: false, message: 'Every dog is already placed.' };
+      const target = Math.min(3, remaining);
+      const picks: number[] = [];
+      // Prefer the cells a player would logically find next, then fall back to any unplaced dog.
       const dogs = state.marks.map((m, i) => (m === 'dog' ? i : -1)).filter((i) => i >= 0);
       const logic = createLogicState(puzzle, dogs);
-      let next = spend(state);
-      let placed = 0;
-      let changed = false;
-      for (let guard = 0; guard < 200 && placed < 3; guard++) {
-        const d = findNextDeduction(logic, 2);
+      for (let guard = 0; guard < 500 && picks.length < target; guard++) {
+        const d = findNextDeduction(logic);
         if (!d) break;
         applyDeduction(logic, d);
-        if (d.kind === 'place') {
-          for (const c of d.cells) {
-            if (next.marks[c] !== 'dog') {
-              next = withCorrectDog(next, c, true);
-              placed++;
-              changed = true;
-            }
-          }
-        } else {
-          const marks = [...next.marks];
-          for (const c of d.cells) {
-            if (marks[c] === 'empty') {
-              marks[c] = 'autoX';
-              changed = true;
-            }
-          }
-          next = { ...next, marks };
+        if (d.kind !== 'place') continue;
+        for (const c of d.cells) {
+          if (picks.length < target && state.marks[c] !== 'dog' && !picks.includes(c) && isSolutionCell(puzzle, c)) picks.push(c);
         }
       }
-      if (!changed) return { ok: false, message: 'The next step is too tricky for the Guide Dog — try a Flashlight.' };
-      return { ok: true, state: next, message: placed ? `Guide Dog placed ${placed} dog${placed > 1 ? 's' : ''}.` : 'Guide Dog crossed some tiles.' };
+      for (let row = 0; row < size && picks.length < target; row++) {
+        const c = row * size + puzzle.solution[row];
+        if (state.marks[c] !== 'dog' && !picks.includes(c)) picks.push(c);
+      }
+      let next = spend(state, picks);
+      for (const c of picks) next = withCorrectDog(next, c, opts.autoCross);
+      next = { ...next, event: makeEvent('powerUp', picks) };
+      return { ok: true, state: next, message: `Guide Dog placed ${picks.length} new dog${picks.length > 1 ? 's' : ''}.` };
     }
   }
 }

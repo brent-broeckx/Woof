@@ -39,6 +39,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
 
   const placeDog = useCallback(
     (cell: number) => {
+      if (marksRef.current[cell] === 'cat') return;
       dispatch({ type: 'placeDog', cell, autoCross: settings.autoCross });
       haptic(15);
     },
@@ -53,7 +54,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
 
   const tap = (cell: number) => {
     const g = gesture.current;
-    if (marksRef.current[cell] === 'dog') return;
+    if (marksRef.current[cell] === 'dog' || marksRef.current[cell] === 'cat') return;
     if (settings.placementMode === 'dog') {
       placeDog(cell);
       return;
@@ -277,7 +278,6 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
           focusCells.has(cell) ? 'focus' : '',
           cursor === cell ? 'cursor' : '',
           isEventCell && event?.type === 'wrong' ? 'wrong' : '',
-          isEventCell && event?.type === 'shielded' ? 'shielded' : '',
           isEventCell && event?.type === 'powerUp' ? 'powered' : '',
           conflictCells.has(cell) && marks[cell] === 'dog' ? 'bark' : '',
           rippleDist !== undefined ? 'ripple' : '',
@@ -289,7 +289,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
             data-cell={cell}
             className={classes}
             role="gridcell"
-            aria-label={`Row ${r + 1}, column ${c + 1}, ${mark === 'dog' ? 'dog' : mark === 'empty' ? 'empty' : 'crossed'}`}
+            aria-label={`Row ${r + 1}, column ${c + 1}, ${mark === 'dog' ? 'dog' : mark === 'cat' ? 'sleeping cat' : mark === 'empty' ? 'empty' : 'crossed'}`}
             style={{
               backgroundColor: palette[reg % palette.length],
               animationDelay: rippleDist !== undefined ? `${rippleDist * 45}ms` : undefined,
@@ -302,6 +302,7 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
             {mark === 'dog' && <DogFace breed={reg} className="dog pop" accessory={cosmetics.accessory} />}
             {mark === 'x' && <span className="mark x">✕</span>}
             {mark === 'autoX' && <span className="mark auto">•</span>}
+            {mark === 'cat' && <span className="mark cat">🐈</span>}
             {isEventCell && event?.type === 'wrong' && <DogFace breed={reg} mood="sad" className="dog ghost" />}
           </div>
         );
