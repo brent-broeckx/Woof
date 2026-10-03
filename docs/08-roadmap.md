@@ -66,9 +66,10 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 - [x] Responsive pass: phones stack vertically; ≥900×560 puts the HUD/tools in a side panel.
 
 ## Phase 5 — More mini-games
-All seven built. Intro order (every 5th level): Connect the Leashes → Block Drop → Sliding Pup → **Kibble Blocks → Memory Fetch → Nonogram Paws → Doggy Rush Hour → Water Bowl Sort → Kennel Lamps (Lights Out) → Pipe Sprinklers**, then rotate.
+All seven built. Intro order (every 5th level): Connect the Leashes → Block Drop → Sliding Pup → **Kibble Blocks → Memory Fetch → Nonogram Paws → Doggy Rush Hour → Water Bowl Sort → Bubble Bark (bubble shooter) → Pipe Sprinklers**, then rotate.
 - [x] Each: pure logic + tests, tier configs, reward bias, intro, added to rotation.
 - Note: bonus slots from level 20 onward changed vs. the MVP rotation.
+- Note: Kennel Lamps (Lights Out) was later removed and replaced by Bubble Bark in the same slot (level 45), so the rest of the rotation is unchanged.
 
 ## Phase 6 — Release & extras
 - [x] PWA: manifest, service worker (offline, network-first HTML, cache-first assets), SVG + PNG icons (`npm run icons`), maskable & apple-touch icons.

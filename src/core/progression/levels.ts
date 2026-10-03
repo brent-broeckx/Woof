@@ -22,7 +22,16 @@ export const WORLDS: World[] = [
 export const TOTAL_LEVELS = WORLDS.length * LEVELS_PER_WORLD;
 
 export type MiniGameId =
-  'connectLeashes' | 'blockDrop' | 'slidingPup' | 'kibbleBlocks' | 'memoryFetch' | 'nonogramPaws' | 'rushHour' | 'waterSort' | 'lightsOut' | 'pipeSprinklers';
+  | 'connectLeashes'
+  | 'blockDrop'
+  | 'slidingPup'
+  | 'kibbleBlocks'
+  | 'memoryFetch'
+  | 'nonogramPaws'
+  | 'rushHour'
+  | 'waterSort'
+  | 'bubbleShooter'
+  | 'pipeSprinklers';
 /** Introduction order: one new game every bonus level, then a weighted rotation. */
 export const MINI_GAME_IDS: MiniGameId[] = [
   'connectLeashes',
@@ -33,7 +42,7 @@ export const MINI_GAME_IDS: MiniGameId[] = [
   'nonogramPaws',
   'rushHour',
   'waterSort',
-  'lightsOut',
+  'bubbleShooter',
   'pipeSprinklers',
 ];
 
@@ -62,10 +71,22 @@ export function bonusGameSequence(count: number): MiniGameId[] {
   return seq;
 }
 
-const BONUS_SEQUENCE = bonusGameSequence(Math.ceil(TOTAL_LEVELS / BONUS_EVERY));
+/** Hardest mini-game tier: the last bonus level of the last world. */
+export const MAX_BONUS_TIER = TOTAL_LEVELS / BONUS_EVERY;
+
+// The rotation is generated sequentially, so growing it keeps every earlier entry the same.
+let bonusSequence = bonusGameSequence(MAX_BONUS_TIER);
+function bonusGameAt(index: number): MiniGameId {
+  if (index >= bonusSequence.length) bonusSequence = bonusGameSequence(Math.max(index + 1, bonusSequence.length * 2));
+  return bonusSequence[index];
+}
+
+/** Levels past the last world: endless extra levels once every world is done. */
+export const isExtraLevel = (id: number) => id > TOTAL_LEVELS;
 
 export function getLevel(id: number): LevelEntry {
-  const world = worldOf(id);
+  // Extra levels have no world of their own, so they reuse the last world's look.
+  const world = Math.min(worldOf(id), WORLDS.length);
   if (isBonusLevel(id)) {
     const bonusIndex = id / BONUS_EVERY - 1;
     return {
@@ -73,8 +94,8 @@ export function getLevel(id: number): LevelEntry {
       world,
       kind: 'bonus',
       bonusIndex,
-      game: BONUS_SEQUENCE[bonusIndex],
-      tier: bonusIndex + 1,
+      game: bonusGameAt(bonusIndex),
+      tier: Math.min(bonusIndex + 1, MAX_BONUS_TIER),
       seed: hashSeed('bonus', id),
     };
   }
@@ -124,6 +145,66 @@ export const PUZZLE_SIZES: number[][][] = [
 
 /** Hardest technique difficulty allowed per world (see docs/05). */
 export const WORLD_MAX_DIFFICULTY = [3, 4, 5, 6, 6];
+
+export interface ExtraPuzzleSpec {
+  size: number;
+  seed: number;
+  maxDifficulty: number;
+  minDifficulty?: number;
+}
+
+/** Board-size weights per slot in a 5-level cycle (easy, medium, medium, hard). */
+const EXTRA_SIZE_WEIGHTS: [size: number, weight: number][][] = [
+  [
+    [5, 2],
+    [6, 3],
+    [7, 3],
+    [8, 2],
+    [9, 1],
+  ],
+  [
+    [5, 1],
+    [6, 2],
+    [7, 3],
+    [8, 3],
+    [9, 2],
+    [10, 1],
+  ],
+  [
+    [5, 1],
+    [6, 2],
+    [7, 3],
+    [8, 3],
+    [9, 2],
+    [10, 1],
+  ],
+  [
+    [7, 1],
+    [8, 2],
+    [9, 3],
+    [10, 3],
+    [11, 1],
+  ],
+];
+
+/** The hardest technique a board of this size can sensibly ask for. */
+const extraMaxDifficulty = (size: number) => Math.min(WORLD_MAX_DIFFICULTY[WORLD_MAX_DIFFICULTY.length - 1], size - 2);
+
+/**
+ * Extra levels are generated on the fly (deterministic per level id). Board sizes are
+ * mixed (5×5 up to 11×11) so they stay varied; hard slots lean towards bigger boards.
+ */
+export function extraPuzzleSpec(id: number): ExtraPuzzleSpec {
+  const pos = (id % BONUS_EVERY) - 1;
+  const weights = EXTRA_SIZE_WEIGHTS[pos];
+  let roll = createRng(hashSeed('extra-size', id)).next() * weights.reduce((a, [, w]) => a + w, 0);
+  const [size] = weights.find(([, w]) => (roll -= w) < 0) ?? weights[weights.length - 1];
+  const maxDifficulty = extraMaxDifficulty(size);
+  const seed = hashSeed('extra-level', id);
+  // Nudge the bigger medium/hard boards away from trivial puzzles.
+  const minDifficulty = pos > 0 && size >= 7 && size <= 10 ? maxDifficulty - (pos === 3 ? 1 : 2) : undefined;
+  return minDifficulty === undefined ? { size, seed, maxDifficulty } : { size, seed, maxDifficulty, minDifficulty };
+}
 
 export type SlotRole = 'tutorial' | 'easy' | 'medium' | 'hard';
 

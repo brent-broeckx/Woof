@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { bonusGameSequence, getLevel, isBonusLevel, TOTAL_LEVELS } from '../progression/levels';
+import {
+  bonusGameSequence,
+  extraPuzzleSpec,
+  getLevel,
+  isBonusLevel,
+  isExtraLevel,
+  MAX_BONUS_TIER,
+  MINI_GAME_IDS,
+  TOTAL_LEVELS,
+  WORLDS,
+} from '../progression/levels';
 import { POWER_UPS } from './powerups';
 import { rollBonusReward, rollChest } from './rewards';
 import { BOARD_THEMES, ACCESSORIES, cosmeticPrice } from './cosmetics';
@@ -42,6 +52,35 @@ describe('progression', () => {
   it('never repeats a mini-game back-to-back', () => {
     const seq = bonusGameSequence(40);
     for (let i = 1; i < seq.length; i++) expect(seq[i]).not.toBe(seq[i - 1]);
+  });
+
+  it('keeps going past the last world with extra levels', () => {
+    const before = Array.from({ length: TOTAL_LEVELS / 5 }, (_, i) => getLevel((i + 1) * 5));
+    expect(isExtraLevel(TOTAL_LEVELS)).toBe(false);
+    expect(isExtraLevel(TOTAL_LEVELS + 1)).toBe(true);
+    for (let id = TOTAL_LEVELS + 1; id <= TOTAL_LEVELS * 4; id++) {
+      const level = getLevel(id);
+      expect(level.world).toBe(WORLDS.length);
+      if (level.kind === 'bonus') {
+        expect(level.tier).toBe(MAX_BONUS_TIER);
+        expect(MINI_GAME_IDS).toContain(level.game);
+        const prev = getLevel(id - 5);
+        if (prev.kind === 'bonus') expect(prev.game).not.toBe(level.game);
+      } else {
+        expect(extraPuzzleSpec(id)).toEqual(extraPuzzleSpec(id));
+        expect(extraPuzzleSpec(id).size).toBeGreaterThanOrEqual(5);
+        expect(extraPuzzleSpec(id).size).toBeLessThanOrEqual(11);
+      }
+    }
+    // Growing the rotation must not change the games of the world levels.
+    expect(Array.from({ length: TOTAL_LEVELS / 5 }, (_, i) => getLevel((i + 1) * 5))).toEqual(before);
+    expect(extraPuzzleSpec(TOTAL_LEVELS + 1).seed).not.toBe(extraPuzzleSpec(TOTAL_LEVELS + 6).seed);
+    const sizes = new Set(
+      Array.from({ length: 200 }, (_, i) => TOTAL_LEVELS + 1 + i)
+        .filter((id) => !isBonusLevel(id))
+        .map((id) => extraPuzzleSpec(id).size),
+    );
+    expect([...sizes].sort((a, b) => a - b)).toEqual([5, 6, 7, 8, 9, 10, 11]);
   });
 });
 

@@ -23,7 +23,7 @@ Board: N×N, N colored regions ("yards"), exactly N dogs. Unique, logically solv
 | Keyboard | arrows to move, `Space` = X | `Enter` = dog | `Shift`+arrows |
 
 - Drag mode is decided by the first cell: if it was empty → paint X; if it had X → erase X.
-- Setting: **"Placement mode" toggle button** (X-mode / Dog-mode) for players who dislike double-tap.
+- One fixed control scheme: single tap = X, double-tap / long-press = dog (no placement-mode toggle).
 - **Undo** for X's (unlimited, free). Dogs are locked and cannot be undone (like original).
 
 ## Validation

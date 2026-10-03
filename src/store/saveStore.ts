@@ -65,7 +65,6 @@ import type { GameState } from '../core/puzzle/game';
 export interface Settings {
   autoCross: boolean;
   highlightDone: boolean;
-  placementMode: 'x' | 'dog';
   showTimer: boolean;
   reducedMotion: boolean;
   sound: boolean;
@@ -218,7 +217,6 @@ const emptyInventory = () => Object.fromEntries(POWER_UP_IDS.map((id) => [id, 0]
 export const DEFAULT_SETTINGS: Settings = {
   autoCross: true,
   highlightDone: true,
-  placementMode: 'x',
   showTimer: true,
   reducedMotion: false,
   sound: true,
@@ -764,7 +762,7 @@ export function nextUnplayed(progress: Record<number, LevelProgress>): number {
 }
 
 export function highestUnlocked(progress: Record<number, LevelProgress>): number {
-  return debugUnlockAll() ? TOTAL_LEVELS : nextUnplayed(progress);
+  return debugUnlockAll() ? Math.max(TOTAL_LEVELS, nextUnplayed(progress)) : nextUnplayed(progress);
 }
 
 /** The parts of the save that badges track. */

@@ -1,0 +1,18 @@
+.bubble-game {
+  width: 100%;
+}
+.bubble-canvas {
+  display: block;
+  width: min(100%, 400px, calc(64vh * 8 / 12.9));
+  height: auto;
+  border: 3px solid #3b2f2a;
+  border-radius: 14px;
+  touch-action: none;
+  user-select: none;
+  cursor: crosshair;
+  box-shadow: 0 3px 0 rgba(90, 60, 40, 0.2);
+}
+.mg-stats span.bubble-warn {
+  background: #ffd9de;
+  color: #b3203a;
+}

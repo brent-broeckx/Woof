@@ -115,17 +115,18 @@ export const MINI_GAMES: Record<MiniGameId, MiniGameDefinition> = {
     ],
     component: lazy(() => import('./waterSort/WaterSortView')),
   },
-  lightsOut: {
-    id: 'lightsOut',
-    name: 'Kennel Lamps',
-    icon: '💡',
-    tagline: 'Dim every glowing kennel',
+  bubbleShooter: {
+    id: 'bubbleShooter',
+    name: 'Bubble Bark',
+    icon: '🫧',
+    tagline: 'Pop the paw-print bubbles before the ceiling sinks',
     rules: [
-      'Tap a kennel to toggle it and its up/down/left/right neighbours.',
-      'Turn every lamp off; Undo and Reset are available.',
-      'Stars compare your presses to the optimal solution.',
+      'Drag to aim, release to shoot (or ← → and Space). Bounce shots off the side walls.',
+      'Match 3+ bubbles of one colour to pop them; bubbles left hanging fall too. Tap the launcher (or S) to swap.',
+      'Too many shots without a pop and the ceiling drops a row. Bubbles past the line end the round.',
+      '★★★ clear the board within the shot limit · ★★ clear 70%+ · ★ otherwise.',
     ],
-    component: lazy(() => import('./lightsOut/LightsOutView')),
+    component: lazy(() => import('./bubbleShooter/BubbleShooterView')),
   },
   pipeSprinklers: {
     id: 'pipeSprinklers',

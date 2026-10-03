@@ -14,7 +14,7 @@ import { usePup, useTripsReady, useYard } from '../hooks/usePup';
 export function Title() {
   const go = useNav((s) => s.go);
   const progress = useSave((s) => s.progress);
-  const next = Math.min(TOTAL_LEVELS, nextUnplayed(progress));
+  const next = nextUnplayed(progress);
   const started = Object.keys(progress).length > 0;
   const daily = useSave((s) => s.daily);
   const streak = currentStreak(daily);
@@ -40,7 +40,7 @@ export function Title() {
       <PupWidget />
       <div className="title-buttons">
         <button className="btn primary big" onClick={() => go({ name: 'level', id: next })}>
-          {started ? `Continue · Level ${next}` : 'Play'}
+          {started ? `${next > TOTAL_LEVELS ? 'Keep playing' : 'Continue'} · Level ${next}` : 'Play'}
         </button>
         <button className="btn" onClick={() => go({ name: 'map' })}>
           🗺️ Level map

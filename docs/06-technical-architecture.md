@@ -7,7 +7,7 @@
 | Language | **TypeScript** (strict) | puzzle logic benefits from types |
 | UI | **React** | screens, HUD, menus, grid (DOM grid is fine up to 11×11) |
 | State | **Zustand** | small global stores (save, inventory, settings) |
-| Mini-game rendering | DOM/CSS for grid games; **Canvas 2D** for Block Drop | no need for Phaser/Pixi |
+| Mini-game rendering | DOM/CSS for grid games; **Canvas 2D** for Block Drop and Bubble Bark | no need for Phaser/Pixi |
 | Animation | CSS transitions + **Motion** (Framer Motion) | juicy UI cheaply |
 | Audio | **Howler.js** | simple cross-browser audio sprites |
 | Persistence | `localStorage` (versioned JSON save) | offline, no backend |

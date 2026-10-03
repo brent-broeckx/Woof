@@ -18,7 +18,7 @@ export const GAME_BIAS: Record<MiniGameId, PowerUpId[]> = {
   nonogramPaws: ['flashlight', 'fetch'],
   rushHour: ['extraBone', 'guideDog'],
   waterSort: ['sniff', 'guideDog'],
-  lightsOut: ['flashlight', 'extraBone'],
+  bubbleShooter: ['flashlight', 'extraBone'],
   pipeSprinklers: ['fetch', 'flashlight'],
 };
 

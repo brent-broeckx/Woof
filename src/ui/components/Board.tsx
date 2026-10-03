@@ -55,10 +55,6 @@ export const Board = memo(function Board({ state, dispatch, settings, onTarget }
   const tap = (cell: number) => {
     const g = gesture.current;
     if (marksRef.current[cell] === 'dog' || marksRef.current[cell] === 'cat') return;
-    if (settings.placementMode === 'dog') {
-      placeDog(cell);
-      return;
-    }
     const now = performance.now();
     if (g.lastTapCell === cell && now - g.lastTapTime < DOUBLE_TAP_MS) {
       dispatch({ type: 'undo' });

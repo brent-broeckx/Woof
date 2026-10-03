@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { POWER_UPS, type PowerUpId } from '../../core/economy/powerups';
 import { MINI_GAMES } from '../../minigames/registry';
-import { BONUS_EVERY, LEVELS_PER_WORLD, WORLDS, getLevel } from '../../core/progression/levels';
+import { BONUS_EVERY, LEVELS_PER_WORLD, TOTAL_LEVELS, WORLDS, getLevel } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
 import { highestUnlocked, nextUnplayed, useSave, type AdoptionResult } from '../../store/saveStore';
 import { breedById } from '../../core/pet/breeds';
@@ -129,6 +129,20 @@ export function WorldMap() {
             </button>
           </Modal>
         </>
+      )}
+      {current > TOTAL_LEVELS && (
+        <section className="world extra-world">
+          <header>
+            <h2>🏆 All worlds complete!</h2>
+            <span className="world-stars">♾️ {current - TOTAL_LEVELS - 1} extra</span>
+          </header>
+          <p className="center">You walked every trail! There are no more worlds, but fresh puzzles and bonus games keep coming — play as long as you like.</p>
+          <div className="center">
+            <button ref={currentRef} className="btn primary big" onClick={() => go({ name: 'level', id: current })}>
+              ▶ Keep playing · Level {current}
+            </button>
+          </div>
+        </section>
       )}
       <p className="muted center">Every {BONUS_EVERY}th level is a 🎁 bonus game that earns power-ups.</p>
     </div>
