@@ -43,7 +43,6 @@ export function PuzzleSession(props: PuzzleSessionProps) {
   const settings = useSave((s) => s.settings);
   const inventory = useSave((s) => s.inventory);
   const accessory = useSave((s) => s.cosmetics.accessory);
-  const updateSettings = useSave((s) => s.updateSettings);
   const pupView = usePup();
   const pupBreed = pupView?.pup.breed ?? 0;
   const [pupTrick, setPupTrick] = useState<{ id: TrickId; key: number } | null>(null);
@@ -248,14 +247,6 @@ export function PuzzleSession(props: PuzzleSessionProps) {
           </button>
           <button className="tool" onClick={nudge} disabled={state.status !== 'playing'}>
             💡<span>{state.freeNudgeUsed ? 'Used' : 'Nudge'}</span>
-          </button>
-          <button
-            className={`tool mode ${settings.placementMode}`}
-            onClick={() => updateSettings({ placementMode: settings.placementMode === 'x' ? 'dog' : 'x' })}
-            title="Switch what a single tap does"
-          >
-            {settings.placementMode === 'x' ? '✕' : '🐶'}
-            <span>Tap: {settings.placementMode === 'x' ? 'Cross' : 'Dog'}</span>
           </button>
           <button className="tool" onClick={restart}>
             ⟲<span>Restart</span>

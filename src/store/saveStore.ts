@@ -65,7 +65,6 @@ import type { GameState } from '../core/puzzle/game';
 export interface Settings {
   autoCross: boolean;
   highlightDone: boolean;
-  placementMode: 'x' | 'dog';
   showTimer: boolean;
   reducedMotion: boolean;
   sound: boolean;
@@ -218,7 +217,6 @@ const emptyInventory = () => Object.fromEntries(POWER_UP_IDS.map((id) => [id, 0]
 export const DEFAULT_SETTINGS: Settings = {
   autoCross: true,
   highlightDone: true,
-  placementMode: 'x',
   showTimer: true,
   reducedMotion: false,
   sound: true,

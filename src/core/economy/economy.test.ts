@@ -68,12 +68,19 @@ describe('progression', () => {
         if (prev.kind === 'bonus') expect(prev.game).not.toBe(level.game);
       } else {
         expect(extraPuzzleSpec(id)).toEqual(extraPuzzleSpec(id));
-        expect(extraPuzzleSpec(id).size).toBeGreaterThanOrEqual(9);
+        expect(extraPuzzleSpec(id).size).toBeGreaterThanOrEqual(5);
+        expect(extraPuzzleSpec(id).size).toBeLessThanOrEqual(11);
       }
     }
     // Growing the rotation must not change the games of the world levels.
     expect(Array.from({ length: TOTAL_LEVELS / 5 }, (_, i) => getLevel((i + 1) * 5))).toEqual(before);
     expect(extraPuzzleSpec(TOTAL_LEVELS + 1).seed).not.toBe(extraPuzzleSpec(TOTAL_LEVELS + 6).seed);
+    const sizes = new Set(
+      Array.from({ length: 200 }, (_, i) => TOTAL_LEVELS + 1 + i)
+        .filter((id) => !isBonusLevel(id))
+        .map((id) => extraPuzzleSpec(id).size),
+    );
+    expect([...sizes].sort((a, b) => a - b)).toEqual([5, 6, 7, 8, 9, 10, 11]);
   });
 });
 

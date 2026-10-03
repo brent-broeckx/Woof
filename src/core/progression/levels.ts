@@ -153,16 +153,57 @@ export interface ExtraPuzzleSpec {
   minDifficulty?: number;
 }
 
+/** Board-size weights per slot in a 5-level cycle (easy, medium, medium, hard). */
+const EXTRA_SIZE_WEIGHTS: [size: number, weight: number][][] = [
+  [
+    [5, 2],
+    [6, 3],
+    [7, 3],
+    [8, 2],
+    [9, 1],
+  ],
+  [
+    [5, 1],
+    [6, 2],
+    [7, 3],
+    [8, 3],
+    [9, 2],
+    [10, 1],
+  ],
+  [
+    [5, 1],
+    [6, 2],
+    [7, 3],
+    [8, 3],
+    [9, 2],
+    [10, 1],
+  ],
+  [
+    [7, 1],
+    [8, 2],
+    [9, 3],
+    [10, 3],
+    [11, 1],
+  ],
+];
+
+/** The hardest technique a board of this size can sensibly ask for. */
+const extraMaxDifficulty = (size: number) => Math.min(WORLD_MAX_DIFFICULTY[WORLD_MAX_DIFFICULTY.length - 1], size - 2);
+
 /**
- * Extra levels are generated on the fly (deterministic per level id) and follow the
- * last world's rhythm: easy 9×9, then medium and hard 10×10 before each bonus.
+ * Extra levels are generated on the fly (deterministic per level id). Board sizes are
+ * mixed (5×5 up to 11×11) so they stay varied; hard slots lean towards bigger boards.
  */
 export function extraPuzzleSpec(id: number): ExtraPuzzleSpec {
   const pos = (id % BONUS_EVERY) - 1;
-  const maxDifficulty = WORLD_MAX_DIFFICULTY[WORLD_MAX_DIFFICULTY.length - 1];
+  const weights = EXTRA_SIZE_WEIGHTS[pos];
+  let roll = createRng(hashSeed('extra-size', id)).next() * weights.reduce((a, [, w]) => a + w, 0);
+  const [size] = weights.find(([, w]) => (roll -= w) < 0) ?? weights[weights.length - 1];
+  const maxDifficulty = extraMaxDifficulty(size);
   const seed = hashSeed('extra-level', id);
-  if (pos === 0) return { size: 9, seed, maxDifficulty };
-  return { size: 10, seed, maxDifficulty, minDifficulty: pos === 3 ? 5 : 4 };
+  // Nudge the bigger medium/hard boards away from trivial puzzles.
+  const minDifficulty = pos > 0 && size >= 7 && size <= 10 ? maxDifficulty - (pos === 3 ? 1 : 2) : undefined;
+  return minDifficulty === undefined ? { size, seed, maxDifficulty } : { size, seed, maxDifficulty, minDifficulty };
 }
 
 export type SlotRole = 'tutorial' | 'easy' | 'medium' | 'hard';

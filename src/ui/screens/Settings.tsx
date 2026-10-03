@@ -35,16 +35,6 @@ export function Settings() {
             <input type="checkbox" checked={settings[t.key] as boolean} onChange={(e) => update({ [t.key]: e.target.checked })} />
           </label>
         ))}
-        <label className="toggle">
-          <div>
-            <div className="name">Single tap places…</div>
-            <div className="desc">What a single tap does. Double-tap / long-press does the other.</div>
-          </div>
-          <select value={settings.placementMode} onChange={(e) => update({ placementMode: e.target.value as 'x' | 'dog' })}>
-            <option value="x">✕ Cross</option>
-            <option value="dog">🐶 Dog</option>
-          </select>
-        </label>
       </div>
       <div className="card">
         <h3>Save data</h3>
