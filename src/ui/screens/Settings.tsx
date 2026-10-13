@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNav } from '../../store/navStore';
 import { exportSave, useSave, type Settings as SettingsData } from '../../store/saveStore';
 import { Modal, TopBar } from '../components/common';
+import { useReminderToggle } from '../hooks/usePupReminders';
 
-const TOGGLES: { key: keyof SettingsData; label: string; help: string }[] = [
+const TOGGLES: { key: Exclude<keyof SettingsData, 'pupReminders'>; label: string; help: string }[] = [
   { key: 'autoCross', label: 'Auto-cross', help: 'After placing a dog, mark every tile it rules out.' },
   { key: 'highlightDone', label: 'Highlight finished lines', help: 'Dim rows, columns and yards that already have their dog.' },
   { key: 'showTimer', label: 'Show timer', help: 'Show how long you have been playing a level.' },
@@ -14,6 +15,24 @@ const TOGGLES: { key: keyof SettingsData; label: string; help: string }[] = [
   { key: 'patterns', label: 'Yard patterns', help: 'Add a pattern to every yard colour (colour-blind friendly).' },
   { key: 'highContrast', label: 'High contrast', help: 'Strong colours and thick black yard borders.' },
 ];
+
+function RemindersCard() {
+  const reminders = useReminderToggle();
+  const pupName = useSave((s) => s.pup?.name);
+  if (!reminders.available || !pupName) return null;
+  return (
+    <div className="card">
+      <label className="toggle">
+        <div>
+          <div className="name">🔔 Hungry pup reminders</div>
+          <div className="desc">A notification when {pupName} gets hungry, and another if they start starving. Never between 22:00 and 08:00.</div>
+        </div>
+        <input type="checkbox" checked={reminders.on} disabled={reminders.busy} onChange={(e) => void reminders.setOn(e.target.checked)} />
+      </label>
+      {reminders.message && <p className="muted text-small">{reminders.message}</p>}
+    </div>
+  );
+}
 
 export function Settings() {
   const go = useNav((s) => s.go);
@@ -36,6 +55,7 @@ export function Settings() {
           </label>
         ))}
       </div>
+      <RemindersCard />
       <div className="card">
         <h3>Save data</h3>
         <p className="muted">Progress is saved in this browser. Copy it to move to another device.</p>

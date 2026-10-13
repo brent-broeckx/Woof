@@ -8,6 +8,8 @@ import { Modal, TopBar } from '../components/common';
 import { PupAvatar } from '../components/PupAvatar';
 import { FullnessBar, hungerHint, useFeed } from '../components/PupWidget';
 import { usePup } from '../hooks/usePup';
+import { REMINDER_TIP, useReminderToggle } from '../hooks/usePupReminders';
+import { reminderStatus } from '../../net/push';
 
 const MOOD_TEXT = {
   happy: 'is having the best day ever!',
@@ -15,6 +17,43 @@ const MOOD_TEXT = {
   hungry: 'keeps staring at the food bowl…',
   sad: 'is starving. Solve a puzzle and grab some kibble!',
 };
+
+/** One-time, opt-in offer to get "hungry pup" notifications. Also lives in Settings. */
+function ReminderPrompt({ name }: { name: string }) {
+  const reminders = useReminderToggle();
+  const seen = useSave((s) => !!s.seenTips[REMINDER_TIP]);
+  const [status] = useState(reminderStatus);
+  const [hidden, setHidden] = useState(false);
+  if (hidden || !reminders.available || reminders.on || status === 'unsupported' || (seen && !reminders.message)) return null;
+  const dismiss = () => {
+    setHidden(true);
+    useSave.getState().markTip(REMINDER_TIP);
+  };
+  return (
+    <div className="card reminder-prompt">
+      <h3>🔔 Get a ping when {name} is hungry?</h3>
+      {reminders.message ? (
+        <p className="muted text-small">{reminders.message}</p>
+      ) : status === 'install' ? (
+        <p className="muted text-small">
+          On iPhone and iPad, add Woofdoku to your Home Screen first (Share → Add to Home Screen), then turn this on in the installed app.
+        </p>
+      ) : (
+        <p className="muted text-small">At most two reminders after each meal, never between 22:00 and 08:00. You can turn them off in Settings.</p>
+      )}
+      <div className="row">
+        {status !== 'install' && !reminders.message && (
+          <button className="btn primary" disabled={reminders.busy} onClick={() => void reminders.setOn(true)}>
+            Turn on
+          </button>
+        )}
+        <button className="btn ghost" onClick={dismiss}>
+          {status === 'install' || reminders.message ? 'Got it' : 'No thanks'}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function PupScreen() {
   const go = useNav((s) => s.go);
@@ -55,6 +94,8 @@ export function PupScreen() {
         </button>
         <p className="muted center text-small">Tap {pup.name} to pet. Earn kibble from every puzzle, daily walk, endless round and bonus game.</p>
       </div>
+
+      <ReminderPrompt name={pup.name} />
 
       <div className="card">
         <div className="pup-stat-row">

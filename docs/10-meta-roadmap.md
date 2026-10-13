@@ -73,7 +73,7 @@ Today, treats come from **level wins**. In the new model, treats come from the *
 - [x] **Bond level:** feeding and playing build bond XP. Levels unlock small cosmetic rewards (animations, new idle poses, a name tag). No stat power.
 - [x] **Pup home screen:** the pup is front and center on the Title or a new "Home" screen and reacts to taps (wag, bark, spin). The pup peeks onto the puzzle screen with reactions (cheers on win, whimpers on mistake).
 - [x] **Medium neglect, done gently:** a hungry pup shows clearly (sad face, empty bowl) and its future production boost is off. Nothing is deleted. Coming back gives a "missed you!" greeting animation.
-- [ ] *(Deferred)* Optional: PWA notification permission request ("your pup is hungry"), strictly opt-in. Can be deferred.
+- [x] Optional: "your pup is hungry" push notifications, strictly opt-in (Settings toggle + one-time prompt on the pup screen). Sent via Web Push from a Supabase Edge Function + pg_cron; Hungry + Starving only, never 22:00–08:00 local. Home-screen widgets skipped (not possible for a PWA). See [12-pup-reminders.md](12-pup-reminders.md).
 - [x] Unit tests: decay math (including long absences and clock changes), feeding caps, migration.
 
 **Done when:** a new and an existing save can adopt/name a pup, wins pay kibble, hunger decays across reloads, feeding works, mood is visible on home and in puzzles.

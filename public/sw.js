@@ -54,3 +54,37 @@ self.addEventListener('fetch', (event) => {
     }),
   );
 });
+
+// Pup hunger reminders (Web Push, see src/net/push.ts and supabase/functions/push-reminders).
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Woofdoku', {
+      body: data.body || 'Your pup misses you!',
+      tag: data.tag || 'pup-hunger',
+      renotify: true,
+      icon: './icons/icon-192.png',
+      data: { url: data.url || './' },
+    }),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data && event.notification.data.url) || './', self.registration.scope).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((w) => w.url.startsWith(self.registration.scope));
+      if (open) {
+        open.postMessage({ type: 'open-pup' });
+        return open.focus();
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});

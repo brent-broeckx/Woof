@@ -18,6 +18,7 @@ npm run lint             # oxlint (typescript-eslint doesn't support TS 7 yet)
 npm run format           # Prettier (format:check in CI)
 npm run e2e              # Playwright smoke tests, mobile + desktop
 npm run icons            # regenerate PNG app icons in public/icons
+npm run vapid-keys       # generate a VAPID key pair for pup reminder push notifications
 ```
 
 > Playwright: if the browser download fails, use an installed browser, e.g. `PW_CHANNEL=msedge npm run e2e` (PowerShell: `$env:PW_CHANNEL='msedge'`).
@@ -45,14 +46,16 @@ The build injects a precache list and a build-specific cache version into `sw.js
 |------|---------|
 | `src/core/puzzle/` | Puzzle types, exact solver, human-style logic solver (hints/grading), generator, game reducer |
 | `src/core/economy/` | Power-up definitions/effects, bonus reward rolls |
-| `src/core/pet/` | Main pup (hunger decay, moods, bond, tricks, kibble rewards), yard treat production, the breed catalog, the pack, the Adoption Fair, and expeditions + postcards |
+| `src/core/pet/` | Main pup (hunger decay, moods, bond, tricks, kibble rewards), hunger reminder planning, yard treat production, the breed catalog, the pack, the Adoption Fair, and expeditions + postcards |
 | `src/core/progression/` | Worlds, level table, bonus schedule, puzzle slot sizes/difficulty |
+| `src/net/` | Optional network code: Web Push subscription for pup reminders (plain `fetch`, off when not configured) |
 | `src/data/` | Pre-generated puzzle pack (`puzzles.json`) |
 | `src/minigames/` | Bonus mini-games (pure `logic.ts` + React view each) and the registry |
 | `src/store/` | Zustand stores: persisted save data and screen navigation |
 | `src/ui/` | Board, dog SVGs, power-up tray, audio, confetti and all screens |
 | `src/workers/` | Web Worker that generates Daily/Endless puzzles off the main thread |
-| `public/` | PWA manifest, service worker, icons |
+| `public/` | PWA manifest, service worker (offline cache + push notifications), icons |
+| `supabase/` | Optional backend for pup reminders: DB migration (tables + pg_cron job) and the `push-reminders` Edge Function |
 | `e2e/` | Playwright smoke tests |
 | `scripts/generate-levels.ts` | Offline level generator |
 
@@ -71,6 +74,7 @@ The build injects a precache list and a build-specific cache version into `sw.js
 | 9 | [docs/09-open-questions.md](docs/09-open-questions.md) | Decisions we should confirm before building |
 | 10 | [docs/10-meta-roadmap.md](docs/10-meta-roadmap.md) | Next roadmap: main pup + kibble, yard idle, pack & Adoption Fair, expeditions, Arcade, achievements, weekly boss, new puzzles, cosmetics |
 | 11 | [docs/11-social-plan.md](docs/11-social-plan.md) | Social plan (not started): Supabase, optional accounts, cloud save sync, leaderboards, friends, yard visits, challenges |
+| 12 | [docs/12-pup-reminders.md](docs/12-pup-reminders.md) | Hungry pup push notifications: how they work, platform support, Supabase setup |
 
 ## One-paragraph pitch
 
