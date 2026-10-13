@@ -72,6 +72,8 @@ export interface Settings {
   haptics: boolean;
   patterns: boolean;
   highContrast: boolean;
+  /** Opted in to "your pup is hungry" push notifications on this device. */
+  pupReminders: boolean;
 }
 
 export interface LevelStats {
@@ -224,6 +226,7 @@ export const DEFAULT_SETTINGS: Settings = {
   haptics: true,
   patterns: false,
   highContrast: false,
+  pupReminders: false,
 };
 
 const emptyTotals = (): Totals => ({

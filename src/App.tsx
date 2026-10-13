@@ -9,6 +9,7 @@ import { PuzzleScreen } from './ui/screens/PuzzleScreen';
 import { Title } from './ui/screens/Title';
 import { touchLastSeen } from './store/lastSeen';
 import { WorldMap } from './ui/screens/WorldMap';
+import { usePupRemindersSync } from './ui/hooks/usePupReminders';
 
 const BonusScreen = lazy(() => import('./ui/screens/BonusScreen').then((m) => ({ default: m.BonusScreen })));
 const HowTo = lazy(() => import('./ui/screens/HowTo').then((m) => ({ default: m.HowTo })));
@@ -103,6 +104,23 @@ function Router() {
 export function App() {
   const reducedMotion = useSave((s) => s.settings.reducedMotion);
   const music = useSave((s) => s.settings.music);
+  usePupRemindersSync();
+
+  // A tapped "hungry pup" notification opens ./?open=pup, or messages an already-open app.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('open') === 'pup') {
+      useNav.getState().go({ name: 'pup' });
+      params.delete('open');
+      const query = params.toString();
+      window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
+    }
+    const onMessage = (e: MessageEvent) => {
+      if ((e.data as { type?: string } | null)?.type === 'open-pup') useNav.getState().go({ name: 'pup' });
+    };
+    navigator.serviceWorker?.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker?.removeEventListener('message', onMessage);
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('reduced-motion', reducedMotion);
