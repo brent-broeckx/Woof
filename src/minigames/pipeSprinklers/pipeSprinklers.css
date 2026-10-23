@@ -30,6 +30,9 @@
     0 2px 0 rgba(90, 60, 40, 0.14);
   cursor: pointer;
   touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   transition:
     transform 120ms ease,
     background 120ms ease;
@@ -44,6 +47,11 @@
 
 .pipe-tile.wet {
   background: #eaf7ff;
+}
+
+.pipe-tile svg,
+.pipe-tile span {
+  pointer-events: none;
 }
 
 .pipe-tile svg {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { DogFace } from '../../ui/components/DogFace';
 import type { MiniGameProps } from '../registry';
 import {
@@ -21,6 +21,7 @@ import {
 import './pipeSprinklers.css';
 
 const bits = [PIPE_N, PIPE_E, PIPE_S, PIPE_W] as const;
+const LONG_PRESS_MS = 450;
 
 function PipeSvg({ mask, wet, source }: { mask: PipeMask; wet: boolean; source: boolean }) {
   const color = wet ? '#43aee8' : '#c9bda9';
@@ -76,6 +77,34 @@ export default function PipeSprinklersView({ tier, seed, onFinish }: MiniGamePro
     setState((s) => rotatePipeTile(s, index, direction));
   };
 
+  // Touch has no right-click, so a long-press rotates counter-clockwise.
+  const press = useRef<{ timer: number; x: number; y: number; fired: boolean; touch: boolean } | null>(null);
+  const suppressClick = useRef(false);
+  const cancelPress = () => {
+    if (press.current) window.clearTimeout(press.current.timer);
+    press.current = null;
+  };
+  useEffect(() => cancelPress, []);
+
+  const onPointerDown = (event: ReactPointerEvent, index: number) => {
+    cancelPress();
+    const touch = event.pointerType !== 'mouse';
+    suppressClick.current = false;
+    if (!touch) return;
+    const entry = { x: event.clientX, y: event.clientY, fired: false, touch, timer: 0 };
+    entry.timer = window.setTimeout(() => {
+      entry.fired = true;
+      suppressClick.current = true;
+      navigator.vibrate?.(15);
+      rotate(index, -1);
+    }, LONG_PRESS_MS);
+    press.current = entry;
+  };
+  const onPointerMove = (event: ReactPointerEvent) => {
+    const p = press.current;
+    if (p && !p.fired && Math.hypot(event.clientX - p.x, event.clientY - p.y) > 10) cancelPress();
+  };
+
   return (
     <div className="minigame pipeSprinklers-game">
       <div className="mg-stats">
@@ -93,9 +122,22 @@ export default function PipeSprinklersView({ tier, seed, onFinish }: MiniGamePro
             <button
               key={i}
               className={`pipe-tile ${wet ? 'wet' : ''}`}
-              onClick={() => rotate(i, 1)}
+              onPointerDown={(event) => onPointerDown(event, i)}
+              onPointerMove={onPointerMove}
+              onPointerUp={cancelPress}
+              onPointerCancel={cancelPress}
+              onPointerLeave={cancelPress}
+              onClick={() => {
+                if (suppressClick.current) {
+                  suppressClick.current = false;
+                  return;
+                }
+                rotate(i, 1);
+              }}
               onContextMenu={(event) => {
                 event.preventDefault();
+                // Touch long-press also fires contextmenu; the timer already handled it.
+                if (press.current?.touch || suppressClick.current) return;
                 rotate(i, -1);
               }}
               aria-label={`Pipe tile ${i + 1}`}
