@@ -64,40 +64,27 @@ function neighbor(cell: number, size: number, bit: number): number | null {
   return nr < 0 || nc < 0 || nr >= size || nc >= size ? null : nr * size + nc;
 }
 
-export function pipeFlow(size: number, source: number, masks: readonly PipeMask[]): { watered: Set<number>; leaks: Set<number> } {
-  const watered = new Set<number>();
-  const leaks = new Set<number>();
+/** Tiles reachable from the tap through mutually connected pipe ends. */
+export function pipeFlow(size: number, source: number, masks: readonly PipeMask[]): { watered: Set<number> } {
+  const watered = new Set<number>([source]);
   const queue = [source];
-  watered.add(source);
   for (let head = 0; head < queue.length; head++) {
     const cell = queue[head];
     for (const dir of DIRS) {
       if ((masks[cell] & dir.bit) === 0) continue;
       const n = neighbor(cell, size, dir.bit);
-      if (n === null || (masks[n] & dir.opposite) === 0) {
-        leaks.add(cell);
-        continue;
-      }
-      if (!watered.has(n)) {
-        watered.add(n);
-        queue.push(n);
-      }
+      if (n === null || (masks[n] & dir.opposite) === 0 || watered.has(n)) continue;
+      watered.add(n);
+      queue.push(n);
     }
   }
-  return { watered, leaks };
+  return { watered };
 }
 
+/** Solved when water reaches every dog bowl. */
 export function isPipeSolved(puzzle: PipePuzzle, masks: readonly PipeMask[]): boolean {
-  const { watered, leaks } = pipeFlow(puzzle.size, puzzle.source, masks);
-  if (watered.size !== puzzle.size * puzzle.size || leaks.size > 0) return false;
-  for (let cell = 0; cell < masks.length; cell++) {
-    for (const dir of DIRS) {
-      if ((masks[cell] & dir.bit) === 0) continue;
-      const n = neighbor(cell, puzzle.size, dir.bit);
-      if (n === null || (masks[n] & dir.opposite) === 0) return false;
-    }
-  }
-  return true;
+  const { watered } = pipeFlow(puzzle.size, puzzle.source, masks);
+  return puzzle.bowls.every((bowl) => watered.has(bowl));
 }
 
 export function generatePipeSprinklersPuzzle(config: PipeConfig, seed: number): PipePuzzle {
@@ -131,9 +118,12 @@ export function generatePipeSprinklersPuzzle(config: PipeConfig, seed: number): 
     const extras = solution.map((_, i) => i).filter((i) => i !== source && !bowls.includes(i));
     bowls.push(...rng.shuffle(extras).slice(0, 2 - bowls.length));
   }
-  let start = solution.map((mask) => rotateMask(mask, rng.int(4)));
-  if (isPipeSolved({ size, source, solution, start, bowls, target: 0 }, start)) {
-    start = start.map((mask, i) => (i === source ? rotateMask(mask, 1) : mask));
+  const start = solution.map((mask) => rotateMask(mask, rng.int(4)));
+  const probe = { size, source, solution, start, bowls, target: 0 };
+  // Guarantee the player has something to do: scramble pipes until a bowl is dry.
+  for (let guard = 0; isPipeSolved(probe, start) && guard < 200; guard++) {
+    const i = rng.int(total);
+    if (start[i] !== rotateMask(start[i], 1)) start[i] = rotateMask(start[i], 1 + rng.int(3));
   }
   const target = start.reduce((sum, mask, i) => sum + minimalTurns(mask, solution[i]), 0);
   return { size, source, solution, start, bowls, target };

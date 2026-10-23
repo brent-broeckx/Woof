@@ -24,7 +24,7 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 | 30 | Nonogram Paws (intro) |
 | 35 | Doggy Rush Hour (intro) |
 | 40 | Water Bowl Sort (intro) |
-| 45 | Kennel Lamps / Lights Out (intro) |
+| 45 | Bubble Bark / bubble shooter (intro) |
 | 50 | Pipe Sprinklers (intro) |
 | 55+ | seeded random rotation over all 10 games (never the same game twice in a row) |
 
@@ -59,24 +59,32 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 ### 4. 🟦 Kibble Blocks (Block Blast / 1010!-style)
 - 8×8 grid, you get 3 polyomino pieces at a time, place them anywhere; full rows/columns clear. No gravity, no timer — pure planning.
 - Goal: reach score X in limited rounds, or clear specific marked cells ("treats").
+- Input: drag a piece onto the board (on touch it floats above your finger so it stays visible), or tap a piece then tap a cell. Board cells are always square.
 
 ### 5. 🃏 Memory Fetch (pairs)
-- Flip cards to find pairs of dog breeds. 4×3 → 6×5. Stars by number of flips. Later tiers add "shuffle after N misses".
+- Flip cards to find pairs of dog breeds. 4×3 → 6×5. Stars by number of flips. Later tiers add "shuffle after N misses". Every pair has a visually unique face (each breed once; larger boards add hats to repeats) so no two pairs look alike.
 
 ### 6. 🔢 Nonogram Paws (mini Picross)
 - 5×5 / 8×8 nonograms that reveal a dog pixel-art picture. Fits the logic-puzzle vibe very well.
 
 ### 7. 🚗 Doggy Rush Hour (Unblock Me)
-- Slide cars/crates on a 6×6 lot to get the dog van out. Pre-generated levels with known optimal solutions; stars by moves vs optimal.
+- Slide cars/crates on a 6×6 lot to get the dog van out. Pre-generated levels with known optimal solutions; stars by moves vs optimal. Vehicles follow your finger live and can slide several cells in one drag (counted as one move); the dog drives out through the visible EXIT when freed.
 
 ### 8. 🚿 Pipe Sprinklers (pipe rotation puzzle)
-- Rotate pipe tiles so water from the tap reaches every thirsty dog's bowl. Stars by rotations used.
+- Rotate pipe tiles so water from the tap reaches every thirsty dog's bowl. Pipes turn blue as soon as water reaches them; no leak markers. You win once every dog is watered. Stars by rotations used.
 
 ### 9. 💧 Water Bowl Sort (Water Sort puzzle)
 - Pour colored water between bowls until each bowl is a single color.
 
-### 10. 💡 Lights Out: Kennel Lamps
-- Toggling a kennel light flips it and its neighbors; turn all off.
+### 10. 🫧 Bubble Bark (classic bubble shooter)
+- Replaces the removed *Kennel Lamps / Lights Out* game in the same rotation slot.
+- **Board:** glossy paw-print bubbles on an offset hex grid (8 / 7 per row) hanging from the ceiling.
+- **Controls:** drag to aim and release to shoot (a dotted guide shows the path and wall bounces). Release below the launcher to cancel. Tap the launcher/next bubble or press **S** to swap; ← → aim and Space shoots.
+- **Rules:** a shot sticks to the first bubble or the ceiling it touches and snaps to the nearest free cell. 3+ connected bubbles of one colour pop, and any bubbles cut off from the ceiling drop. Shot colours only come from colours still on the board.
+- **Pressure:** after `missesPerDrop` shots in a row without a pop, the ceiling drops one row. If bubbles cross the red line, the round ends early.
+- **Limit:** a shot budget of `ceil(startingBubbles × shotFactor)`.
+- **Stars:** board cleared = ⭐⭐⭐ · ≥70% cleared = ⭐⭐ · otherwise ⭐.
+- **Tiers:** 3→6 colours, 4→8 starting rows, shot factor 0.6→0.32, ceiling drop every 6→3 misses.
 
 ### 11. 🧠 Simon Barks (sequence memory)
 - Repeat growing sequences of dog barks/colors. Very short; good as a "break" game.
@@ -93,7 +101,7 @@ Mini-games rotate so the same one never appears twice in a row. First appearance
 | Doggy Rush Hour | ★★★ | ★★★ | M (levels) | ★★★ | P5 medium |
 | Pipe Sprinklers | ★★ | ★★ | M | ★★★ | P5 low |
 | Water Bowl Sort | ★★ | ★★ | S | ★★★ | P5 low |
-| Lights Out | ★ | ★★★ | S | ★★★ | P5 low |
+| Bubble Bark | ★★★ | ★★ | M | ★★★ | built (replaced Lights Out) |
 | Simon Barks | ★ | ★ | S | ★★★ | optional |
 
 ## Shared bonus result screen

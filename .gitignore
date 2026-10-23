@@ -4,3 +4,9 @@ dist
 .DS_Store
 test-results
 playwright-report
+
+# Local env + Supabase CLI state
+.env.local
+.env.*.local
+supabase/.temp
+supabase/.branches

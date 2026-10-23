@@ -4,6 +4,8 @@ export interface Puzzle {
   regions: number[];
   /** Column of the dog for each row. */
   solution: number[];
+  /** Twist: cells with a sleeping cat. No dog can go there. */
+  cats?: number[];
 }
 
 export type TechniqueId = 'lastCell' | 'confinement' | 'blocksUnit' | 'pigeonhole2' | 'pigeonhole3' | 'contradiction';

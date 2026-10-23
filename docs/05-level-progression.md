@@ -44,6 +44,13 @@ flowchart LR
 ## Bonus tiers
 `bonusTier = level / 5` (1, 2, 3, …) → mini-game difficulty parameter (grid size, target, piece count). Each mini-game maps tier → config in its own table.
 
+## After the last world: extra levels
+Once every world is cleared, play never stops. There are no more worlds, but levels keep counting up (126, 127, …):
+- The Title button turns into **Keep playing · Level N**. The map shows an **🏆 All worlds complete!** card under the last world, with the same button.
+- Extra puzzle levels are generated on the fly (off the main thread) from a seed derived from the level id. A level is always the same puzzle, so replays and saved in-progress boards stay valid. Board sizes are mixed per level (5×5 up to 11×11) so the run stays varied. Easy slots lean small, hard slots lean big, and smaller boards use fewer advanced techniques (`extraPuzzleSpec` in `levels.ts`).
+- Every 5th extra level is still a 🎁 Bonus Park with full rewards. The mini-game rotation simply continues, and the tier is capped at the final world's (`MAX_BONUS_TIER`).
+- Extra levels use the last world's look. They don't count towards world chests, the "Levels cleared" total, or the Star Gazer badge. Stats shows a separate "Extra levels" count.
+
 ## Level data
 ```json
 {

@@ -1,7 +1,8 @@
 import { attackedCells, solutionCells } from './geometry';
 import type { Puzzle } from './types';
 
-export type CellMark = 'empty' | 'x' | 'autoX' | 'dog';
+/** 'cat' cells are fixed by the puzzle (twist mode) and can't be changed. */
+export type CellMark = 'empty' | 'x' | 'autoX' | 'dog' | 'cat';
 export type GameStatus = 'playing' | 'won' | 'lost';
 
 export const START_BONES = 3;
@@ -17,7 +18,7 @@ export interface HintView {
 
 export interface GameEvent {
   id: number;
-  type: 'dog' | 'wrong' | 'shielded' | 'powerUp';
+  type: 'dog' | 'wrong' | 'powerUp';
   cells: number[];
 }
 
@@ -26,9 +27,7 @@ export interface GameState {
   puzzle: Puzzle;
   marks: CellMark[];
   bones: number;
-  shield: boolean;
   mistakes: number;
-  lostBones: number;
   powerUpsUsed: number;
   history: CellMark[][];
   status: GameStatus;
@@ -52,11 +51,9 @@ export function createGame(levelId: number, puzzle: Puzzle): GameState {
   return {
     levelId,
     puzzle,
-    marks: new Array(puzzle.size * puzzle.size).fill('empty'),
+    marks: initialMarks(puzzle),
     bones: START_BONES,
-    shield: false,
     mistakes: 0,
-    lostBones: 0,
     powerUpsUsed: 0,
     history: [],
     status: 'playing',
@@ -65,6 +62,12 @@ export function createGame(levelId: number, puzzle: Puzzle): GameState {
     hint: null,
     event: null,
   };
+}
+
+function initialMarks(puzzle: Puzzle): CellMark[] {
+  const marks: CellMark[] = new Array(puzzle.size * puzzle.size).fill('empty');
+  for (const cat of puzzle.cats ?? []) marks[cat] = 'cat';
+  return marks;
 }
 
 let eventCounter = 0;
@@ -103,7 +106,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, elapsedMs: state.elapsedMs + action.ms };
     case 'toggleX': {
       const m = state.marks[action.cell];
-      if (m === 'dog') return state;
+      if (m === 'dog' || m === 'cat') return state;
       const marks = [...state.marks];
       marks[action.cell] = isCrossed(m) ? 'empty' : 'x';
       return { ...state, marks, history: [...state.history, state.marks], hint: null };
@@ -128,20 +131,16 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
     case 'placeDog': {
       const { cell } = action;
-      if (state.marks[cell] === 'dog') return state;
+      if (state.marks[cell] === 'dog' || state.marks[cell] === 'cat') return state;
       if (isSolutionCell(state.puzzle, cell)) return withCorrectDog(state, cell, action.autoCross);
       const marks = [...state.marks];
       marks[cell] = 'autoX';
-      if (state.shield) {
-        return { ...state, marks, shield: false, hint: null, event: makeEvent('shielded', [cell]) };
-      }
       const bones = state.bones - 1;
       return {
         ...state,
         marks,
         bones,
         mistakes: state.mistakes + 1,
-        lostBones: state.lostBones + 1,
         hint: null,
         status: bones <= 0 ? 'lost' : 'playing',
         event: makeEvent('wrong', [cell]),

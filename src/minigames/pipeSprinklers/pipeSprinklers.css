@@ -49,18 +49,6 @@
   background: #eaf7ff;
 }
 
-.pipe-tile.leak {
-  background: #fff0e8;
-}
-
-.pipe-tile.leak::after {
-  content: '💦';
-  position: absolute;
-  right: -6px;
-  top: -8px;
-  font-size: 1rem;
-}
-
 .pipe-tile svg,
 .pipe-tile span {
   pointer-events: none;

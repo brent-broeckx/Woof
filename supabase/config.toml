@@ -1,0 +1,7 @@
+# Minimal Supabase CLI config for Woofdoku. Unlisted settings use the CLI defaults.
+project_id = "woofdoku"
+
+[functions.push-reminders]
+# The PWA calls this without a user session (no accounts yet). The function validates
+# every request itself, and the cron "send" action needs the x-cron-secret header.
+verify_jwt = false

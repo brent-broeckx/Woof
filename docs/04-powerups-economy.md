@@ -15,19 +15,18 @@
 | Icon | Name | Effect | Rarity |
 |---|---|---|---|
 | 👃 | **Sniff** | Reveals & places one correct dog (player taps a yard to sniff there) | Rare |
-| 🛡️ | **Bone Shield** | Next wrong placement costs no bone | Common |
 | 🦴 | **Extra Bone** | +1 life (max 5). Also offered on the fail screen to continue | Common |
 | 🎾 | **Fetch** | Tap a row: crosses every wrong empty tile in that row except one decoy (as implemented) | Common |
 | 🔦 | **Flashlight** | Highlights one cell that is logically forced next + shows the explanation | Uncommon |
-| 🐾 | **Paw Scan** | Auto-crosses all cells impossible due to *direct* rule violations (neighbors/lines/yards of placed dogs) across the board | Common |
-| ⏪ | **Rewind** | Undo the last wrong placement *and* refund its bone | Uncommon |
-| 🦮 | **Guide Dog** | Solves the next "cascade" (keeps applying easy deductions until a hard step is needed) | Epic |
+| 🦮 | **Guide Dog** | Places up to 3 *new* correct dogs (never re-counts dogs you already placed; may finish the level) | Epic |
+
+Removed (they felt useless): Bone Shield, Paw Scan, Rewind. Old saves silently drop them from the inventory.
 
 In-level limits: **max 3 power-ups per level** (prevents trivializing); 3★ requires none.
 
-**Starter inventory (implemented):** a new save begins with 1× Bone Shield and 1× Extra Bone so the first levels can show off power-ups before the first Bonus Park.
+**Starter inventory (implemented):** a new save begins with 1× Extra Bone and 1× Fetch so the first levels can show off power-ups before the first Bonus Park.
 
-**Implementation note:** the MVP tray shows all 8 power-ups (with counts); the "pinned loadout" below is deferred.
+**Implementation note:** the tray shows all 5 power-ups in a single row of equal buttons on every screen size (with counts); the "pinned loadout" below is deferred.
 
 ### Loadout
 - Power-up tray shows up to 4 pinned types (default: most owned/last used). Keeps HUD clean; full inventory via "more" button.
@@ -39,7 +38,7 @@ In-level limits: **max 3 power-ups per level** (prevents trivializing); 3★ req
 | ⭐⭐ | 2 | 1× Common | 60 / 30 / 10 / 0 |
 | ⭐⭐⭐ | 3 | 1× Uncommon | 45 / 35 / 17 / 3 |
 
-- **Theme bias** per mini-game: Block Drop favors Bone Shield/Extra Bone, Connect the Leashes favors Fetch/Paw Scan, Sliding Pup favors Flashlight/Sniff. Gives a reason to care which game appears.
+- **Theme bias** per mini-game: Block Drop favors Extra Bone, Connect the Leashes favors Fetch, Sliding Pup favors Flashlight/Sniff. Gives a reason to care which game appears.
 - **Pity timer:** guaranteed Rare every 4 bonus levels without one.
 - Rolls are **seeded** per (save, level) so replaying/refreshing can't reroll.
 
@@ -50,8 +49,8 @@ In-level limits: **max 3 power-ups per level** (prevents trivializing); 3★ req
 ## Pet Shop prices (starting values, tune in playtest)
 | Item | Price 🍖 |
 |---|---|
-| Bone Shield / Extra Bone / Fetch / Paw Scan | 60 |
-| Flashlight / Rewind | 120 |
+| Extra Bone / Fetch | 60 |
+| Flashlight | 120 |
 | Sniff | 200 |
 | Guide Dog | 400 |
 | Board theme / dog outfit | 150–500 |
@@ -63,6 +62,6 @@ In-level limits: **max 3 power-ups per level** (prevents trivializing); 3★ req
 
 ## Data model (sketch)
 ```ts
-type PowerUpId = 'sniff'|'shield'|'extraBone'|'fetch'|'flashlight'|'pawScan'|'rewind'|'guideDog';
+type PowerUpId = 'sniff'|'extraBone'|'fetch'|'flashlight'|'guideDog';
 interface Inventory { powerUps: Record<PowerUpId, number>; treats: number; cosmetics: string[] }
 ```

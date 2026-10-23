@@ -63,6 +63,7 @@ export default function PipeSprinklersView({ tier, seed, onFinish }: MiniGamePro
   const finished = useRef(false);
   const flow = pipeFlow(puzzle.size, puzzle.source, state.masks);
   const bowlSet = new Set(puzzle.bowls);
+  const wateredBowls = puzzle.bowls.filter((b) => flow.watered.has(b)).length;
 
   useEffect(() => {
     if (!isPipeSolved(state.puzzle, state.masks) || finished.current) return;
@@ -110,17 +111,17 @@ export default function PipeSprinklersView({ tier, seed, onFinish }: MiniGamePro
         <span>🔄 {state.moves} rotations</span>
         <span>🎯 target {puzzle.target}</span>
         <span>
-          💧 {flow.watered.size}/{puzzle.size * puzzle.size} watered
+          🐶 {wateredBowls}/{puzzle.bowls.length} dogs watered
         </span>
       </div>
       <div className="pipe-board" style={{ ['--n' as string]: puzzle.size }} aria-label="Pipe Sprinklers board">
         {state.masks.map((mask, i) => {
-          const wet = flow.watered.has(i) && !flow.leaks.has(i);
+          const wet = flow.watered.has(i);
           const bowl = bowlSet.has(i);
           return (
             <button
               key={i}
-              className={`pipe-tile ${wet ? 'wet' : ''} ${flow.leaks.has(i) ? 'leak' : ''}`}
+              className={`pipe-tile ${wet ? 'wet' : ''}`}
               onPointerDown={(event) => onPointerDown(event, i)}
               onPointerMove={onPointerMove}
               onPointerUp={cancelPress}

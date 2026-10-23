@@ -2,12 +2,14 @@ import { TOTAL_LEVELS } from '../../core/progression/levels';
 import { useNav } from '../../store/navStore';
 import { useSave } from '../../store/saveStore';
 import { TopBar, formatTime } from '../components/common';
+import { tierIcon, useBadges } from '../hooks/useBadges';
 
 export function StatsScreen() {
   const go = useNav((s) => s.go);
   const { stats, progress, daily, inventory, treats } = useSave();
   const t = stats.totals;
-  const levelsDone = Object.keys(progress).length;
+  const levelsDone = Object.keys(progress).filter((id) => Number(id) <= TOTAL_LEVELS).length;
+  const extraDone = Object.keys(progress).length - levelsDone;
   const stars = Object.values(progress).reduce((a, p) => a + p.stars, 0);
   const threeStars = Object.values(progress).filter((p) => p.stars === 3).length;
   const items = Object.values(inventory).reduce((a, n) => a + n, 0);
@@ -20,6 +22,7 @@ export function StatsScreen() {
 
   const tiles: [string, string | number][] = [
     ['Levels cleared', `${levelsDone}/${TOTAL_LEVELS}`],
+    ...(extraDone > 0 ? ([['Extra levels', extraDone]] as [string, number][]) : []),
     ['Stars', stars],
     ['Perfect ★★★', threeStars],
     ['Puzzles solved', t.puzzlesSolved + t.dailySolved + t.endlessSolved],
@@ -33,6 +36,8 @@ export function StatsScreen() {
     ['Time played', formatTime(t.playMs)],
   ];
 
+  const badges = useBadges();
+
   return (
     <div className="screen stats-screen">
       <TopBar onBack={() => go({ name: 'title' })} title="📊 Stats" />
@@ -43,6 +48,20 @@ export function StatsScreen() {
             <span>{label}</span>
           </div>
         ))}
+      </div>
+      <div className="card badge-showcase">
+        <h3>🏅 Badges</h3>
+        <div className="badge-row">
+          {badges.map((b) => (
+            <span key={b.badge.id} className={`badge-mini ${b.earned ? '' : 'dim'}`} title={b.badge.name}>
+              {b.badge.icon}
+              <small>{tierIcon(b.earned)}</small>
+            </span>
+          ))}
+        </div>
+        <button className="btn small" onClick={() => go({ name: 'badges' })}>
+          See all badges
+        </button>
       </div>
       {hardest.length > 0 && (
         <div className="card">

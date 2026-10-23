@@ -129,15 +129,6 @@ describe('power-ups', () => {
     expect(r.state.powerUpsUsed).toBe(1);
   });
 
-  it('shield absorbs one mistake', () => {
-    const r = applyPowerUp(fresh(), 'shield', { autoCross: true });
-    if (!r.ok) throw new Error(r.message);
-    const bad = puzzle.solution[0] === 0 ? 2 : 0;
-    const s = gameReducer(r.state, { type: 'placeDog', cell: bad, autoCross: true });
-    expect(s.bones).toBe(3);
-    expect(s.shield).toBe(false);
-  });
-
   it('fetch leaves exactly the dog and one decoy open in the row', () => {
     const r = applyPowerUp(fresh(), 'fetch', { target: 0, autoCross: true });
     if (!r.ok) throw new Error(r.message);
@@ -146,34 +137,59 @@ describe('power-ups', () => {
     expect(row[puzzle.solution[0]]).toBe('empty');
   });
 
-  it('rewind refunds a lost bone and extra bone revives', () => {
+  it('extra bone revives a lost level', () => {
     let s = fresh();
     const bad = puzzle.solution[0] === 0 ? 2 : 0;
     for (let i = 0; i < 3; i++) s = gameReducer(s, { type: 'placeDog', cell: bad, autoCross: true });
     expect(s.status).toBe('lost');
-    const r = applyPowerUp(s, 'rewind', { autoCross: true });
-    if (!r.ok) throw new Error(r.message);
-    expect(r.state.status).toBe('playing');
-    expect(r.state.bones).toBe(1);
-    const e = applyPowerUp(r.state, 'extraBone', { autoCross: true });
-    expect(e.ok && e.state.bones).toBe(2);
+    expect(applyPowerUp(s, 'flashlight', { autoCross: true }).ok).toBe(false);
+    const e = applyPowerUp(s, 'extraBone', { autoCross: true });
+    if (!e.ok) throw new Error(e.message);
+    expect(e.state.status).toBe('playing');
+    expect(e.state.bones).toBe(1);
   });
 
   it('limits power-ups per level', () => {
     let s = fresh();
-    for (const id of ['shield', 'extraBone', 'flashlight'] as const) {
+    for (const id of ['extraBone', 'flashlight', 'guideDog'] as const) {
       const r = applyPowerUp(s, id, { autoCross: true });
       if (!r.ok) throw new Error(r.message);
       s = r.state;
     }
-    expect(applyPowerUp(s, 'pawScan', { autoCross: true }).ok).toBe(false);
+    expect(applyPowerUp(s, 'sniff', { target: 0, autoCross: true }).ok).toBe(false);
   });
 
-  it('guide dog places correct dogs', () => {
-    const r = applyPowerUp(fresh(), 'guideDog', { autoCross: true });
-    if (!r.ok) return; // Some boards start with a hard step; that's allowed.
-    r.state.marks.forEach((m, cell) => {
-      if (m === 'dog') expect(puzzle.solution[Math.floor(cell / puzzle.size)]).toBe(cell % puzzle.size);
-    });
+  const dogsOf = (s: GameState) => s.marks.map((m, i) => (m === 'dog' ? i : -1)).filter((i) => i >= 0);
+  const isSol = (cell: number) => puzzle.solution[Math.floor(cell / puzzle.size)] === cell % puzzle.size;
+
+  it('guide dog places exactly 3 new correct dogs', () => {
+    for (const p of [PUZZLES[0], PUZZLES[40], PUZZLES[PUZZLES.length - 1]]) {
+      const r = applyPowerUp(createGame(1, p), 'guideDog', { autoCross: true });
+      if (!r.ok) throw new Error(r.message);
+      const dogs = dogsOf(r.state);
+      expect(dogs).toHaveLength(3);
+      for (const c of dogs) expect(p.solution[Math.floor(c / p.size)]).toBe(c % p.size);
+    }
+  });
+
+  it('guide dog keeps existing dogs and only adds new ones', () => {
+    let s = fresh();
+    const own = [0, 1].map((r) => r * puzzle.size + puzzle.solution[r]);
+    for (const c of own) s = gameReducer(s, { type: 'placeDog', cell: c, autoCross: true });
+    const r = applyPowerUp(s, 'guideDog', { autoCross: true });
+    if (!r.ok) throw new Error(r.message);
+    const dogs = dogsOf(r.state);
+    expect(dogs).toHaveLength(5);
+    for (const c of own) expect(dogs).toContain(c);
+    for (const c of dogs) expect(isSol(c)).toBe(true);
+  });
+
+  it('guide dog finishes the level when 3 or fewer dogs remain', () => {
+    let s = fresh();
+    for (let r = 0; r < puzzle.size - 2; r++) s = gameReducer(s, { type: 'placeDog', cell: r * puzzle.size + puzzle.solution[r], autoCross: true });
+    const r = applyPowerUp(s, 'guideDog', { autoCross: true });
+    if (!r.ok) throw new Error(r.message);
+    expect(dogsOf(r.state)).toHaveLength(puzzle.size);
+    expect(r.state.status).toBe('won');
   });
 });

@@ -52,7 +52,7 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 - [x] **Sliding Pup** (parity-safe shuffle, move targets).
 - [x] Bonus schedule every 5th level; rotation; tier configs.
 - [x] Inventory store; seeded reward rolls, pity timer, theme bias.
-- [x] Power-ups: Sniff, Bone Shield, Extra Bone, Fetch, Flashlight, Paw Scan, Rewind, Guide Dog (+ max-3 rule, 3★ rule).
+- [x] Power-ups: Sniff, Extra Bone, Fetch, Flashlight, Guide Dog (Bone Shield, Paw Scan, Rewind removed) (+ max-3 rule, 3★ rule).
 - [x] Power-up tray; "continue with Extra Bone" on fail screen.
 
 **Done when:** full loop: 4 puzzles → bonus → power-ups → used in puzzles.
@@ -66,9 +66,10 @@ Each phase ends with something playable. Estimates are rough focused dev-days.
 - [x] Responsive pass: phones stack vertically; ≥900×560 puts the HUD/tools in a side panel.
 
 ## Phase 5 — More mini-games
-All seven built. Intro order (every 5th level): Connect the Leashes → Block Drop → Sliding Pup → **Kibble Blocks → Memory Fetch → Nonogram Paws → Doggy Rush Hour → Water Bowl Sort → Kennel Lamps (Lights Out) → Pipe Sprinklers**, then rotate.
+All seven built. Intro order (every 5th level): Connect the Leashes → Block Drop → Sliding Pup → **Kibble Blocks → Memory Fetch → Nonogram Paws → Doggy Rush Hour → Water Bowl Sort → Bubble Bark (bubble shooter) → Pipe Sprinklers**, then rotate.
 - [x] Each: pure logic + tests, tier configs, reward bias, intro, added to rotation.
 - Note: bonus slots from level 20 onward changed vs. the MVP rotation.
+- Note: Kennel Lamps (Lights Out) was later removed and replaced by Bubble Bark in the same slot (level 45), so the rest of the rotation is unchanged.
 
 ## Phase 6 — Release & extras
 - [x] PWA: manifest, service worker (offline, network-first HTML, cache-first assets), SVG + PNG icons (`npm run icons`), maskable & apple-touch icons.
