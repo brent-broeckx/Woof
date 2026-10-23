@@ -133,7 +133,7 @@ export const MINI_GAMES: Record<MiniGameId, MiniGameDefinition> = {
     icon: '💧',
     tagline: 'Rotate pipes to water every dog bowl',
     rules: [
-      'Tap pipes to rotate them clockwise.',
+      'Tap pipes to rotate them clockwise; long-press (or right-click) to rotate counter-clockwise.',
       'Blue pipes are connected to the tap; fix leaks and water all bowls.',
       'Stars are based on rotations versus the target.',
     ],
